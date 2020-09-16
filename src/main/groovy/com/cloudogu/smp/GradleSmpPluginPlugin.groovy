@@ -92,6 +92,11 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
 
             it.mustRunAfter("compileJava")
         }
+
+        project.tasks.getByName("jar").configure {
+            exclude("**/module.xml")
+            from "build/smp"
+        }
     }
 
     private static void registerRepositories(Project project) {
