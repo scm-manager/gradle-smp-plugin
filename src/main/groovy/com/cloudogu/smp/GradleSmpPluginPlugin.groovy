@@ -219,17 +219,32 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
             archiveFileName.set("${project.name}.smp")
             archiveExtension.set("smp")
 
-            classpath( createPackagingClasspath(project) )
+            createPackagingClasspath(project).each {file ->
+                if (file.name.endsWith(".jar")) {
+                    from(file) {
+                        into("lib")
+                    }
+                } else if (file.name == "main") {
+                    from(file) {
+                        into("classes")
+                        exclude("**/module.xml")
+                    }
+                } else {
+                    println "WARNING: unknown classpath entry ${file}"
+                }
+            }
 
             from("build/resources/main/META-INF") {
                 into "META-INF"
             }
 
-            from("build/webapp")
+            from("build/webapp") {
+                into "webapp"
+            }
             from("build/smp")
-            from("src/main/webapp")
-
-            rootSpec.exclude("**/module.xml")
+            from("src/main/webapp") {
+                into "webapp"
+            }
 
             dependsOn("build")
         }
