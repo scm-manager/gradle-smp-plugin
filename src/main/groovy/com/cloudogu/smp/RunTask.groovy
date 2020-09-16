@@ -61,7 +61,6 @@ class RunTask extends DefaultTask {
                 "BUNDLE_OUTPUT": home.absolutePath,
                 "NODE_ENV": "development"
             ]
-            dependsOn("yarn_install")
         }
         return {
             frontend.exec()

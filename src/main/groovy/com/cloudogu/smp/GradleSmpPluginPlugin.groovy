@@ -8,11 +8,15 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ConfigurationContainer
+import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.file.FileCollection
+import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.plugins.JavaLibraryPlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
+import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.Sync
@@ -24,6 +28,7 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
     void apply(Project project) {
         project.plugins.apply(JavaLibraryPlugin)
         project.plugins.apply("com.github.node-gradle.node")
+        project.plugins.apply(MavenPublishPlugin)
 
         def extension = project.extensions.create("scmPlugin", SmpExtension)
 
@@ -32,14 +37,47 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
         registerUIBuild(project)
         registerUITest(project)
         registerTest(project)
-        registerBuild(project)
-        registerPackage(project)
+        def artifact = registerPackage(project)
         registerRun(project, extension)
         registerInfo(project, extension)
         registerPluginXml(project, extension)
 
+        // TODO? is this ok? do we need this?
         project.afterEvaluate {
-            configureProject(project, extension)
+            configureDependencies(project, extension)
+            configurePublishing(project, extension, artifact)
+            configureTests(project)
+        }
+    }
+
+    private static void configureTests(Project project) {
+        project.test {
+            useJUnitPlatform()
+        }
+    }
+
+    private static void configurePublishing(Project project, SmpExtension extension, PublishArtifact smp) {
+        project.java {
+            withJavadocJar()
+            withSourcesJar()
+        }
+
+        project.publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    groupId = "sonia.scm.plugins"
+                    artifactId = extension.getName(project)
+                    version = extension.version
+                    from project.components.java
+                    artifact smp
+                }
+            }
+            repositories {
+                maven {
+                    // TODO package.scm-manager.org
+                    url = "${project.buildDir}/repo"
+                }
+            }
         }
     }
 
@@ -64,7 +102,7 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
         }
     }
 
-    private static void configureProject(Project project, SmpExtension extension) {
+    private static void configureDependencies(Project project, SmpExtension extension) {
         // gradle has xerces on it classpath, which breaks our annotation processor
         // so we force jdk build in for now
         // @see https://stackoverflow.com/questions/53299280/java-and-xerces-cant-find-property-xmlconstants-access-external-dtd
@@ -128,19 +166,15 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
 
             // we have to add both smp and jar,
             // because the smp (default artifact) knows the dependencies and the jar knows the plugin classes
-            extension.dependencies.forEach {dep ->
+            extension.dependencies.forEach { dep ->
                 scmCoreDependency "${dep}"
                 scmCoreDependency "${dep}@jar"
             }
 
-            extension.optionalDependencies.forEach {dep ->
+            extension.optionalDependencies.forEach { dep ->
                 scmCoreDependency "${dep}"
                 scmCoreDependency "${dep}@jar"
             }
-        }
-
-        project.test {
-            useJUnitPlatform()
         }
     }
 
@@ -157,12 +191,12 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
 
     private static void registerRun(Project project, SmpExtension extension) {
         project.tasks.register("copy-dependencies", Copy) {
-            extension.dependencies.each {dependencyString ->
+            extension.dependencies.each { dependencyString ->
                 def files = resolveSmp(project, dependencyString)
                 from(files)
             }
 
-            extension.optionalDependencies.each {dependencyString ->
+            extension.optionalDependencies.each { dependencyString ->
                 def files = resolveSmp(project, dependencyString)
                 from(files)
             }
@@ -171,7 +205,7 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
         }
 
         project.tasks.register("prepare-home", Sync) {
-            createPackagingClasspath(project).each {file ->
+            createPackagingClasspath(project).each { file ->
                 if (file.name.endsWith(".jar")) {
                     from(file) {
                         into("lib")
@@ -186,7 +220,7 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
                 }
             }
 
-            from"build/smp"
+            from "build/smp"
             from("build/resources/main/META-INF") {
                 into "META-INF"
             }
@@ -201,7 +235,7 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
         project.tasks.register("run", RunTask) {
             description = "Run SCM-Manager with the plugin installed"
             it.extension = extension
-            dependsOn("prepare-home")
+            dependsOn("prepare-home", "yarn_install")
         }
     }
 
@@ -212,14 +246,14 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
         runtimeClasspath - scmCoreDependency
     }
 
-    private static void registerPackage(Project project) {
-        project.tasks.register("package", War) {
+    private PublishArtifact registerPackage(Project project) {
+        def smp = project.tasks.register("smp", War) {
             description = 'Generates the SMP package'
             group = BasePlugin.BUILD_GROUP
             archiveFileName.set("${project.name}.smp")
             archiveExtension.set("smp")
 
-            createPackagingClasspath(project).each {file ->
+            createPackagingClasspath(project).each { file ->
                 if (file.name.endsWith(".jar")) {
                     from(file) {
                         into("lib")
@@ -246,14 +280,14 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
                 into "webapp"
             }
 
-            dependsOn("build")
+            dependsOn("classes", "ui-bundle")
         }
-    }
 
-    private static void registerBuild(Project project) {
-        project.tasks.getByName('build').configure {
-            dependsOn("ui-build")
+        project.tasks.getByName("assemble").configure {
+            dependsOn("smp")
         }
+
+        new LazyPublishArtifact(smp)
     }
 
     private static void registerTest(Project project) {
@@ -279,7 +313,7 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
     }
 
     private static void registerUIBuild(Project project) {
-        project.tasks.register("ui-build", YarnTask) {
+        project.tasks.register("ui-bundle", YarnTask) {
             inputs.file("package.json")
             inputs.file("yarn.lock")
             inputs.dir("src/main/js")
@@ -290,7 +324,7 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
             dependsOn("yarn_install")
 
             group = BasePlugin.BUILD_GROUP
-            description = "Assembles the plugin frontend"
+            description = "Assembles the plugin ui bundle"
         }
     }
 
