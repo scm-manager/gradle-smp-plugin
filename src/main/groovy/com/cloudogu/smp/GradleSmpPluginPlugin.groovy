@@ -8,17 +8,15 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ConfigurationContainer
+import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.PublishArtifact
-import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.plugins.JavaLibraryPlugin
 import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.tasks.Copy
-import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.Sync
 import org.gradle.api.tasks.bundling.War
 import org.gradle.language.base.plugins.LifecycleBasePlugin
@@ -56,7 +54,30 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
         }
     }
 
-    private static void configurePublishing(Project project, SmpExtension extension, PublishArtifact smp) {
+    private static Iterable<Dependency> createDependencies(Project project, Collection<String> dependencyStrings) {
+        dependencyStrings.collect { dep ->
+            project.dependencies.create(dep)
+        }
+    }
+
+    private static void appendDependencies(Node dependenciesNode, Iterable<Dependency> dependencies, String scope = null, boolean optional = false) {
+        dependencies.forEach { dep ->
+            def dependencyNode = dependenciesNode.appendNode('dependency')
+            dependencyNode.appendNode('groupId', dep.group)
+            dependencyNode.appendNode('artifactId', dep.name)
+            if (dep.version != null && !dep.version.isEmpty()) {
+                dependencyNode.appendNode('version', dep.version)
+            }
+            if (scope != null) {
+                dependencyNode.appendNode('scope', 'provided')
+            }
+            if (optional) {
+                dependencyNode.appendNode('optional', true)
+            }
+        }
+    }
+
+    private void configurePublishing(Project project, SmpExtension extension, PublishArtifact smp) {
         project.java {
             withJavadocJar()
             withSourcesJar()
@@ -68,8 +89,32 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
                     groupId = "sonia.scm.plugins"
                     artifactId = extension.getName(project)
                     version = extension.version
+
                     from project.components.java
                     artifact smp
+
+                    pom {
+                        packaging = "smp"
+                        description = extension.description
+                    }
+
+                    pom.withXml {
+                        def rootNode = asNode()
+                        rootNode.remove(rootNode.get('dependencies'))
+                        def dependenciesNode = rootNode.appendNode('dependencies')
+
+                        Set<Dependency> runtime = runtimeDependencies(project)
+
+                        def provided = project.configurations.scmCoreDependency.allDependencies
+                            .findAll { dep ->
+                                return !dep.group.equals("sonia.scm") && !dep.name.equals("scm")
+                            }
+
+                        appendDependencies(dependenciesNode, provided, 'provided')
+                        appendDependencies(dependenciesNode, runtime)
+                        appendDependencies(dependenciesNode, createDependencies(project, extension.dependencies))
+                        appendDependencies(dependenciesNode, createDependencies(project, extension.optionalDependencies), null, true)
+                    }
                 }
             }
             repositories {
@@ -79,6 +124,13 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
                 }
             }
         }
+    }
+
+    private static Set<Dependency> runtimeDependencies(Project project) {
+        def runtime = project.configurations.implementation.allDependencies
+        runtime -= project.configurations.scmCoreDependency.allDependencies
+        runtime -= project.configurations.scmPluginDependency.allDependencies
+        runtime
     }
 
     private static void registerPluginXml(Project project, extension) {
@@ -123,8 +175,13 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
                 .setVisible(false)
                 .setDescription("Additional classpath for libraries which are provided from scm code.")
 
-        configurationContainer.getByName(JavaPlugin.COMPILE_CONFIGURATION_NAME).extendsFrom(coreDependency);
-        configurationContainer.getByName(JavaPlugin.RUNTIME_CONFIGURATION_NAME).extendsFrom(coreDependency);
+        Configuration pluginDependency = configurationContainer
+                .create("scmPluginDependency")
+                .setVisible(false)
+                .setDescription("Plugin dependencies.")
+
+        configurationContainer.getByName(JavaPlugin.COMPILE_CONFIGURATION_NAME).extendsFrom(coreDependency, pluginDependency)
+        configurationContainer.getByName(JavaPlugin.RUNTIME_CONFIGURATION_NAME).extendsFrom(coreDependency, pluginDependency)
 
         project.dependencies {
             // we enforce the dependency versions from scm-manager root pom dependency management
@@ -172,13 +229,13 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
             // we have to add both smp and jar,
             // because the smp (default artifact) knows the dependencies and the jar knows the plugin classes
             extension.dependencies.forEach { dep ->
-                scmCoreDependency "${dep}"
-                scmCoreDependency "${dep}@jar"
+                scmPluginDependency "${dep}"
+                scmPluginDependency "${dep}@jar"
             }
 
             extension.optionalDependencies.forEach { dep ->
-                scmCoreDependency "${dep}"
-                scmCoreDependency "${dep}@jar"
+                scmPluginDependency "${dep}"
+                scmPluginDependency "${dep}@jar"
             }
         }
     }
@@ -244,11 +301,11 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
         }
     }
 
-    private static FileCollection createPackagingClasspath(Project project) {
-        FileCollection runtimeClasspath = project.getConvention().getPlugin(JavaPluginConvention.class)
-                .getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath()
-        Configuration scmCoreDependency = project.getConfigurations().getByName("scmCoreDependency")
-        runtimeClasspath - scmCoreDependency
+    private static Iterable<File> createPackagingClasspath(Project project) {
+        Set<Dependency> runtime = runtimeDependencies(project)
+        def configuration = project.configurations.detachedConfiguration(runtime.toArray(new Dependency[0]))
+        configuration.resolve()
+        configuration.files
     }
 
     private PublishArtifact registerPackage(Project project) {
