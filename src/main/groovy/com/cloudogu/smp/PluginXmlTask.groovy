@@ -1,7 +1,6 @@
 package com.cloudogu.smp
 
 import groovy.xml.DOMBuilder
-import groovy.xml.MarkupBuilder
 import groovy.xml.XmlUtil
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.InputFile
@@ -9,7 +8,6 @@ import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
-import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.OutputKeys
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
@@ -17,9 +15,9 @@ import javax.xml.transform.stream.StreamResult
 
 class PluginXmlTask extends DefaultTask {
 
-    private SmpExtension extension;
-    private File moduleXml;
-    private File pluginXml;
+    private SmpExtension extension
+    private File moduleXml
+    private File pluginXml
 
     @Nested
     SmpExtension getExtension() {

@@ -35,7 +35,8 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
         registerUIBuild(project)
         registerUITest(project)
         registerTest(project)
-        def artifact = registerPackage(project)
+
+        def artifact = registerPackage(project, extension)
         registerRun(project, extension)
         registerInfo(project, extension)
         registerPluginXml(project, extension)
@@ -308,11 +309,13 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
         configuration.files
     }
 
-    private PublishArtifact registerPackage(Project project) {
+    private PublishArtifact registerPackage(Project project, SmpExtension extension) {
+        String name = extension.getName(project)
+
         def smp = project.tasks.register("smp", War) {
             description = 'Generates the SMP package'
             group = BasePlugin.BUILD_GROUP
-            archiveFileName.set("${project.name}.smp")
+            archiveFileName.set("${name}.smp")
             archiveExtension.set("smp")
 
             createPackagingClasspath(project).each { file ->
@@ -346,6 +349,14 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
         }
 
         project.tasks.getByName("assemble").configure {
+            dependsOn("release-yaml")
+        }
+
+        project.tasks.register("release-yaml", ReleaseYamlTask) {
+            it.extension = extension
+            it.releaseYaml = new File(project.buildDir, "libs/release.yaml")
+            it.smp = new File(project.buildDir, "libs/${name}.smp")
+
             dependsOn("smp")
         }
 

@@ -2,12 +2,16 @@ package com.cloudogu.smp
 
 import org.gradle.api.Project
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
 
 class SmpExtension implements Serializable {
 
     @Input
     String scmVersion = "2.0.0"
+
+    @Input
+    String group = "sonia.scm.plugins"
 
     @Input
     @Optional
@@ -36,6 +40,9 @@ class SmpExtension implements Serializable {
     @Optional
     String home
 
+    @Nested
+    Conditions pluginConditions = new Conditions()
+
     private List<String> dependencies = new ArrayList<>()
     private List<String> optionalDependencies = new ArrayList<>()
 
@@ -47,6 +54,11 @@ class SmpExtension implements Serializable {
     @Input
     List<String> getOptionalDependencies() {
         return optionalDependencies
+    }
+
+    def conditions(Closure<Void> closure) {
+        closure.delegate = pluginConditions
+        closure.call()
     }
 
     def depends(Closure<Void> closure) {
@@ -66,6 +78,16 @@ class SmpExtension implements Serializable {
             return name
         }
         return project.name
+    }
+
+    private class Conditions {
+        @Input
+        @Optional
+        String os
+
+        @Input
+        @Optional
+        String arch
     }
 
     private class DependencyConfigurator {
