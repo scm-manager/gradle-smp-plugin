@@ -32,7 +32,9 @@ class SmpExtension implements Serializable {
     @Optional
     String category
 
-    File home
+    @Input
+    @Optional
+    String home
 
     private List<String> dependencies = new ArrayList<>()
     private List<String> optionalDependencies = new ArrayList<>()
@@ -54,7 +56,7 @@ class SmpExtension implements Serializable {
 
     File getScmHome(Project project) {
         if (home != null) {
-            return home
+            return new File(home)
         }
         return new File(project.buildDir, "scm-home")
     }
