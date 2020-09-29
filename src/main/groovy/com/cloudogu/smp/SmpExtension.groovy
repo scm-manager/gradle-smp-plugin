@@ -43,6 +43,9 @@ class SmpExtension implements Serializable {
     @Nested
     Conditions pluginConditions = new Conditions()
 
+    @Nested
+    OpenApiSpec openApiSpec = new OpenApiSpec()
+
     private List<String> dependencies = new ArrayList<>()
     private List<String> optionalDependencies = new ArrayList<>()
 
@@ -66,6 +69,11 @@ class SmpExtension implements Serializable {
         closure.call()
     }
 
+    def openapi(Closure<Void> closure) {
+        closure.delegate = openApiSpec
+        closure.call()
+    }
+
     File getScmHome(Project project) {
         if (home != null) {
             return new File(home)
@@ -80,7 +88,7 @@ class SmpExtension implements Serializable {
         return project.name
     }
 
-    private class Conditions {
+    class Conditions {
         @Input
         @Optional
         String os
@@ -90,10 +98,18 @@ class SmpExtension implements Serializable {
         String arch
     }
 
+    class OpenApiSpec {
+
+        @Input
+        @Optional
+        Set<String> packages = new LinkedHashSet<>()
+
+    }
+
     private class DependencyConfigurator {
 
-        private List<String> dependencies;
-        private List<String> optionalDependencies;
+        private List<String> dependencies
+        private List<String> optionalDependencies
 
         DependencyConfigurator(List<String> dependencies, List<String> optionalDependencies) {
             this.dependencies = dependencies

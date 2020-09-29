@@ -26,6 +26,7 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
     void apply(Project project) {
         project.plugins.apply(JavaLibraryPlugin)
         project.plugins.apply("com.github.node-gradle.node")
+        project.plugins.apply("io.swagger.core.v3.swagger-gradle-plugin")
         project.plugins.apply(MavenPublishPlugin)
 
         def extension = project.extensions.create("scmPlugin", SmpExtension)
@@ -38,11 +39,11 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
 
         def artifact = registerPackage(project, extension)
         registerRun(project, extension)
-        registerInfo(project, extension)
         registerPluginXml(project, extension)
 
         // TODO? is this ok? do we need this?
         project.afterEvaluate {
+            registerOpenApiSpecGenerator(project, extension)
             configureDependencies(project, extension)
             configurePublishing(project, extension, artifact)
             configureTests(project)
@@ -309,6 +310,20 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
         configuration.files
     }
 
+    private static void registerOpenApiSpecGenerator(Project project, SmpExtension extension) {
+        project.tasks.getByName("resolve") {
+            outputFileName = 'openapi'
+            outputFormat = 'JSONANDYAML'
+            prettyPrint = 'TRUE'
+            classpath = project.sourceSets.main.runtimeClasspath
+            resourcePackages = extension.openApiSpec.packages
+            outputDir = new File(project.buildDir, "smp/META-INF/scm")
+            skip = extension.openApiSpec.packages.isEmpty()
+
+            mustRunAfter("classes")
+        }
+    }
+
     private PublishArtifact registerPackage(Project project, SmpExtension extension) {
         String name = extension.getName(project)
 
@@ -345,7 +360,7 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
                 into "webapp"
             }
 
-            dependsOn("classes", "ui-bundle")
+            dependsOn("classes", "ui-bundle", "resolve")
         }
 
         project.tasks.getByName("assemble").configure {
@@ -408,14 +423,6 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
             outputs.dir("node_modules")
 
             description = "Install ui dependencies"
-        }
-    }
-
-    private static void registerInfo(Project project, SmpExtension extension) {
-        project.tasks.register("scm-info") {
-            println "scmVersion: ${extension.scmVersion}"
-            println "dependencies: ${extension.dependencies}"
-            println "optionalDependencies: ${extension.optionalDependencies}"
         }
     }
 }
