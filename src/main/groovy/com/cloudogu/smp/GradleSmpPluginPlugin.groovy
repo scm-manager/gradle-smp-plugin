@@ -10,13 +10,16 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.PublishArtifact
+import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.plugins.JavaLibraryPlugin
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.tasks.Copy
+import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.Sync
 import org.gradle.api.tasks.bundling.War
 import org.gradle.language.base.plugins.LifecycleBasePlugin
@@ -158,8 +161,10 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
 
                         def provided = project.configurations.scmCoreDependency.allDependencies
                             .findAll { dep ->
-                                return !dep.group.equals("sonia.scm") && !dep.name.equals("scm")
+                                return !(dep.group.equals("sonia.scm") && dep.name.equals("scm"))
                             }
+
+
 
                         appendDependencies(dependenciesNode, provided, 'provided')
                         appendDependencies(dependenciesNode, runtime)
@@ -230,9 +235,9 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
                 .create("scmPluginDependency")
                 .setVisible(false)
                 .setDescription("Plugin dependencies.")
+                .extendsFrom(coreDependency)
 
-        configurationContainer.getByName(JavaPlugin.COMPILE_CONFIGURATION_NAME).extendsFrom(coreDependency, pluginDependency)
-        configurationContainer.getByName(JavaPlugin.RUNTIME_CONFIGURATION_NAME).extendsFrom(coreDependency, pluginDependency)
+        configurationContainer.getByName(JavaPlugin.COMPILE_CONFIGURATION_NAME).extendsFrom(pluginDependency)
 
         project.dependencies {
             // we enforce the dependency versions from scm-manager root pom dependency management
@@ -353,10 +358,10 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
     }
 
     private static Iterable<File> createPackagingClasspath(Project project) {
-        Set<Dependency> runtime = runtimeDependencies(project)
-        def configuration = project.configurations.detachedConfiguration(runtime.toArray(new Dependency[0]))
-        configuration.resolve()
-        configuration.files
+        FileCollection runtimeClasspath = project.getConvention().getPlugin(JavaPluginConvention.class)
+                .getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath()
+        Configuration scmPluginDependency = project.getConfigurations().getByName("scmPluginDependency")
+        runtimeClasspath - scmPluginDependency
     }
 
     private static void registerOpenApiSpecGenerator(Project project, SmpExtension extension) {

@@ -24,7 +24,7 @@ repositories {
     }
 }
 
-def jettyVersion = '9.4.31.v20200723';
+def jettyVersion = '9.4.31.v20200723'
 
 dependencies {
     implementation "com.github.node-gradle:gradle-node-plugin:2.2.4"
