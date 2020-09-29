@@ -20,6 +20,7 @@ import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Sync
 import org.gradle.api.tasks.bundling.War
 import org.gradle.language.base.plugins.LifecycleBasePlugin
+import com.hierynomus.gradle.license.tasks.LicenseCheck
 
 class GradleSmpPluginPlugin implements Plugin<Project> {
 
@@ -27,10 +28,12 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
         project.plugins.apply(JavaLibraryPlugin)
         project.plugins.apply("com.github.node-gradle.node")
         project.plugins.apply("io.swagger.core.v3.swagger-gradle-plugin")
+        project.plugins.apply("com.github.hierynomus.license")
         project.plugins.apply(MavenPublishPlugin)
 
         def extension = project.extensions.create("scmPlugin", SmpExtension)
 
+        configureLicenseCheck(project)
         registerRepositories(project)
         registerYarnInstall(project)
         registerUIBuild(project)
@@ -47,6 +50,52 @@ class GradleSmpPluginPlugin implements Plugin<Project> {
             configureDependencies(project, extension)
             configurePublishing(project, extension, artifact)
             configureTests(project)
+        }
+    }
+
+    private static void configureLicenseCheck(Project project) {
+        def licenseFile = new File(project.rootDir, "LICENSE.txt")
+
+        project.tasks.register("licenseBuild", LicenseCheck) {
+            source = project.fileTree(dir: ".").include("build.gradle", "settings.gradle")
+            enabled = licenseFile.exists()
+        }
+
+        project.tasks.register("licenseUI", LicenseCheck) {
+            source = project.fileTree(dir: "src/main/js")
+            enabled = licenseFile.exists()
+        }
+
+        project.tasks.getByName("licenseMain").configure {
+            enabled = licenseFile.exists()
+        }
+
+        project.tasks.getByName("licenseTest").configure {
+            enabled = licenseFile.exists()
+        }
+
+        project.tasks.getByName("license").configure {
+            dependsOn("licenseBuild", "licenseUI")
+            enabled = licenseFile.exists()
+        }
+
+        project.license {
+            header licenseFile
+            strictCheck true
+
+            mapping {
+                tsx = 'SLASHSTAR_STYLE'
+                ts = 'SLASHSTAR_STYLE'
+                java = 'SLASHSTAR_STYLE'
+                gradle = 'SLASHSTAR_STYLE'
+            }
+
+            exclude "**/*.mustache"
+            exclude "**/*.json"
+            exclude "**/*.ini"
+            exclude "**/mockito-extensions/*"
+            exclude "**/*.txt"
+            exclude "**/*.md"
         }
     }
 
