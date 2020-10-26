@@ -10,7 +10,7 @@ import spock.lang.Specification
 /**
  * A simple unit test for the 'com.cloudogu.smp.greeting' plugin.
  */
-public class GradleSmpPluginPluginTest extends Specification {
+public class GradleSmpPluginTest extends Specification {
     def "plugin registers task"() {
         given:
         def project = ProjectBuilder.builder().build()

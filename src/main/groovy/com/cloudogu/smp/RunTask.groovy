@@ -9,7 +9,7 @@ import java.util.stream.Collectors
 
 class RunTask extends DefaultTask {
 
-    SmpExtension extension;
+    SmpExtension extension
 
     @TaskAction
     void exec() {
