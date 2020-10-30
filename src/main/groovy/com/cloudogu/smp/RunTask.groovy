@@ -3,12 +3,14 @@ package com.cloudogu.smp
 import com.moowork.gradle.node.yarn.YarnTask
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.TaskAction
 
 import java.util.stream.Collectors
 
 class RunTask extends DefaultTask {
 
+    @Nested
     SmpExtension extension
 
     @TaskAction

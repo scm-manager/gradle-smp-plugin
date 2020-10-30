@@ -51,9 +51,11 @@ class RunTasks {
         }
 
         project.tasks.register("run", RunTask) {
-            description = "Run SCM-Manager with the plugin installed"
-            it.extension = extension
-            dependsOn("prepare-home", "yarn_install")
+          description = "Run SCM-Manager with the plugin installed"
+          it.extension = extension
+          // run always
+          outputs.upToDateWhen { false }
+          dependsOn("prepare-home", "yarn_install")
         }
     }
 
