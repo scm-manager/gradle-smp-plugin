@@ -53,3 +53,16 @@ _
 /java/com/cloudogu/scm/review/MessageSender.java,8/1/81d5d449aea3ca3e10368110499c5a62fe2d527c
 h
 8java/com/cloudogu/scm/review/MergeObstacleCheckHook.java,6/4/64fbb161f5728348b16b273a148851497bb5d3ed
+`
+0src/main/groovy/com/cloudogu/smp/RunTasks.groovy,4/5/45f5c6c3d4ded51d7e2d2ac4ada77e4d187d3e8b
+d
+4src/main/groovy/com/cloudogu/smp/LicenseTasks.groovy,1/3/13a52f3925ab06b014d62c89cae449b63b926edc
+a
+1src/main/groovy/com/cloudogu/smp/TestTasks.groovy,5/d/5da43690e719bdb52ca416ba9da600f96a10586a
+:
+
+.gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
+X
+(gradle/wrapper/gradle-wrapper.properties,f/b/fbe448ebfc3eb2d4e308f6b8b043666f5b57235e
+=
+.editorconfig,6/2/626a747c8694eaae66f2afb3d1a745b045782c70
