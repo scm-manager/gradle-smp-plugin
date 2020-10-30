@@ -18,6 +18,7 @@ class PluginXmlTask extends DefaultTask {
     private SmpExtension extension
     private File moduleXml
     private File pluginXml
+    private File packageJson
 
     @Nested
     SmpExtension getExtension() {
@@ -44,6 +45,15 @@ class PluginXmlTask extends DefaultTask {
 
     void setModuleXml(File moduleXml) {
         this.moduleXml = moduleXml
+    }
+
+    @InputFile
+    File getPackageJson() {
+        return packageJson
+    }
+
+    void setPackageJson(File packageJson) {
+        this.packageJson = packageJson
     }
 
     @TaskAction
@@ -75,22 +85,30 @@ class PluginXmlTask extends DefaultTask {
                 }
             }
             conditions {
-                'min-version'(extension.scmVersion)
+              'min-version'(extension.scmVersion)
+              if (extension.pluginConditions.os != null) {
+                os(extension.pluginConditions.os)
+              }
+              if (extension.pluginConditions.arch != null) {
+                arch(extension.pluginConditions.arch)
+              }
             }
             resources {
+              if (packageJson.exists()) {
                 script("assets/${pluginName}.bundle.js")
+              }
             }
             // we use name/artifactid as dependency
             dependencies {
                 extension.dependencies.forEach {
                     def dep = project.dependencies.create(it)
-                    dependency(verions: dep.version, dep.name)
+                    dependency(version: dep.version, dep.name)
                 }
             }
             'optional-dependencies' {
                 extension.optionalDependencies.forEach {
                     def dep = project.dependencies.create(it)
-                    dependency(verions: dep.version, dep.name)
+                    dependency(version: dep.version, dep.name)
                 }
             }
         }
