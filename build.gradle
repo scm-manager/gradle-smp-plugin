@@ -7,53 +7,59 @@
  */
 
 plugins {
-    // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
-    id 'java-gradle-plugin'
+  // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
+  id 'java-gradle-plugin'
 
-    // Apply the Groovy plugin to add support for Groovy
-    id 'groovy'
+  // Apply the Groovy plugin to add support for Groovy
+  id 'groovy'
 }
 
 repositories {
-    // Use jcenter for resolving dependencies.
-    // You can declare any Maven/Ivy/file repository here.
-    jcenter()
+  // Use jcenter for resolving dependencies.
+  // You can declare any Maven/Ivy/file repository here.
+  jcenter()
 
-    maven {
-        url "https://plugins.gradle.org/m2/"
-    }
+  maven {
+    url "https://plugins.gradle.org/m2/"
+  }
 }
 
 def jettyVersion = '9.4.31.v20200723'
 
 dependencies {
-    implementation "com.github.node-gradle:gradle-node-plugin:2.2.4"
-    implementation "org.eclipse.jetty:jetty-server:${jettyVersion}"
-    implementation "org.eclipse.jetty:jetty-webapp:${jettyVersion}"
-    implementation "com.sun.xml.bind:jaxb-osgi:2.2.4-1"
-    implementation 'com.google.guava:guava:29.0-jre'
-    implementation 'org.codehaus.groovy:groovy-yaml:3.0.5'
-    implementation "io.swagger.core.v3:swagger-gradle-plugin:2.1.4"
-    implementation "gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.15.0"
+  implementation "com.github.node-gradle:gradle-node-plugin:2.2.4"
+  implementation "org.eclipse.jetty:jetty-server:${jettyVersion}"
+  implementation "org.eclipse.jetty:jetty-webapp:${jettyVersion}"
+  implementation "com.sun.xml.bind:jaxb-osgi:2.2.4-1"
+  implementation 'com.google.guava:guava:29.0-jre'
+  implementation 'org.codehaus.groovy:groovy-yaml:3.0.5'
+  implementation "io.swagger.core.v3:swagger-gradle-plugin:2.1.4"
+  implementation "gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.15.0"
 
-    // Use the awesome Spock testing and specification framework
-    testImplementation 'org.spockframework:spock-core:1.3-groovy-2.5'
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+  testImplementation "org.junit.jupiter:junit-jupiter-params:5.7.0"
+  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+  testImplementation "org.assertj:assertj-core:3.11.1"
+}
+
+test {
+  useJUnitPlatform()
 }
 
 gradlePlugin {
-    // Define the plugin
-    plugins {
-        greeting {
-            id = 'org.scm-manager.smp'
-            implementationClass = 'com.cloudogu.smp.GradleSmpPlugin'
-        }
+  // Define the plugin
+  plugins {
+    scmPlugin {
+      id = 'org.scm-manager.smp'
+      implementationClass = 'com.cloudogu.smp.GradleSmpPlugin'
     }
+  }
 }
 
 // Add a source set for the functional test suite
 sourceSets {
-    functionalTest {
-    }
+  functionalTest {
+  }
 }
 
 gradlePlugin.testSourceSets(sourceSets.functionalTest)
@@ -61,11 +67,12 @@ configurations.functionalTestImplementation.extendsFrom(configurations.testImple
 
 // Add a task to run the functional tests
 tasks.register('functionalTest', Test) {
-    testClassesDirs = sourceSets.functionalTest.output.classesDirs
-    classpath = sourceSets.functionalTest.runtimeClasspath
+  testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  classpath = sourceSets.functionalTest.runtimeClasspath
+  useJUnitPlatform()
 }
 
 check {
-    // Run the functional tests as part of `check`
-    dependsOn(tasks.functionalTest)
+  // Run the functional tests as part of `check`
+  dependsOn(tasks.functionalTest)
 }

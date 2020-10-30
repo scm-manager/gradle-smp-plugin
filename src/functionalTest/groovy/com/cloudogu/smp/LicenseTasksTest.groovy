@@ -1,4 +1,4 @@
-package com.cloudogu.smp
+package smp
 
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
