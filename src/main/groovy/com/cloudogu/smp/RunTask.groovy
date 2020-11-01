@@ -44,7 +44,7 @@ class RunTask extends DefaultTask {
   private Closure<Void> createBackend() {
     def webapp = resolveWebApp()
     def backend = project.tasks.create("boot-backend", JavaExec) {
-      main Runner.class.name
+      main ScmServer.class.name
       environment "NODE_ENV", "development"
       systemProperty "scm.webapp", webapp.toString()
       systemProperty "scm.home", extension.getScmHome(project)
