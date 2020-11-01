@@ -14,7 +14,7 @@ class PluginXmlTaskTest {
   @Test
   void shouldCreatePluginXml(@TempDir Path temp) {
     File packageJson = temp.resolve("package.json").toFile()
-    packageJson.createNewFile()
+    packageJson << "{}"
     File moduleXml = temp.resolve("module.xml").toFile()
     moduleXml << """
       <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -47,7 +47,7 @@ class PluginXmlTaskTest {
       it.extension = extension
       it.moduleXml = moduleXml
       it.pluginXml = pluginXml
-      it.packageJson = packageJson
+      it.packageJson = new PackageJson(packageJson)
     }
     task.write()
 
@@ -96,7 +96,7 @@ class PluginXmlTaskTest {
       it.extension = extension
       it.moduleXml = moduleXml
       it.pluginXml = pluginXml
-      it.packageJson = packageJson
+      it.packageJson = new PackageJson(packageJson)
     }
     task.write()
 

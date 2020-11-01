@@ -7,7 +7,7 @@ import static com.cloudogu.smp.Dependencies.*
 
 class RunTasks {
 
-    static void configure(Project project, SmpExtension extension) {
+    static void configure(Project project, PackageJson packageJson, SmpExtension extension) {
         project.tasks.register("copy-dependencies", Copy) {
             extension.dependencies.each { dependencyString ->
                 def files = resolveSmp(project, dependencyString)
@@ -53,6 +53,7 @@ class RunTasks {
         project.tasks.register("run", RunTask) {
           description = "Run SCM-Manager with the plugin installed"
           it.extension = extension
+          it.packageJson = packageJson
           // run always
           outputs.upToDateWhen { false }
           dependsOn("prepare-home", "yarn_install")

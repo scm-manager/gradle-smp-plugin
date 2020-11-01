@@ -13,14 +13,18 @@ class RunTask extends DefaultTask {
     @Nested
     SmpExtension extension
 
+    @Nested
+    PackageJson packageJson
+
     @TaskAction
     void exec() {
-        def actions = [
-            createBackend(),
-            createFrontend()
-        ]
-        def threads = start(actions)
-        wait(threads)
+      List<Closure<Void>> actions = new ArrayList<>();
+      actions.add(createBackend())
+      if (packageJson.hasScript("watch")) {
+        actions.add(createFrontend())
+      }
+      def threads = start(actions)
+      wait(threads)
     }
 
     private static void wait(List<Thread> threads) {

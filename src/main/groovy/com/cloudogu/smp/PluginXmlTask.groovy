@@ -18,7 +18,7 @@ class PluginXmlTask extends DefaultTask {
     private SmpExtension extension
     private File moduleXml
     private File pluginXml
-    private File packageJson
+    private PackageJson packageJson
 
     @Nested
     SmpExtension getExtension() {
@@ -47,12 +47,12 @@ class PluginXmlTask extends DefaultTask {
         this.moduleXml = moduleXml
     }
 
-    @InputFile
-    File getPackageJson() {
+    @Nested
+    PackageJson getPackageJson() {
         return packageJson
     }
 
-    void setPackageJson(File packageJson) {
+    void setPackageJson(PackageJson packageJson) {
         this.packageJson = packageJson
     }
 

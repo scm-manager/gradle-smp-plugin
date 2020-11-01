@@ -8,9 +8,9 @@ import org.gradle.api.tasks.bundling.War
 
 class PackagingTasks {
 
-    static PublishArtifact configure(Project project, SmpExtension extension) {
+    static PublishArtifact configure(Project project, PackageJson packageJson, SmpExtension extension) {
         PublishArtifact artifact = registerSmpTasks(project, extension)
-        registerPluginXml(project, extension)
+        registerPluginXml(project, packageJson, extension)
         project.afterEvaluate {
             registerOpenApiSpecGenerator(project, extension)
         }
@@ -53,7 +53,7 @@ class PackagingTasks {
                 into "webapp"
             }
 
-            dependsOn("classes", "ui-bundle", "resolve")
+            dependsOn("classes", "resolve")
         }
 
         project.tasks.getByName("assemble").configure {
@@ -71,7 +71,7 @@ class PackagingTasks {
         new LazyPublishArtifact(smp)
     }
 
-    private static void registerPluginXml(Project project, SmpExtension extension) {
+    private static void registerPluginXml(Project project, PackageJson packageJson, SmpExtension extension) {
         project.tasks.getByName('classes').configure {
             dependsOn("plugin-xml")
         }
@@ -79,6 +79,7 @@ class PackagingTasks {
             it.extension = extension
             it.moduleXml = new File(project.buildDir, "classes/java/main/META-INF/scm/module.xml")
             it.pluginXml = new File(project.buildDir, "smp/META-INF/scm/plugin.xml")
+            it.packageJson = packageJson
 
             it.mustRunAfter("compileJava")
         }
