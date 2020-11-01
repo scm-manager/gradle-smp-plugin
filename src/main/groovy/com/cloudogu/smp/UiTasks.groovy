@@ -9,6 +9,8 @@ class UiTasks {
 
   static void configure(Project project, PackageJson packageJson, SmpExtension extension) {
     if (packageJson.exists()) {
+      project.plugins.apply("com.github.node-gradle.node")
+
       registerYarnInstall(project)
 
       if (packageJson.hasScript("typecheck")) {
@@ -54,7 +56,6 @@ class UiTasks {
     }
   }
 
-
   private static void registerUIBuild(Project project) {
     project.tasks.register("ui-bundle", YarnTask) {
       inputs.file("package.json")
@@ -77,7 +78,6 @@ class UiTasks {
     }
   }
 
-
   private static void registerUITest(Project project) {
     project.tasks.register("ui-tests", YarnTask) {
       inputs.file("package.json")
@@ -97,7 +97,6 @@ class UiTasks {
       dependsOn("ui-tests")
     }
   }
-
 
   private static void registerUIDeploy(Project project, SmpExtension extension) {
     project.tasks.register("ui-deploy", YarnTask) {
