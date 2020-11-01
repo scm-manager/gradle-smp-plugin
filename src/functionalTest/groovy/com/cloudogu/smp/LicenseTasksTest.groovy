@@ -106,7 +106,9 @@ class LicenseTasksTest {
     content filePath, ""
 
     def result = runner.build()
-    assertThat(result.output).contains("BUILD SUCCESSFUL")
+    assertThat(result.output)
+      .contains("No LICENSE.txt found")
+      .contains("BUILD SUCCESSFUL")
   }
 
   private void content(String path, String content) {

@@ -13,7 +13,6 @@ class GradleSmpPlugin implements Plugin<Project> {
   void apply(Project project) {
     project.plugins.apply(JavaLibraryPlugin)
     project.plugins.apply("io.swagger.core.v3.swagger-gradle-plugin")
-    project.plugins.apply("com.github.hierynomus.license")
     project.plugins.apply(MavenPublishPlugin)
 
     def packageJson = new PackageJson(project)
