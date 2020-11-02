@@ -46,6 +46,12 @@ class PackageJson {
     return file
   }
 
+  String getDependencyVersion(String dependency) {
+    if (packageJson != null) {
+      return packageJson.dependencies[dependency]
+    }
+  }
+
   boolean exists() {
     return packageJson != null
   }

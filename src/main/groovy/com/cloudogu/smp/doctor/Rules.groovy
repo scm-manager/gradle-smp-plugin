@@ -1,6 +1,7 @@
 package com.cloudogu.smp.doctor
 
 import com.cloudogu.smp.doctor.rules.NameRule
+import com.cloudogu.smp.doctor.rules.UiPluginsVersionRule
 import com.cloudogu.smp.doctor.rules.VersionRule
 
 class Rules implements Iterable<Rule> {
@@ -14,7 +15,8 @@ class Rules implements Iterable<Rule> {
   static Rules all() {
     return new Rules([
       new NameRule(),
-      new VersionRule()
+      new VersionRule(),
+      new UiPluginsVersionRule()
     ])
   }
 

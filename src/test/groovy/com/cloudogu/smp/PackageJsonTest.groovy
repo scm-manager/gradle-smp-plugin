@@ -126,11 +126,53 @@ class PackageJsonTest {
     void shouldReturnName() {
       packageJsonFile << """
       {
-        "version": "@scm-manager/scm-super-plugin"
+        "name": "@scm-manager/scm-super-plugin"
       }
       """
       PackageJson packageJson = new PackageJson(packageJsonFile)
-      assertThat(packageJson.getVersion()).isEqualTo("@scm-manager/scm-super-plugin")
+      assertThat(packageJson.getName()).isEqualTo("@scm-manager/scm-super-plugin")
+    }
+  }
+
+  @Nested
+  class GetDependencyVersionTests {
+
+    @Test
+    void shouldReturnNullIfPackageJsonDoesNotExists() {
+      PackageJson packageJson = new PackageJson(packageJsonFile)
+      assertThat(packageJson.getName()).isNull()
+    }
+
+    @Test
+    void shouldReturnNullWithoutDependencies() {
+      packageJsonFile << "{}"
+      PackageJson packageJson = new PackageJson(packageJsonFile)
+      assertThat(packageJson.getName()).isNull()
+    }
+
+    @Test
+    void shouldReturnNullWithoutDependency() {
+      packageJsonFile << """
+      {
+        "dependencies": {}
+      }
+      """
+      PackageJson packageJson = new PackageJson(packageJsonFile)
+      assertThat(packageJson.getName()).isNull()
+    }
+
+    @Test
+    void shouldReturnVersion() {
+      packageJsonFile << """
+      {
+        "dependencies": {
+          "@scm-manager/scm-super-plugin": "2.0.0"        
+        }
+      }
+      """
+      PackageJson packageJson = new PackageJson(packageJsonFile)
+      String version = packageJson.getDependencyVersion("@scm-manager/scm-super-plugin")
+      assertThat(version).isEqualTo("2.0.0")
     }
   }
 
