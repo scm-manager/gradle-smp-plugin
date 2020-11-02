@@ -36,6 +36,10 @@ class ScmServerConfiguration {
   @Optional
   private String loggingConfiguration
 
+  @Input
+  @Optional
+  private boolean openBrowser = true
+
   String getWarFile() {
     return warFile
   }
@@ -98,6 +102,14 @@ class ScmServerConfiguration {
 
   void setLoggingConfiguration(String loggingConfiguration) {
     this.loggingConfiguration = loggingConfiguration
+  }
+
+  boolean getOpenBrowser() {
+    return openBrowser
+  }
+
+  void setOpenBrowser(boolean openBrowser) {
+    this.openBrowser = openBrowser
   }
 
   File getFile(Project project) {

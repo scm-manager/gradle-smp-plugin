@@ -6,9 +6,13 @@ import org.eclipse.jetty.server.HttpConfiguration
 import org.eclipse.jetty.server.HttpConnectionFactory
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
+import org.eclipse.jetty.util.component.AbstractLifeCycle
+import org.eclipse.jetty.util.component.LifeCycle
 import org.eclipse.jetty.webapp.WebAppContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+import java.awt.Desktop
 
 final class ScmServer {
 
@@ -40,9 +44,33 @@ final class ScmServer {
     server = new Server()
     server.addConnector(createServerConnector(server))
     server.setHandler(createScmContext())
+    server.addLifeCycleListener(new AbstractLifeCycle.AbstractLifeCycleListener() {
+      @Override
+      void lifeCycleStarted(LifeCycle event) {
+
+        String endpoint = String.format("http://localhost:%d%s", configuration.port, configuration.contextPath)
+
+        System.out.println()
+        System.out.println("==> scm-server started successfully and is accessible at:")
+        System.out.append("==> ").println(endpoint)
+        System.out.println()
+
+        if (configuration.openBrowser) {
+          openBrowser(endpoint)
+        }
+      }
+    })
 
     server.start()
-    LOG.info("scm-server is now accessible at http://localhost:{}{}", configuration.port, configuration.contextPath)
+  }
+
+  private static void openBrowser(String endpoint) {
+    try {
+      Desktop desktop = Desktop.getDesktop()
+      desktop.browse(URI.create(endpoint))
+    } catch (IOException | URISyntaxException ex) {
+      LOG.warn("could not open browser", ex);
+    }
   }
 
   private WebAppContext createScmContext() {
