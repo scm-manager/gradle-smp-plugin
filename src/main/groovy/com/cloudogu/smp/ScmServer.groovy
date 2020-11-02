@@ -1,5 +1,6 @@
 package com.cloudogu.smp
 
+import com.google.common.base.Strings
 import groovy.json.JsonSlurper
 import org.eclipse.jetty.server.HttpConfiguration
 import org.eclipse.jetty.server.HttpConnectionFactory
@@ -27,6 +28,10 @@ final class ScmServer {
     if (configuration.disableCorePlugins) {
       LOG.info("disable core plugin extraction")
       System.setProperty("sonia.scm.boot.disable-core-plugin-extraction", "true")
+    }
+
+    if (!Strings.isNullOrEmpty(configuration.loggingConfiguration)) {
+      System.setProperty("logback.configurationFile", configuration.loggingConfiguration);
     }
 
     LOG.info("set stage {}", configuration.stage)

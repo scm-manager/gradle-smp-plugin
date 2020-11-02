@@ -32,6 +32,10 @@ class ScmServerConfiguration {
   @Optional
   private int headerSize = 16384
 
+  @Input
+  @Optional
+  private String loggingConfiguration
+
   String getWarFile() {
     return warFile
   }
@@ -88,11 +92,12 @@ class ScmServerConfiguration {
     this.headerSize = headerSize
   }
 
-  File getHome(Project project) {
-    if (home != null) {
-      return new File(home)
-    }
-    return new File(project.buildDir, "scm-home")
+  String getLoggingConfiguration() {
+    return loggingConfiguration
+  }
+
+  void setLoggingConfiguration(String loggingConfiguration) {
+    this.loggingConfiguration = loggingConfiguration
   }
 
   File getFile(Project project) {
