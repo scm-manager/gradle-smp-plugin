@@ -1,5 +1,6 @@
 package com.cloudogu.smp.doctor
 
+import com.cloudogu.smp.doctor.rules.NameRule
 import com.cloudogu.smp.doctor.rules.VersionRule
 
 class Rules implements Iterable<Rule> {
@@ -11,7 +12,10 @@ class Rules implements Iterable<Rule> {
   }
 
   static Rules all() {
-    return new Rules([new VersionRule()]);
+    return new Rules([
+      new NameRule(),
+      new VersionRule()
+    ])
   }
 
   static Rules of(Rule... rules) {

@@ -28,6 +28,13 @@ class PackageJson {
   }
 
   @Internal
+  String getName() {
+    if (packageJson != null) {
+      return packageJson.name
+    }
+  }
+
+  @Internal
   String getVersion() {
     if (packageJson != null) {
       return packageJson.version
