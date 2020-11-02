@@ -1,15 +1,16 @@
 package com.cloudogu.smp
 
+
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 
-import static org.assertj.core.api.Assertions.*
-
 import java.nio.file.Path
 
-class PluginJsonTest {
+import static org.assertj.core.api.Assertions.assertThat
+
+class PackageJsonTest {
 
   private File packageJsonFile
 
@@ -38,6 +39,12 @@ class PluginJsonTest {
 
   @Nested
   class HasScriptTests {
+
+    @Test
+    void shouldReturnFalseIfPackageJsonDoesNotExists() {
+      PackageJson packageJson = new PackageJson(packageJsonFile)
+      assertThat(packageJson.hasScript("build")).isFalse()
+    }
 
     @Test
     void shouldReturnFalseIfScriptsDoesNotExists() {
@@ -69,5 +76,52 @@ class PluginJsonTest {
       PackageJson packageJson = new PackageJson(packageJsonFile)
       assertThat(packageJson.hasScript("build")).isTrue()
     }
+  }
+
+  @Nested
+  class GetVersionTests {
+
+    @Test
+    void shouldReturnNullIfPackageJsonDoesNotExists() {
+      PackageJson packageJson = new PackageJson(packageJsonFile)
+      assertThat(packageJson.getVersion()).isNull()
+    }
+
+    @Test
+    void shouldReturnNullWithoutVersion() {
+      packageJsonFile << "{}"
+      PackageJson packageJson = new PackageJson(packageJsonFile)
+      assertThat(packageJson.getVersion()).isNull()
+    }
+
+    @Test
+    void shouldReturnVersion() {
+      packageJsonFile << """
+      {
+        "version": "1.0.0"
+      }
+      """
+      PackageJson packageJson = new PackageJson(packageJsonFile)
+      assertThat(packageJson.getVersion()).isEqualTo("1.0.0")
+    }
+  }
+
+  @Nested
+  class ModifyTests {
+
+    @Test
+    void shouldModifyPackageJson() {
+      packageJsonFile << """
+      {
+        "version": "1.0.0"
+      }
+      """
+      PackageJson packageJson = new PackageJson(packageJsonFile)
+      packageJson.modify { it ->
+        it.version = "2.0.0"
+      }
+      assertThat(packageJson.getVersion()).isEqualTo("2.0.0")
+    }
+
   }
 }

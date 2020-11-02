@@ -6,6 +6,8 @@ import org.gradle.api.tasks.Optional
 
 class ScmServerConfiguration {
 
+  @Input
+  @Optional
   private String warFile
 
   @Input
@@ -13,7 +15,6 @@ class ScmServerConfiguration {
   private String home
 
   @Input
-  @Optional
   private int port = 8081
 
   @Input
@@ -21,7 +22,6 @@ class ScmServerConfiguration {
   private String contextPath = "/scm"
 
   @Input
-  @Optional
   private boolean disableCorePlugins = false
 
   @Input
@@ -29,7 +29,6 @@ class ScmServerConfiguration {
   private String stage = "DEVELOPMENT"
 
   @Input
-  @Optional
   private int headerSize = 16384
 
   @Input
@@ -37,7 +36,6 @@ class ScmServerConfiguration {
   private String loggingConfiguration
 
   @Input
-  @Optional
   private boolean openBrowser = true
 
   String getWarFile() {

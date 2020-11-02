@@ -18,6 +18,7 @@ class GradleSmpPlugin implements Plugin<Project> {
     def packageJson = new PackageJson(project)
     def extension = project.extensions.create("scmPlugin", SmpExtension)
 
+    DoctorTasks.configure(project, extension, packageJson)
     LicenseTasks.configure(project)
     Dependencies.configure(project, extension)
     UiTasks.configure(project, packageJson, extension)

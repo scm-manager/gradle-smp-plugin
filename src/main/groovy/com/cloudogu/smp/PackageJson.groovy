@@ -1,12 +1,13 @@
 package com.cloudogu.smp
 
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.gradle.api.Project
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
 
 class PackageJson {
 
-  @InputFile
   private File file
   private Object packageJson
 
@@ -17,9 +18,25 @@ class PackageJson {
   PackageJson(File file) {
     this.file = file
     if (file.exists()) {
-      JsonSlurper slurper = new JsonSlurper()
-      packageJson = slurper.parse(file)
+      parse()
     }
+  }
+
+  private void parse() {
+    JsonSlurper slurper = new JsonSlurper()
+    packageJson = slurper.parse(file)
+  }
+
+  @Internal
+  String getVersion() {
+    if (packageJson != null) {
+      return packageJson.version
+    }
+  }
+
+  @InputFile
+  File getFile() {
+    return file
   }
 
   boolean exists() {
@@ -34,5 +51,12 @@ class PackageJson {
       }
     }
     return false
+  }
+
+  void modify(Closure<Void> modifier) {
+    modifier.call(packageJson)
+    println JsonOutput.prettyPrint(JsonOutput.toJson(packageJson))
+    file.setText(JsonOutput.prettyPrint(JsonOutput.toJson(packageJson)))
+    parse()
   }
 }
