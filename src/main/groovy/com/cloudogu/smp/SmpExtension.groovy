@@ -46,6 +46,9 @@ class SmpExtension implements Serializable {
   @Nested
   OpenApiSpec openApiSpec = new OpenApiSpec()
 
+  @Nested
+  ScmServerConfiguration serverConfiguration = new ScmServerConfiguration()
+
   private List<String> dependencies = new ArrayList<>()
   private List<String> optionalDependencies = new ArrayList<>()
 
@@ -74,7 +77,13 @@ class SmpExtension implements Serializable {
     closure.call()
   }
 
+  def run(def closure) {
+    closure.delegate = serverConfiguration
+    closure.call()
+  }
+
   File getScmHome(Project project) {
+    def home = serverConfiguration.getHome()
     if (home != null) {
       return new File(home)
     }

@@ -1,5 +1,6 @@
 package com.cloudogu.smp
 
+import groovy.json.JsonSlurper
 import org.eclipse.jetty.server.HttpConfiguration
 import org.eclipse.jetty.server.HttpConnectionFactory
 import org.eclipse.jetty.server.Server
@@ -8,57 +9,43 @@ import org.eclipse.jetty.webapp.WebAppContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-import java.nio.file.Path
-import java.nio.file.Paths
-
-import static com.google.common.base.Preconditions.checkArgument
-
 final class ScmServer {
 
   private static final Logger LOG = LoggerFactory.getLogger(ScmServer.class)
 
-  private final Path warFile
-  private final Path scmHome
-
-  private int port = 8081
-  private String contextPath = "/scm"
-  private boolean disableCorePlugins = false
-  private String stage = "DEVELOPMENT"
-  private int headerSize = 16384
-
+  private final ScmServerConfiguration configuration
   private Server server
 
-  private ScmServer(Path warFile, Path scmHome) {
-    this.warFile = warFile
-    this.scmHome = scmHome
+  private ScmServer(ScmServerConfiguration configuration) {
+    this.configuration = configuration
   }
 
   void start() throws Exception {
-    LOG.info("start scm-server at port {}", port)
+    LOG.info("start scm-server at port {}", configuration.port)
 
-    System.setProperty("scm.home", scmHome.toString())
-    if (disableCorePlugins) {
+    System.setProperty("scm.home", configuration.home)
+    if (configuration.disableCorePlugins) {
       LOG.info("disable core plugin extraction")
       System.setProperty("sonia.scm.boot.disable-core-plugin-extraction", "true")
     }
 
-    LOG.info("set stage {}", stage)
-    System.setProperty("scm.stage", stage)
+    LOG.info("set stage {}", configuration.stage)
+    System.setProperty("scm.stage", configuration.stage)
 
     server = new Server()
     server.addConnector(createServerConnector(server))
     server.setHandler(createScmContext())
 
     server.start()
-    LOG.info("scm-server is now accessible at http://localhost:{}{}", port, contextPath);
+    LOG.info("scm-server is now accessible at http://localhost:{}{}", configuration.port, configuration.contextPath)
   }
 
   private WebAppContext createScmContext() {
     WebAppContext warContext = new WebAppContext()
 
-    warContext.setContextPath(contextPath)
+    warContext.setContextPath(configuration.contextPath)
     warContext.setExtractWAR(true)
-    warContext.setWar(warFile.toString())
+    warContext.setWar(configuration.warFile)
 
     return warContext
   }
@@ -67,71 +54,21 @@ final class ScmServer {
     ServerConnector connector = new ServerConnector(server)
     HttpConfiguration cfg = new HttpConfiguration()
 
-    cfg.setRequestHeaderSize(headerSize)
-    cfg.setResponseHeaderSize(headerSize)
+    cfg.setRequestHeaderSize(configuration.headerSize)
+    cfg.setResponseHeaderSize(configuration.headerSize)
 
     connector.setConnectionFactories([new HttpConnectionFactory(cfg)])
-    connector.setPort(port)
+    connector.setPort(configuration.port)
 
     return connector
   }
 
-  static ScmServerBuilder builder(Path warFile, Path scmHome) {
-    return new ScmServerBuilder(warFile, scmHome);
-  }
-
-  static class ScmServerBuilder {
-
-    private final ScmServer scmServer;
-
-    ScmServerBuilder(Path warFile, Path scmHome) {
-      this.scmServer = new ScmServer(warFile, scmHome);
-    }
-
-    ScmServerBuilder withDisableCorePlugins(boolean disableCorePlugins) {
-      scmServer.disableCorePlugins = disableCorePlugins;
-      return this;
-    }
-
-    ScmServerBuilder withContextPath(String contextPath) {
-      scmServer.contextPath = contextPath;
-      return this;
-    }
-
-    ScmServerBuilder withStage(String stage) {
-      scmServer.stage = stage;
-      return this;
-    }
-
-    ScmServerBuilder withPort(int port) {
-      scmServer.port = port;
-      return this;
-    }
-
-    ScmServerBuilder withHeaderSize(int headerSize) {
-      checkArgument(headerSize >= 1024, "header buffer must as least 1024");
-      checkArgument(headerSize <= 65536, "header buffer must be smaller than 65536");
-      scmServer.headerSize = headerSize;
-      return this;
-    }
-
-    ScmServer build() {
-      return scmServer;
-    }
-  }
-
   static void main(String[] args) {
-    def webapp = System.getProperty("scm.webapp")
-    def home = System.getProperty("scm.home")
-
-    ScmServer server = ScmServer.builder(Paths.get(webapp), Paths.get(home))
-      .withContextPath("/scm")
-      .withHeaderSize(16384)
-      .withDisableCorePlugins(false)
-      .withPort(8081)
-      .withStage("DEVELOPMENT")
-      .build()
-
+    String configurationPath = args[0]
+    JsonSlurper slurper = new JsonSlurper()
+    def json = slurper.parse(new File(configurationPath))
+    ScmServerConfiguration configuration = new ScmServerConfiguration(json)
+    ScmServer server = new ScmServer(configuration)
     server.start()
   }
 

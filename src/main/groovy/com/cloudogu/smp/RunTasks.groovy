@@ -3,7 +3,9 @@ package com.cloudogu.smp
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Sync
-import static com.cloudogu.smp.Dependencies.*
+
+import static com.cloudogu.smp.Dependencies.createPackagingClasspath
+import static com.cloudogu.smp.Dependencies.resolveSmp
 
 class RunTasks {
 
@@ -50,14 +52,21 @@ class RunTasks {
       dependsOn("classes", "copy-dependencies")
     }
 
+    project.tasks.register("write-server-config", WriteServerConfigTask) {
+      description = "Writes the configuration for run task"
+      it.extension = extension
+      it.outputFile = extension.serverConfiguration.getFile(project)
+    }
+
     project.tasks.register("run", RunTask) {
       description = "Run SCM-Manager with the plugin installed"
       it.extension = extension
       it.packageJson = packageJson
       // run always
       outputs.upToDateWhen { false }
-      dependsOn("prepare-home", "yarn_install")
+      dependsOn("prepare-home", "write-server-config", "yarn_install")
     }
   }
+
 
 }

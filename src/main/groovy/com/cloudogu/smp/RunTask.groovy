@@ -42,12 +42,10 @@ class RunTask extends DefaultTask {
   }
 
   private Closure<Void> createBackend() {
-    def webapp = resolveWebApp()
     def backend = project.tasks.create("boot-backend", JavaExec) {
       main ScmServer.class.name
+      args(extension.serverConfiguration.getFile(project))
       environment "NODE_ENV", "development"
-      systemProperty "scm.webapp", webapp.toString()
-      systemProperty "scm.home", extension.getScmHome(project)
       classpath project.buildscript.configurations.classpath
     }
     return {
@@ -71,14 +69,5 @@ class RunTask extends DefaultTask {
     return {
       frontend.exec()
     }
-  }
-
-  private File resolveWebApp() {
-    def extension = project.extensions.getByType(SmpExtension)
-    def coordinates = "sonia.scm:scm-webapp:${extension.scmVersion}@war"
-    def dependency = project.dependencies.create(coordinates)
-    def configuration = project.configurations.detachedConfiguration(dependency)
-    configuration.resolve()
-    return configuration.files.first()
   }
 }
