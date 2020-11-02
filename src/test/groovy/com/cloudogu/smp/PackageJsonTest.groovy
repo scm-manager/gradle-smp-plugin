@@ -107,6 +107,34 @@ class PackageJsonTest {
   }
 
   @Nested
+  class GetNameTests {
+
+    @Test
+    void shouldReturnNullIfPackageJsonDoesNotExists() {
+      PackageJson packageJson = new PackageJson(packageJsonFile)
+      assertThat(packageJson.getName()).isNull()
+    }
+
+    @Test
+    void shouldReturnNullWithoutName() {
+      packageJsonFile << "{}"
+      PackageJson packageJson = new PackageJson(packageJsonFile)
+      assertThat(packageJson.getName()).isNull()
+    }
+
+    @Test
+    void shouldReturnName() {
+      packageJsonFile << """
+      {
+        "version": "@scm-manager/scm-super-plugin"
+      }
+      """
+      PackageJson packageJson = new PackageJson(packageJsonFile)
+      assertThat(packageJson.getVersion()).isEqualTo("@scm-manager/scm-super-plugin")
+    }
+  }
+
+  @Nested
   class ModifyTests {
 
     @Test

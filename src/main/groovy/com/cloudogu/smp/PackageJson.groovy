@@ -62,7 +62,6 @@ class PackageJson {
 
   void modify(Closure<Void> modifier) {
     modifier.call(packageJson)
-    println JsonOutput.prettyPrint(JsonOutput.toJson(packageJson))
     file.setText(JsonOutput.prettyPrint(JsonOutput.toJson(packageJson)))
     parse()
   }
