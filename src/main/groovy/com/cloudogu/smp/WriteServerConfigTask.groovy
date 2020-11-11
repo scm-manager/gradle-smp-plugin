@@ -1,6 +1,7 @@
 package com.cloudogu.smp
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
@@ -11,6 +12,13 @@ class WriteServerConfigTask extends DefaultTask {
 
   private SmpExtension extension
   private File outputFile
+  private Closure<File> webappResolver = {
+    def coordinates = "sonia.scm:scm-webapp:${extension.scmVersion}@war"
+    def dependency = project.dependencies.create(coordinates)
+    def configuration = project.configurations.detachedConfiguration(dependency)
+    configuration.resolve()
+    return configuration.files.first()
+  }
 
   @Nested
   SmpExtension getExtension() {
@@ -30,6 +38,15 @@ class WriteServerConfigTask extends DefaultTask {
     this.outputFile = outputFile
   }
 
+  @Internal
+  Closure<File> getWebappResolver() {
+    return webappResolver
+  }
+
+  void setWebappResolver(Closure<File> webappResolver) {
+    this.webappResolver = webappResolver
+  }
+
   @TaskAction
   void write() {
     File directory = outputFile.getParentFile()
@@ -40,18 +57,13 @@ class WriteServerConfigTask extends DefaultTask {
       throw new IllegalStateException("failed to delete existing server configuration: ${outputFile}")
     }
 
-    extension.serverConfiguration.warFile = resolveWebApp()
+    webappResolver.delegate = {
+      it.project = project
+    }
+
+    extension.serverConfiguration.warFile = webappResolver.call()
     extension.serverConfiguration.home = extension.getScmHome(project)
 
     outputFile << JsonOutput.toJson(extension.serverConfiguration)
-  }
-
-  private File resolveWebApp() {
-    def extension = project.extensions.getByType(SmpExtension)
-    def coordinates = "sonia.scm:scm-webapp:${extension.scmVersion}@war"
-    def dependency = project.dependencies.create(coordinates)
-    def configuration = project.configurations.detachedConfiguration(dependency)
-    configuration.resolve()
-    return configuration.files.first()
   }
 }
