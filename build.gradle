@@ -12,6 +12,9 @@ plugins {
 
   // Apply the Groovy plugin to add support for Groovy
   id 'groovy'
+
+  // publishing plugin
+  id "com.gradle.plugin-publish" version "0.12.0"
 }
 
 repositories {
@@ -49,7 +52,7 @@ test {
 gradlePlugin {
   // Define the plugin
   plugins {
-    scmPlugin {
+    smpPlugin {
       id = 'org.scm-manager.smp'
       implementationClass = 'com.cloudogu.smp.GradleSmpPlugin'
     }
@@ -75,4 +78,24 @@ tasks.register('functionalTest', Test) {
 check {
   // Run the functional tests as part of `check`
   dependsOn(tasks.functionalTest)
+}
+
+// publish plugin
+pluginBundle {
+  website = 'https://scm-managr.org'
+  vcsUrl = 'https://github.com/scm-manager/gradle-smp-plugin'
+  description = 'Plugin to build and test SCM-Manager plugins'
+  tags = ['scm-manager', 'smp', 'plugin']
+
+  plugins {
+    smpPlugin {
+      displayName = 'Gradle SCM-Manager Plugin'
+    }
+  }
+}
+
+task printVersion {
+  doLast {
+    println project.version
+  }
 }
