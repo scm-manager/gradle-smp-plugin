@@ -13,6 +13,9 @@ pipeline {
     stage('Check') {
       steps {
         sh './gradlew check'
+        // update timestamp to avoid rerun tests again and fix junit-plugin:
+        // ERROR: Test reports were found but none of them are new
+        sh 'touch build/test-results/*/*.xml'
         junit 'build/test-results/*/*.xml'
       }
     }
