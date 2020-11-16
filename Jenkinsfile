@@ -91,4 +91,3 @@ pipeline {
 String getReleaseVersion() {
   return env.BRANCH_NAME.substring("release/".length());
 }
-

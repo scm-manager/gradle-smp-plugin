@@ -16,7 +16,7 @@ plugins {
   id 'groovy'
 
   // publishing plugin
-  id "com.gradle.plugin-publish" version "0.12.0"
+  id 'com.gradle.plugin-publish' version '0.12.0'
 }
 
 repositories {
@@ -25,26 +25,26 @@ repositories {
   jcenter()
 
   maven {
-    url "https://plugins.gradle.org/m2/"
+    url 'https://plugins.gradle.org/m2/'
   }
 }
 
 def jettyVersion = '9.4.31.v20200723'
 
 dependencies {
-  implementation "com.github.node-gradle:gradle-node-plugin:2.2.4"
+  implementation 'com.github.node-gradle:gradle-node-plugin:2.2.4'
   implementation "org.eclipse.jetty:jetty-server:${jettyVersion}"
   implementation "org.eclipse.jetty:jetty-webapp:${jettyVersion}"
-  implementation "com.sun.xml.bind:jaxb-osgi:2.2.4-1"
+  implementation 'com.sun.xml.bind:jaxb-osgi:2.2.4-1'
   implementation 'com.google.guava:guava:29.0-jre'
   implementation 'org.codehaus.groovy:groovy-yaml:3.0.5'
-  implementation "io.swagger.core.v3:swagger-gradle-plugin:2.1.4"
-  implementation "gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.15.0"
+  implementation 'io.swagger.core.v3:swagger-gradle-plugin:2.1.4'
+  implementation 'gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.15.0'
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-  testImplementation "org.junit.jupiter:junit-jupiter-params:5.7.0"
+  testImplementation 'org.junit.jupiter:junit-jupiter-params:5.7.0'
   testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-  testImplementation "org.assertj:assertj-core:3.11.1"
+  testImplementation 'org.assertj:assertj-core:3.11.1'
 }
 
 test {
@@ -84,7 +84,7 @@ check {
 
 // publish plugin
 pluginBundle {
-  website = 'https://scm-managr.org'
+  website = 'https://scm-manager.org'
   vcsUrl = 'https://github.com/scm-manager/gradle-smp-plugin'
   description = 'Plugin to build and test SCM-Manager plugins'
   tags = ['scm-manager', 'smp', 'plugin']
@@ -125,7 +125,7 @@ task printVersion {
 
 def setVersion(String version) {
   Properties properties = new Properties()
-  
+
   File propertiesFile = new File(project.rootDir, 'gradle.properties')
   propertiesFile.withInputStream { stream ->
     properties.load(stream)
