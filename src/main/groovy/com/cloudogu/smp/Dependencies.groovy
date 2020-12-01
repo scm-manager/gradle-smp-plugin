@@ -92,8 +92,6 @@ class Dependencies {
 
     project.dependencies {
       // we enforce the dependency versions from scm-manager root pom dependency management
-      // TODO at all dependencies from here to dependencyManagement of core
-      // for older version we could add those manually based on the scm version
       scmCoreDependency enforcedPlatform("sonia.scm:scm:${extension.scmVersion}")
 
       scmCoreDependency "sonia.scm:scm-core:${extension.scmVersion}"
@@ -101,16 +99,13 @@ class Dependencies {
       // is provided in scm-core
       scmCoreDependency "javax.ws.rs:javax.ws.rs-api:2.1.1"
       scmCoreDependency "io.swagger.core.v3:swagger-annotations:2.1.1"
-      // TODO define in dependencyManagement
       scmCoreDependency 'javax.servlet:javax.servlet-api:3.1.0'
 
       scmCoreDependency 'org.projectlombok:lombok:1.18.12'
       scmCoreDependency 'org.mapstruct:mapstruct-jdk8:1.3.1.Final'
 
       // register annotation processors
-      // TODO because it is defined as provided in dependencyManagement?
       annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.1.Final'
-      // TODO because it is defined as provided in dependencyManagement?
       annotationProcessor 'org.projectlombok:lombok:1.18.12'
       annotationProcessor "sonia.scm:scm-annotation-processor:${extension.scmVersion}"
 
@@ -123,7 +118,6 @@ class Dependencies {
       testImplementation "org.jboss.resteasy:resteasy-jackson2-provider:4.5.3.Final"
 
       // test engine
-      // TODO because it is defined as provided in dependencyManagement?
       testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
 
       testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
