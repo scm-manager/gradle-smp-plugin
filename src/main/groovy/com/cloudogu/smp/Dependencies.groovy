@@ -99,13 +99,13 @@ class Dependencies {
       scmCoreDependency "sonia.scm:scm-core:${extension.scmVersion}"
 
       // is provided in scm-core
-      scmCoreDependency "javax.ws.rs:javax.ws.rs-api"
-      scmCoreDependency "io.swagger.core.v3:swagger-annotations"
+      scmCoreDependency "javax.ws.rs:javax.ws.rs-api:2.1.1"
+      scmCoreDependency "io.swagger.core.v3:swagger-annotations:2.1.1"
       // TODO define in dependencyManagement
       scmCoreDependency 'javax.servlet:javax.servlet-api:3.1.0'
 
-      scmCoreDependency 'org.projectlombok:lombok'
-      scmCoreDependency 'org.mapstruct:mapstruct-jdk8'
+      scmCoreDependency 'org.projectlombok:lombok:1.18.12'
+      scmCoreDependency 'org.mapstruct:mapstruct-jdk8:1.3.1.Final'
 
       // register annotation processors
       // TODO because it is defined as provided in dependencyManagement?
@@ -118,20 +118,20 @@ class Dependencies {
       testImplementation "sonia.scm:scm-test:${extension.scmVersion}"
 
       // resteasy test dependencies
-      testImplementation "org.jboss.resteasy:resteasy-core"
-      testImplementation "org.jboss.resteasy:resteasy-core-spi"
-      testImplementation "org.jboss.resteasy:resteasy-jackson2-provider"
+      testImplementation "org.jboss.resteasy:resteasy-core:4.5.3.Final"
+      testImplementation "org.jboss.resteasy:resteasy-core-spi:4.5.3.Final"
+      testImplementation "org.jboss.resteasy:resteasy-jackson2-provider:4.5.3.Final"
 
       // test engine
       // TODO because it is defined as provided in dependencyManagement?
       testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
 
-      testImplementation 'org.junit.jupiter:junit-jupiter-api'
-      testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+      testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
+      testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
 
-      testImplementation 'org.assertj:assertj-core'
-      testImplementation 'org.mockito:mockito-core'
-      testImplementation 'org.mockito:mockito-junit-jupiter'
+      testImplementation 'org.assertj:assertj-core:3.16.1'
+      testImplementation 'org.mockito:mockito-core:1.3.1.Final'
+      testImplementation 'org.mockito:mockito-junit-jupiter:1.3.1.Final'
 
       // we have to add both smp and jar,
       // because the smp (default artifact) knows the dependencies and the jar knows the plugin classes
