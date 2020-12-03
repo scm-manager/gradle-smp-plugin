@@ -1,6 +1,7 @@
 package com.cloudogu.smp
 
 import com.moowork.gradle.node.yarn.YarnTask
+import com.moowork.gradle.node.NodeExtension
 import org.gradle.api.Project
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.language.base.plugins.LifecycleBasePlugin
@@ -9,8 +10,7 @@ class UiTasks {
 
   static void configure(Project project, PackageJson packageJson, SmpExtension extension) {
     if (packageJson.exists()) {
-      project.plugins.apply("com.github.node-gradle.node")
-
+      setupNodeEnv(project)
       registerYarnInstall(project)
 
       if (packageJson.hasScript("typecheck")) {
@@ -26,6 +26,12 @@ class UiTasks {
         registerUIDeploy(project, extension)
       }
     }
+  }
+
+  private static void setupNodeEnv(Project project) {
+    project.plugins.apply("com.github.node-gradle.node")
+    def nodeExt = NodeExtension.get(project)
+    nodeExt.setDownload(true)
   }
 
   private static void registerYarnInstall(Project project) {
