@@ -3,10 +3,12 @@
  */
 package com.cloudogu.smp
 
+import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaLibraryPlugin
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
+import org.gradle.api.tasks.compile.JavaCompile
 
 class GradleSmpPlugin implements Plugin<Project> {
 
@@ -14,6 +16,11 @@ class GradleSmpPlugin implements Plugin<Project> {
     project.plugins.apply(JavaLibraryPlugin)
     project.plugins.apply("io.swagger.core.v3.swagger-gradle-plugin")
     project.plugins.apply(MavenPublishPlugin)
+
+    project.tasks.withType(JavaCompile) {
+      sourceCompatibility = JavaVersion.VERSION_1_8
+      targetCompatibility = JavaVersion.VERSION_1_8
+    }
 
     def packageJson = new PackageJson(project)
     def extension = project.extensions.create("scmPlugin", SmpExtension)
