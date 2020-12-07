@@ -18,7 +18,7 @@ class WriteServerConfigTaskTest {
   void shouldResolveWebapp(@TempDir Path directory) {
     SmpExtension extension = new SmpExtension()
     extension.scmVersion = "2.0.0"
-    extension.home = directory.resolve("home")
+    extension.serverConfiguration.home = directory.resolve("home")
 
     Project project = ProjectBuilder.builder().build()
     project.repositories {

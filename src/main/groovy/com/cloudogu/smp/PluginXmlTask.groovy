@@ -100,14 +100,12 @@ class PluginXmlTask extends DefaultTask {
       }
       // we use name/artifactid as dependency
       dependencies {
-        extension.dependencies.forEach {
-          def dep = project.dependencies.create(it)
+        project.configurations.getByName("plugin").dependencies.forEach { dep ->
           dependency(version: dep.version, dep.name)
         }
       }
       'optional-dependencies' {
-        extension.optionalDependencies.forEach {
-          def dep = project.dependencies.create(it)
+        project.configurations.getByName("optionalPlugin").dependencies.forEach { dep ->
           dependency(version: dep.version, dep.name)
         }
       }

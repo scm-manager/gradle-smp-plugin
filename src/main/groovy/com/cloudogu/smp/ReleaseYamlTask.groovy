@@ -52,6 +52,14 @@ class ReleaseYamlTask extends DefaultTask {
     String chksum = checksum()
     String downloadUrl = createDownloadUrl(name)
 
+    def pluginDeps = project.configurations.getByName("plugin").dependencies.collect { dep ->
+      dep.name
+    }
+
+    def optionalPluginDeps = project.configurations.getByName("optionalPlugin").dependencies.collect { dep ->
+      dep.name
+    }
+
     def release = new YamlBuilder()
     release {
       plugin name
@@ -59,19 +67,11 @@ class ReleaseYamlTask extends DefaultTask {
       date new Date().format("yyyy-MM-dd'T'HH:mm:ss'Z'")
       url downloadUrl
       checksum chksum
-      if (!extension.dependencies.isEmpty()) {
-        dependencies extension.dependencies.collect {
-          def dep = project.dependencies.create(it)
-          // TODO do we need the version
-          dep.name
-        }
+      if (!pluginDeps.isEmpty()) {
+        dependencies pluginDeps
       }
-      if (!extension.optionalDependencies.isEmpty()) {
-        optionalDependencies extension.optionalDependencies.collect {
-          def dep = project.dependencies.create(it)
-          // TODO do we need the version
-          dep.name
-        }
+      if (!optionalPluginDeps.isEmpty()) {
+        optionalDependencies optionalPluginDeps
       }
       conditions {
         minVersion extension.scmVersion

@@ -1,27 +1,16 @@
 package com.cloudogu.smp
 
 import org.gradle.api.Project
-import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Sync
 
 import static com.cloudogu.smp.Dependencies.createPackagingClasspath
-import static com.cloudogu.smp.Dependencies.resolveSmp
 
 class RunTasks {
 
   static void configure(Project project, PackageJson packageJson, SmpExtension extension) {
-    project.tasks.register("copy-dependencies", Copy) {
-      extension.dependencies.each { dependencyString ->
-        def files = resolveSmp(project, dependencyString)
-        from(files)
-      }
-
-      extension.optionalDependencies.each { dependencyString ->
-        def files = resolveSmp(project, dependencyString)
-        from(files)
-      }
-
-      destinationDir = new File(extension.getScmHome(project), "plugins")
+    project.tasks.register("copy-plugins", CopyPluginsTask) {
+      it.configuration = project.configurations.getByName("runtimePluginElements")
+      it.home = extension.getScmHome(project)
     }
 
     project.tasks.register("prepare-home", Sync) {
@@ -49,7 +38,7 @@ class RunTasks {
       }
 
       destinationDir = new File(extension.getScmHome(project), "plugins/${extension.getName(project)}")
-      dependsOn("classes", "copy-dependencies")
+      dependsOn("classes", "copy-plugins")
     }
 
     project.tasks.register("write-server-config", WriteServerConfigTask) {
@@ -67,6 +56,5 @@ class RunTasks {
       dependsOn("prepare-home", "write-server-config", "yarn_install")
     }
   }
-
 
 }

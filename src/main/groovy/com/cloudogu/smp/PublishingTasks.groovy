@@ -23,7 +23,7 @@ class PublishingTasks {
     project.publishing {
       publications {
         mavenJava(MavenPublication) {
-          groupId = "sonia.scm.plugins"
+          groupId = extension.group
           artifactId = extension.getName(project)
           version = extension.version
 
@@ -49,8 +49,8 @@ class PublishingTasks {
 
             appendDependencies(dependenciesNode, provided, 'provided')
             appendDependencies(dependenciesNode, runtime)
-            appendDependencies(dependenciesNode, createDependencies(project, extension.dependencies))
-            appendDependencies(dependenciesNode, createDependencies(project, extension.optionalDependencies), null, true)
+            appendDependencies(dependenciesNode, project.configurations.plugin.dependencies)
+            appendDependencies(dependenciesNode, project.configurations.optionalPlugin.dependencies, null, true)
           }
         }
       }

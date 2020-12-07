@@ -4,6 +4,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.artifacts.Dependency
+import org.gradle.api.attributes.*
 import org.gradle.api.file.FileCollection
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
@@ -11,35 +12,21 @@ import org.gradle.api.tasks.SourceSet
 
 class Dependencies {
 
-  static Set<File> resolveSmp(Project project, String dependencyString) {
-    String coordinates = dependencyString
-    if (!dependencyString.endsWith("@smp")) {
-      coordinates = dependencyString + "@smp"
-    }
-    def dependency = project.dependencies.create(coordinates)
-    def configuration = project.configurations.detachedConfiguration(dependency)
-    configuration.resolve()
-    configuration.files
-  }
-
   static Iterable<File> createPackagingClasspath(Project project) {
     FileCollection runtimeClasspath = project.getConvention().getPlugin(JavaPluginConvention.class)
       .getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath()
-    Configuration scmPluginDependency = project.getConfigurations().getByName("scmPluginDependency")
-    runtimeClasspath - scmPluginDependency
+    Configuration plugins = project.getConfigurations().getByName("plugin")
+    Configuration optionalPlugin = project.getConfigurations().getByName("optionalPlugin")
+    runtimeClasspath -= plugins
+    runtimeClasspath - optionalPlugin
   }
 
   static Set<Dependency> runtimeDependencies(Project project) {
     def runtime = project.configurations.implementation.allDependencies
     runtime -= project.configurations.scmCoreDependency.allDependencies
-    runtime -= project.configurations.scmPluginDependency.allDependencies
+    runtime -= project.configurations.plugin.allDependencies
+    runtime -= project.configurations.optionalPlugin.allDependencies
     runtime
-  }
-
-  static Iterable<Dependency> createDependencies(Project project, Collection<String> dependencyStrings) {
-    dependencyStrings.collect { dep ->
-      project.dependencies.create(dep)
-    }
   }
 
   static void appendDependencies(Node dependenciesNode, Iterable<Dependency> dependencies, String scope = null, boolean optional = false) {
@@ -60,19 +47,20 @@ class Dependencies {
   }
 
   static void configure(Project project, SmpExtension extension) {
+    def libraryElementsStrategy = project.dependencies.attributesSchema.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE)
+    libraryElementsStrategy.compatibilityRules.add(SMPLibraryElementsCompatibilityRule)
+    libraryElementsStrategy.disambiguationRules.add(SMPLibraryDisambiguationRule)
+
+    project.dependencies.components.all(SmpVariantRule)
+
     configureRepositories(project)
+    createConfigurations(project)
     project.afterEvaluate {
       configureDependencies(project, extension)
     }
   }
 
-  private static void configureDependencies(Project project, SmpExtension extension) {
-    // gradle has xerces on it classpath, which breaks our annotation processor
-    // so we force jdk build in for now
-    // @see https://stackoverflow.com/questions/53299280/java-and-xerces-cant-find-property-xmlconstants-access-external-dtd
-    System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-      "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-
+  private static void createConfigurations(Project project) {
     // We define our own configuration container that we are able to use all dependencies for compilation,
     // but remove the core dependencies before packaging
     // https://github.com/gradle/gradle/blob/master/subprojects/plugins/src/main/java/org/gradle/api/plugins/WarPlugin.java#L72
@@ -83,12 +71,42 @@ class Dependencies {
       .setDescription("Additional classpath for libraries which are provided from scm code.")
 
     Configuration pluginDependency = configurationContainer
-      .create("scmPluginDependency")
+      .create("plugin")
       .setVisible(false)
       .setDescription("Plugin dependencies.")
       .extendsFrom(coreDependency)
 
-    configurationContainer.getByName(JavaPlugin.COMPILE_CONFIGURATION_NAME).extendsFrom(pluginDependency)
+    pluginDependency.canBeConsumed = true
+
+    configurationContainer.getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME).extendsFrom(pluginDependency)
+
+    Configuration optionalPlugin = configurationContainer
+      .create("optionalPlugin")
+      .setVisible(false)
+      .setDescription("Optional plugin dependencies.")
+      .extendsFrom(coreDependency)
+
+    configurationContainer.getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME).extendsFrom(optionalPlugin)
+
+    Configuration runtimeScmElements = project.configurations.create("runtimePluginElements")
+    runtimeScmElements.canBeResolved = true
+    runtimeScmElements.canBeConsumed = true
+    runtimeScmElements.attributes {
+      it.attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage, Usage.JAVA_RUNTIME))
+      it.attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category, Category.LIBRARY))
+      it.attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling, Bundling.EXTERNAL))
+      it.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements, "smp"))
+
+      runtimeScmElements.extendsFrom(pluginDependency, optionalPlugin)
+    }
+  }
+
+  private static void configureDependencies(Project project, SmpExtension extension) {
+    // gradle has xerces on it classpath, which breaks our annotation processor
+    // so we force jdk build in for now
+    // @see https://stackoverflow.com/questions/53299280/java-and-xerces-cant-find-property-xmlconstants-access-external-dtd
+    System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
+      "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
 
     project.dependencies {
       // we enforce the dependency versions from scm-manager root pom dependency management
@@ -126,18 +144,6 @@ class Dependencies {
       testImplementation 'org.assertj:assertj-core:3.16.1'
       testImplementation 'org.mockito:mockito-core:1.3.1.Final'
       testImplementation 'org.mockito:mockito-junit-jupiter:1.3.1.Final'
-
-      // we have to add both smp and jar,
-      // because the smp (default artifact) knows the dependencies and the jar knows the plugin classes
-      extension.dependencies.forEach { dep ->
-        scmPluginDependency "${dep}"
-        scmPluginDependency "${dep}@jar"
-      }
-
-      extension.optionalDependencies.forEach { dep ->
-        scmPluginDependency "${dep}"
-        scmPluginDependency "${dep}@jar"
-      }
     }
   }
 
@@ -145,6 +151,31 @@ class Dependencies {
     project.repositories {
       maven {
         url "https://packages.scm-manager.org/repository/public/"
+      }
+    }
+  }
+
+  private static class SMPLibraryElementsCompatibilityRule implements AttributeCompatibilityRule<LibraryElements> {
+    @Override
+    void execute(CompatibilityCheckDetails<LibraryElements> details) {
+      if (details.consumerValue.name == "smp" && details.producerValue.name == LibraryElements.JAR) {
+        // accept JARs for libraries that do not have JPIs so that we do not fail.
+        // Non-JPI files will be filtered out later if needed (e.g. by the TestDependenciesTask)
+        details.compatible()
+      }
+    }
+  }
+
+  private static class SMPLibraryDisambiguationRule implements AttributeDisambiguationRule<LibraryElements> {
+
+    @Override
+    void execute(MultipleCandidatesDetails<LibraryElements> details) {
+      if (details.consumerValue.name == "smp") {
+        details.candidateValues.each {
+          if (it.name == "smp") {
+            details.closestMatch(it)
+          }
+        }
       }
     }
   }

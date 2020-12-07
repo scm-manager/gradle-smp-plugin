@@ -36,10 +36,6 @@ class SmpExtension implements Serializable {
   @Optional
   String category
 
-  @Input
-  @Optional
-  String home
-
   @Nested
   Conditions pluginConditions = new Conditions()
 
@@ -49,26 +45,8 @@ class SmpExtension implements Serializable {
   @Nested
   ScmServerConfiguration serverConfiguration = new ScmServerConfiguration()
 
-  private List<String> dependencies = new ArrayList<>()
-  private List<String> optionalDependencies = new ArrayList<>()
-
-  @Input
-  List<String> getDependencies() {
-    return dependencies
-  }
-
-  @Input
-  List<String> getOptionalDependencies() {
-    return optionalDependencies
-  }
-
   def conditions(Closure<Void> closure) {
     closure.delegate = pluginConditions
-    closure.call()
-  }
-
-  def depends(Closure<Void> closure) {
-    closure.delegate = new DependencyConfigurator(dependencies, optionalDependencies)
     closure.call()
   }
 
@@ -113,25 +91,6 @@ class SmpExtension implements Serializable {
     @Optional
     Set<String> packages = new LinkedHashSet<>()
 
-  }
-
-  private class DependencyConfigurator {
-
-    private List<String> dependencies
-    private List<String> optionalDependencies
-
-    DependencyConfigurator(List<String> dependencies, List<String> optionalDependencies) {
-      this.dependencies = dependencies
-      this.optionalDependencies = optionalDependencies
-    }
-
-    def on(String dependency) {
-      dependencies.add(dependency);
-    }
-
-    def optional(String dependency) {
-      optionalDependencies.add(dependency);
-    }
   }
 
 }

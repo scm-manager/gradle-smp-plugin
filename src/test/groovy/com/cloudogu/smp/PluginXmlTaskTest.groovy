@@ -36,13 +36,14 @@ class PluginXmlTaskTest {
       os = "Linux"
       arch = "arm"
     }
-    extension.depends {
-      on 'sonia.scm.plugins:scm-mail-plugin:2.1.0'
-      optional 'sonia.scm.plugins:scm-editor-plugin:2.0.0'
-      optional 'sonia.scm.plugins:scm-landingpage-plugin:1.0.0'
-    }
 
     Project project = ProjectBuilder.builder().build()
+    def pluginConfiguration = project.configurations.create("plugin")
+    pluginConfiguration.dependencies.add(project.dependencies.create("sonia.scm.plugins:scm-mail-plugin:2.1.0"))
+    def optionalPluginConfiguration = project.configurations.create("optionalPlugin")
+    optionalPluginConfiguration.dependencies.add(project.dependencies.create("sonia.scm.plugins:scm-editor-plugin:2.0.0"))
+    optionalPluginConfiguration.dependencies.add(project.dependencies.create("sonia.scm.plugins:scm-landingpage-plugin:1.0.0"))
+
     def task = project.task("plugin-xml", type: PluginXmlTask) {
       it.extension = extension
       it.moduleXml = moduleXml
@@ -92,6 +93,8 @@ class PluginXmlTaskTest {
     extension.name = "scm-sample-plugin"
 
     Project project = ProjectBuilder.builder().build()
+    project.configurations.create("plugin")
+    project.configurations.create("optionalPlugin")
     def task = project.task("plugin-xml", type: PluginXmlTask) {
       it.extension = extension
       it.moduleXml = moduleXml

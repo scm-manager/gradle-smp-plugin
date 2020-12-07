@@ -26,13 +26,16 @@ class ReleaseYamlTaskTest {
       os = "Linux"
       arch = "arm"
     }
-    extension.depends {
-      on 'sonia.scm.plugins:scm-mail-plugin:2.1.0'
-      optional 'sonia.scm.plugins:scm-editor-plugin:2.0.0'
-      optional 'sonia.scm.plugins:scm-landingpage-plugin:1.0.0'
-    }
 
     Project project = ProjectBuilder.builder().build()
+
+    def pluginConf = project.configurations.create("plugin")
+    pluginConf.dependencies.add(project.dependencies.create("sonia.scm.plugins:scm-mail-plugin:2.1.0"))
+
+    def optionalPluginConf = project.configurations.create("optionalPlugin")
+    optionalPluginConf.dependencies.add(project.dependencies.create("sonia.scm.plugins:scm-editor-plugin:2.0.0"))
+    optionalPluginConf.dependencies.add(project.dependencies.create("sonia.scm.plugins:scm-landingpage-plugin:1.0.0"))
+
     def task = project.task("release-yaml", type: ReleaseYamlTask) {
       it.extension = extension
       it.smp = smp
