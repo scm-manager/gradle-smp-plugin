@@ -3,9 +3,12 @@ package com.cloudogu.smp
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import org.gradle.util.VersionNumber
+
+import java.nio.charset.StandardCharsets
 
 class VersionTasks {
 
@@ -21,28 +24,34 @@ class VersionTasks {
   }
 
   private static void setVersion(Project project, String newVersion) {
-    Properties properties = new Properties()
-
     File propertiesFile = new File(project.rootDir, 'gradle.properties')
-    propertiesFile.withInputStream { stream ->
-      properties.load(stream)
-    }
 
-    if (properties.version == newVersion) {
+    if (project.version == newVersion) {
       println "project uses already version ${newVersion}"
       return
     }
 
-    println "set version from ${properties.version} to ${newVersion}"
+    // UTF-8 is used since java 9, java 8 uses ISO-8859-1
+    // TODO do we have to implement something to support java 9
+    def lines = propertiesFile.readLines(StandardCharsets.UTF_8.toString())
+    def newLines = lines.collect{ line ->
+      if (line.trim().startsWith("version")) {
+        return "version = ${newVersion}"
+      }
+      return line
+    }
 
-    properties.version = newVersion
-    propertiesFile.withOutputStream { stream ->
-      properties.store(stream, 'gradle properties')
+    println "set version from ${project.version} to ${newVersion}"
+    propertiesFile.withWriter(StandardCharsets.UTF_8.toString()) {writer ->
+      newLines.forEach { line ->
+        writer.writeLine(line)
+      }
     }
   }
 
   static class SetVersionTask extends DefaultTask {
 
+    @Input
     @Option(option = "newVersion", description = "Sets new version for project")
     String newVersion
 
