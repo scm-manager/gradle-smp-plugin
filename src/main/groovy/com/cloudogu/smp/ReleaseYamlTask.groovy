@@ -2,6 +2,7 @@ package com.cloudogu.smp
 
 import groovy.yaml.YamlBuilder
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputFile
@@ -12,6 +13,8 @@ import java.security.MessageDigest
 class ReleaseYamlTask extends DefaultTask {
 
   private SmpExtension extension
+  private String pluginName
+  private String pluginVersion
   private File releaseYaml
   private File smp
 
@@ -22,6 +25,24 @@ class ReleaseYamlTask extends DefaultTask {
 
   void setExtension(SmpExtension extension) {
     this.extension = extension
+  }
+
+  @Input
+  String getPluginVersion() {
+    return pluginVersion
+  }
+
+  void setPluginVersion(String pluginVersion) {
+    this.pluginVersion = pluginVersion
+  }
+
+  @Input
+  String getPluginName() {
+    return pluginName
+  }
+
+  void setPluginName(String pluginName) {
+    this.pluginName = pluginName
   }
 
   @InputFile
@@ -48,9 +69,8 @@ class ReleaseYamlTask extends DefaultTask {
       throw new IllegalStateException("could not delete existing release yaml: ${releaseYaml}")
     }
 
-    String name = extension.getName(project)
     String chksum = checksum()
-    String downloadUrl = createDownloadUrl(name)
+    String downloadUrl = createDownloadUrl()
 
     def pluginDeps = project.configurations.getByName("plugin").dependencies.collect { dep ->
       dep.name
@@ -62,8 +82,8 @@ class ReleaseYamlTask extends DefaultTask {
 
     def release = new YamlBuilder()
     release {
-      plugin name
-      tag extension.version
+      plugin pluginName
+      tag pluginVersion
       date new Date().format("yyyy-MM-dd'T'HH:mm:ss'Z'")
       url downloadUrl
       checksum chksum
@@ -87,9 +107,9 @@ class ReleaseYamlTask extends DefaultTask {
     releaseYaml << release.toString()
   }
 
-  private String createDownloadUrl(String name) {
+  private String createDownloadUrl() {
     String groupIdPath = extension.group.replaceAll("\\.", "/")
-    return "https://packages.scm-manager.org/repository/plugin-releases/${groupIdPath}/${name}/${extension.version}/${name}-${extension.version}.smp"
+    return "https://packages.scm-manager.org/repository/plugin-releases/${groupIdPath}/${pluginName}/${pluginVersion}/${pluginName}-${pluginVersion}.smp"
   }
 
   private String checksum() {

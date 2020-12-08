@@ -18,8 +18,6 @@ class ReleaseYamlTaskTest {
     smp << "a"
     def releaseYaml = temp.resolve("release.yml").toFile()
     def extension = new SmpExtension()
-    extension.setName("scm-sample-plugin")
-    extension.setVersion("2.1.0")
     extension.setCategory("Sample")
     extension.setScmVersion("2.8.0")
     extension.conditions {
@@ -40,6 +38,8 @@ class ReleaseYamlTaskTest {
       it.extension = extension
       it.smp = smp
       it.releaseYaml = releaseYaml
+      it.pluginName = "scm-sample-plugin"
+      it.pluginVersion = "2.1.0"
     }
     task.write()
 

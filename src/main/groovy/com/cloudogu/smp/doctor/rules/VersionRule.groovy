@@ -7,7 +7,7 @@ import com.cloudogu.smp.doctor.Rule
 class VersionRule implements Rule {
   @Override
   Result validate(Context context) {
-    String smpVersion = context.getExtension().getVersion()
+    String smpVersion = context.getProject().version
     String packageJsonVersion = context.getPackageJson().getVersion()
     if (packageJsonVersion == null) {
       return Result.ok("package.json has no version, which is fine")

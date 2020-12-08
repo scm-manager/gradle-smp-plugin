@@ -8,7 +8,7 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 class UiTasks {
 
-  static void configure(Project project, PackageJson packageJson, SmpExtension extension) {
+  static void configure(Project project, PackageJson packageJson) {
     if (packageJson.exists()) {
       setupNodeEnv(project)
       registerYarnInstall(project)
@@ -23,7 +23,7 @@ class UiTasks {
         registerUITest(project)
       }
       if (packageJson.hasScript("deploy")) {
-        registerUIDeploy(project, extension)
+        registerUIDeploy(project)
       }
     }
   }
@@ -106,13 +106,13 @@ class UiTasks {
     }
   }
 
-  private static void registerUIDeploy(Project project, SmpExtension extension) {
+  private static void registerUIDeploy(Project project) {
     project.tasks.register("ui-deploy", YarnTask) {
       inputs.file("package.json")
       inputs.file("yarn.lock")
       inputs.dir("src/main/js")
 
-      args = ['run', 'deploy', extension.version]
+      args = ['run', 'deploy', project.version]
       dependsOn("yarn_install")
 
       group = "publishing"

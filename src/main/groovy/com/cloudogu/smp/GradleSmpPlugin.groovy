@@ -3,6 +3,7 @@
  */
 package com.cloudogu.smp
 
+import org.gradle.api.GradleException
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -13,6 +14,10 @@ import org.gradle.api.tasks.compile.JavaCompile
 class GradleSmpPlugin implements Plugin<Project> {
 
   void apply(Project project) {
+    if (!project.version?.trim() || "unspecified".equals(project.version) ) {
+      throw new GradleException("version is missing in gradle.properties")
+    }
+
     project.plugins.apply(JavaLibraryPlugin)
     project.plugins.apply("io.swagger.core.v3.swagger-gradle-plugin")
     project.plugins.apply(MavenPublishPlugin)
@@ -28,7 +33,7 @@ class GradleSmpPlugin implements Plugin<Project> {
     DoctorTasks.configure(project, extension, packageJson)
     LicenseTasks.configure(project)
     Dependencies.configure(project, extension)
-    UiTasks.configure(project, packageJson, extension)
+    UiTasks.configure(project, packageJson)
     TestTasks.configure(project)
 
     def artifact = PackagingTasks.configure(project, packageJson, extension)

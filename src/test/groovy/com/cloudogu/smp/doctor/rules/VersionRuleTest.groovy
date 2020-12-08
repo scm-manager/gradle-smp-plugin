@@ -40,7 +40,7 @@ class VersionRuleTest {
 
   @Test
   void shouldReturnOk() {
-    extension.version = "2.0.0"
+    project.version = "2.0.0"
     PackageJson packageJson = createPackageJson("2.0.0")
 
     Result result = validate(packageJson)
@@ -53,7 +53,7 @@ class VersionRuleTest {
 
   @Test
   void shouldReturnOkWithoutPackageJsonVersion() {
-    extension.version = "2.0.0"
+    project.version = "2.0.0"
     PackageJson packageJson = createPackageJson()
 
     Result result = validate(packageJson)
@@ -62,7 +62,7 @@ class VersionRuleTest {
 
   @Test
   void shouldWarnWithFixable() {
-    extension.version = "2.0.0"
+    project.version = "2.0.0"
     PackageJson packageJson = createPackageJson("1.0.0")
 
     Result result = validate(packageJson)
@@ -72,7 +72,7 @@ class VersionRuleTest {
 
   @Test
   void shouldFix() {
-    extension.version = "2.0.0"
+    project.version = "2.0.0"
     PackageJson packageJson = createPackageJson("1.0.0")
 
     Result result = validate(packageJson)

@@ -3,9 +3,13 @@ package com.cloudogu.smp
 import groovy.xml.DOMBuilder
 import groovy.xml.XmlUtil
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.CacheableTask
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 
 import javax.xml.transform.OutputKeys
@@ -13,12 +17,34 @@ import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 
+@CacheableTask
 class PluginXmlTask extends DefaultTask {
 
   private SmpExtension extension
   private File moduleXml
   private File pluginXml
   private PackageJson packageJson
+
+  private String pluginName
+  private String pluginVersion
+
+  @Input
+  String getPluginVersion() {
+    return pluginVersion
+  }
+
+  void setPluginVersion(String pluginVersion) {
+    this.pluginVersion = pluginVersion
+  }
+
+  @Input
+  String getPluginName() {
+    return pluginName
+  }
+
+  void setPluginName(String pluginName) {
+    this.pluginName = pluginName
+  }
 
   @Nested
   SmpExtension getExtension() {
@@ -39,6 +65,7 @@ class PluginXmlTask extends DefaultTask {
   }
 
   @InputFile
+  @PathSensitive(PathSensitivity.RELATIVE)
   File getModuleXml() {
     return moduleXml
   }
@@ -65,12 +92,12 @@ class PluginXmlTask extends DefaultTask {
     def xml = new NodeBuilder()
     def module = new XmlParser().parse(moduleXml)
 
-    def pluginName = extension.getName(project)
     def output = xml.plugin {
       'scm-version'('2')
       information {
         name(pluginName)
-        version(extension.version)
+        version(pluginVersion)
+
         if (extension.displayName != null) {
           displayName(extension.displayName)
         }

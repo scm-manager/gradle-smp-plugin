@@ -1,6 +1,5 @@
 package com.cloudogu.smp
 
-import com.moowork.gradle.node.yarn.YarnInstallTask
 import com.moowork.gradle.node.yarn.YarnTask
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -10,7 +9,7 @@ import org.junit.jupiter.api.io.TempDir
 
 import java.nio.file.Path
 
-import static org.assertj.core.api.Assertions.*
+import static org.assertj.core.api.Assertions.assertThat
 
 class UiTasksTest {
 
@@ -104,8 +103,7 @@ class UiTasksTest {
 
   private void configure() {
     PackageJson packageJson = new PackageJson(project)
-    SmpExtension extension = new SmpExtension()
-    UiTasks.configure(project, packageJson, extension)
+    UiTasks.configure(project, packageJson)
   }
 
 }

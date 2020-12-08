@@ -64,6 +64,8 @@ class PackagingTasks {
       it.extension = extension
       it.releaseYaml = new File(project.buildDir, "libs/release.yaml")
       it.smp = new File(project.buildDir, "libs/${name}.smp")
+      it.pluginName = extension.getName(project)
+      it.pluginVersion = project.version
 
       dependsOn("smp")
     }
@@ -75,11 +77,14 @@ class PackagingTasks {
     project.tasks.getByName('classes').configure {
       dependsOn("plugin-xml")
     }
+
     project.tasks.register("plugin-xml", PluginXmlTask) {
       it.extension = extension
       it.moduleXml = new File(project.buildDir, "classes/java/main/META-INF/scm/module.xml")
       it.pluginXml = new File(project.buildDir, "smp/META-INF/scm/plugin.xml")
       it.packageJson = packageJson
+      it.pluginName = extension.getName(project)
+      it.pluginVersion = project.version
 
       it.mustRunAfter("compileJava")
     }

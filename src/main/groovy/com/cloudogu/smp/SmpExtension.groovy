@@ -18,9 +18,6 @@ class SmpExtension implements Serializable {
   String name
 
   @Input
-  String version
-
-  @Input
   @Optional
   String displayName
 

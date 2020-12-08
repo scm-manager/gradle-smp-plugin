@@ -21,7 +21,7 @@ class LicenseTasks {
 
   private static void configureTasks(Project project, File licenseFile) {
     project.tasks.register("licenseBuild", LicenseCheck) {
-      source = project.fileTree(dir: ".").include("build.gradle", "settings.gradle")
+      source = project.fileTree(dir: ".").include("build.gradle", "settings.gradle", "gradle.properties")
       enabled = true
     }
 

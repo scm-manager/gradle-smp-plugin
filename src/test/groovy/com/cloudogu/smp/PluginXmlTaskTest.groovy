@@ -26,9 +26,7 @@ class PluginXmlTaskTest {
     """.trim().stripIndent()
     File pluginXml = temp.resolve("plugin.xml").toFile()
     SmpExtension extension = new SmpExtension()
-    extension.name = "scm-sample-plugin"
     extension.displayName = "Sample Plugin"
-    extension.version = "2.4.0"
     extension.category = "Sample"
     extension.author = "Cloudogu GmbH"
     extension.scmVersion = "2.7.0"
@@ -49,6 +47,8 @@ class PluginXmlTaskTest {
       it.moduleXml = moduleXml
       it.pluginXml = pluginXml
       it.packageJson = new PackageJson(packageJson)
+      it.pluginName = "scm-sample-plugin"
+      it.pluginVersion = "2.4.0"
     }
     task.write()
 
@@ -90,8 +90,6 @@ class PluginXmlTaskTest {
     """.trim().stripIndent()
     File pluginXml = temp.resolve("plugin.xml").toFile()
     SmpExtension extension = new SmpExtension()
-    extension.name = "scm-sample-plugin"
-
     Project project = ProjectBuilder.builder().build()
     project.configurations.create("plugin")
     project.configurations.create("optionalPlugin")
@@ -100,6 +98,8 @@ class PluginXmlTaskTest {
       it.moduleXml = moduleXml
       it.pluginXml = pluginXml
       it.packageJson = new PackageJson(packageJson)
+      it.pluginName = "scm-sample-plugin"
+      it.pluginVersion = "2.4.0"
     }
     task.write()
 

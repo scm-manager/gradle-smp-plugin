@@ -29,6 +29,13 @@ class LicenseTasksTest {
   @ParameterizedTest
   @ValueSource(strings = ["src/main/java/App.java", "src/test/java/AppTest.java", "src/main/js/index.js"])
   void shouldFailIfLicenseIsMissing(String filePath) {
+    content "gradle.properties", """
+    #
+    # Awesome License
+    #
+    
+    version=2.0.0
+    """
     content "LICENSE.txt", "Awesome License"
     content "settings.gradle", """
      /*
@@ -54,6 +61,13 @@ class LicenseTasksTest {
   @ParameterizedTest
   @ValueSource(strings = ["src/main/java/Main.java", "src/test/java/MainTest.java", "src/main/js/index.ts"])
   void shouldNotFail(String filePath) {
+    content "gradle.properties", """
+    # 
+    # Cool License
+    #
+    
+    version=2.0.0
+    """
     content "LICENSE.txt", "Cool License"
     content "settings.gradle", """
      /*
@@ -80,6 +94,9 @@ class LicenseTasksTest {
 
   @Test
   void shouldFailIfBuildFileLicenseIsMissing() {
+    content "gradle.properties", """
+    version=2.0.0
+    """
     content "LICENSE.txt", "Super awesome License"
     content "settings.gradle", ""
     content "build.gradle", """
@@ -92,11 +109,13 @@ class LicenseTasksTest {
       .contains("License violations")
       .contains("settings.gradle")
       .contains("build.gradle")
+      .contains("gradle.properties")
   }
 
   @ParameterizedTest
   @ValueSource(strings = ["src/main/java/Main.java", "src/test/java/MainTest.java", "src/main/js/index.ts"])
   void shouldNotFailWithoutLicenseFile(String filePath) {
+    content "gradle.properties", "version=2.0.0"
     content "settings.gradle", ""
     content "build.gradle", """
       plugins {

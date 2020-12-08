@@ -5,6 +5,8 @@ import groovy.json.JsonSlurper
 import org.gradle.api.Project
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 
 class PackageJson {
 
@@ -42,6 +44,7 @@ class PackageJson {
   }
 
   @InputFile
+  @PathSensitive(PathSensitivity.RELATIVE)
   File getFile() {
     return file
   }

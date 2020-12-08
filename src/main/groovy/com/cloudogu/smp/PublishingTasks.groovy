@@ -25,7 +25,7 @@ class PublishingTasks {
         mavenJava(MavenPublication) {
           groupId = extension.group
           artifactId = extension.getName(project)
-          version = extension.version
+          version = project.version
 
           from project.components.java
           artifact smp
