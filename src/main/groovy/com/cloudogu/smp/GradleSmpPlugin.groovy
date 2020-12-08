@@ -39,6 +39,7 @@ class GradleSmpPlugin implements Plugin<Project> {
     def artifact = PackagingTasks.configure(project, packageJson, extension)
     PublishingTasks.configure(project, extension, artifact)
     RunTasks.configure(project, packageJson, extension)
+    VersionTasks.configure(project)
   }
 
 }
