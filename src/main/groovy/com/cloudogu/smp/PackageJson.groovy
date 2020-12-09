@@ -59,14 +59,18 @@ class PackageJson {
     return packageJson != null
   }
 
-  boolean hasScript(String script) {
+  Optional<String> getScript(String script) {
     if (packageJson != null) {
       def scripts = packageJson.scripts
       if (scripts != null) {
-        return scripts[script] != null
+        return Optional.ofNullable(scripts[script])
       }
     }
-    return false
+    Optional.empty()
+  }
+
+  boolean hasScript(String script) {
+    return getScript(script).isPresent()
   }
 
   void modify(Closure<Void> modifier) {

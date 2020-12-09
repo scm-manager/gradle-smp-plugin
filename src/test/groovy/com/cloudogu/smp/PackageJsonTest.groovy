@@ -38,7 +38,7 @@ class PackageJsonTest {
   }
 
   @Nested
-  class HasScriptTests {
+  class ScriptTests {
 
     @Test
     void shouldReturnFalseIfPackageJsonDoesNotExists() {
@@ -65,7 +65,7 @@ class PackageJsonTest {
     }
 
     @Test
-    void shouldReturnTueIfScriptExists() {
+    void shouldReturnTrueIfScriptExists() {
       packageJsonFile << """
       {
         "scripts": {
@@ -75,6 +75,31 @@ class PackageJsonTest {
       """
       PackageJson packageJson = new PackageJson(packageJsonFile)
       assertThat(packageJson.hasScript("build")).isTrue()
+    }
+
+    @Test
+    void shouldReturnScript() {
+      packageJsonFile << """
+      {
+        "scripts": {
+          "build": "echo build it"
+        }
+      }
+      """
+      PackageJson packageJson = new PackageJson(packageJsonFile)
+      assertThat(packageJson.getScript("build")).contains("echo build it")
+    }
+
+    @Test
+    void shouldReturnEmptyOptional() {
+      packageJsonFile << """
+      {
+        "scripts": {
+        }
+      }
+      """
+      PackageJson packageJson = new PackageJson(packageJsonFile)
+      assertThat(packageJson.getScript("build")).isEmpty()
     }
   }
 

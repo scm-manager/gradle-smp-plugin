@@ -1,5 +1,6 @@
 package com.cloudogu.smp.doctor
 
+import com.cloudogu.smp.doctor.rules.MissingPostInstallRule
 import com.cloudogu.smp.doctor.rules.NameRule
 import com.cloudogu.smp.doctor.rules.UiPluginsVersionRule
 import com.cloudogu.smp.doctor.rules.VersionRule
@@ -16,7 +17,8 @@ class Rules implements Iterable<Rule> {
     return new Rules([
       new NameRule(),
       new VersionRule(),
-      new UiPluginsVersionRule()
+      new UiPluginsVersionRule(),
+      new MissingPostInstallRule()
     ])
   }
 
