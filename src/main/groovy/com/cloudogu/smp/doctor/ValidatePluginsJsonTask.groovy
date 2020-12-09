@@ -19,6 +19,7 @@ class ValidatePluginsJsonTask extends DefaultTask {
 
   @Optional
   @InputDirectory
+  @PathSensitive(PathSensitivity.RELATIVE)
   File getLocaleDirectory() {
     return localeDirectory
   }
