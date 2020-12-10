@@ -19,6 +19,7 @@ class GradleSmpPlugin implements Plugin<Project> {
     }
 
     project.plugins.apply(JavaLibraryPlugin)
+    project.plugins.apply('org.sonarqube')
     project.plugins.apply("io.swagger.core.v3.swagger-gradle-plugin")
     project.plugins.apply(MavenPublishPlugin)
 
