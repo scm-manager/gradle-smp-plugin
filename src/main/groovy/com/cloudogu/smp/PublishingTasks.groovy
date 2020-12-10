@@ -4,6 +4,8 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.authentication.http.BasicAuthentication
+
 import static com.cloudogu.smp.Dependencies.*
 
 class PublishingTasks {
@@ -56,8 +58,16 @@ class PublishingTasks {
       }
       repositories {
         maven {
-          // TODO package.scm-manager.org
-          url = "${project.buildDir}/repo"
+          def releasesRepoUrl = "https://packages.scm-manager.org/repository/plugin-releases/"
+          def snapshotsRepoUrl = "https://packages.scm-manager.org/repository/plugin-snapshots/"
+          url = project.version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+          credentials {
+            username "${packagesScmManagerUsername}"
+            password "${packagesScmManagerPassword}"
+          }
+          authentication {
+            basic(BasicAuthentication)
+          }
         }
       }
     }
