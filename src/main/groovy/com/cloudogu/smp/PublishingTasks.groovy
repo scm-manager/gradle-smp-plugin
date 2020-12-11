@@ -61,12 +61,14 @@ class PublishingTasks {
           def releasesRepoUrl = "https://packages.scm-manager.org/repository/plugin-releases/"
           def snapshotsRepoUrl = "https://packages.scm-manager.org/repository/plugin-snapshots/"
           url = project.version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-          credentials {
-            username "${packagesScmManagerUsername}"
-            password "${packagesScmManagerPassword}"
-          }
-          authentication {
-            basic(BasicAuthentication)
+          if (project.hasProperty("packagesScmManagerUsername") && project.hasProperty("packagesScmManagerPassword")) {
+            credentials {
+              username project.property("packagesScmManagerUsername")
+              password project.property("packagesScmManagerPassword")
+            }
+            authentication {
+              basic(BasicAuthentication)
+            }
           }
         }
       }
