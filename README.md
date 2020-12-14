@@ -1,9 +1,123 @@
-# gradle-smp-plugin
+<p align="center">
+  <a href="https://www.scm-manager.org/">
+    <img alt="SCM-Manager" src="https://download.scm-manager.org/images/logo/scm-manager_logo.png" width="500" />
+  </a>
+</p>
+<h1 align="center">
+  gradle-smp-plugin
+</h1>
 
-## Notes
+A [Gradle](https://gradle.org/) plugin to build SCM-Manager plugins.
 
-* @scm-manager/jest-preset: collect coverage only if `COLLECT_COVERAGE` environment variable is set
-* @scm-manager/jest-preset: find module root on pom.xml or build.gradle
-* @scm-manager/ui-scripts: execute commands without fork, because they won't exit on `CTRL+C` with gradle
-* @scm-manager/ui-scripts: add webpack-plugin-serve for live reloading 
-* remove version from package.json
+## Installation
+
+To install the plugin just add the following snippet to your build.gradle file.
+
+```groovy
+plugins {
+  id "org.scm-manager.smp" version "..."
+}
+```
+
+The version should always be the latest available.
+The latest version can be found in the [Gradle Plugin Center](https://plugins.gradle.org/plugin/org.scm-manager.smp).
+
+## Configuration
+
+### Version
+
+The version of the plugin is specified in the `gradle.properties` file.
+
+### Metadata
+
+Most of the metadata is configured inside a `scmPlugin` block in the `build.gradle` file.
+Such a block looks like the following:
+
+```groovy
+scmPlugin {
+  scmVersion = "2.8.0"
+  displayName = "Review"
+  description = "Depict a review process with pull requests"
+  author = "Cloudogu GmbH"
+  category = "Workflow"
+
+  conditions {
+    os = "Linux"
+  }
+  
+  run {
+    home = "/var/lib/scm"
+  }
+  
+  openapi {
+    packages = [
+      "com.cloudogu.scm.review.pullrequest.api",
+      "com.cloudogu.scm.review.config.api",
+      "com.cloudogu.scm.review.workflow",
+    ]
+  }
+}
+```
+
+The following table shows the available options.
+
+| Name | Required | Description |
+| ---- | -------- | ----------- |
+| scmVersion | Yes | SCM-Manager parent version |
+| name | No | Name of the plugin, default the gradle project name is used |
+| group | No | Maven group id, default is `sonia.scm.plugins` |
+| displayName | Yes | Display name of the plugin |
+| description | Yes | A short description of the plugin |
+| author | Yes | Who has written the plugin |
+| category | Yes | The [category](https://www.scm-manager.org/plugins/#categories) of the plugin |
+| openapi.packages | No | Generate OpenApi documentation for the given packages |
+| conditions.os | No | Specifies on which operating system the plugin can run |
+| conditions.arch | No | Specifies on which cpu architecture the plugin can run |
+| run.warFile | No | Path to the war file which is used with the `run` task |
+| run.home | No | Path to the scm home directory, default is `build/scm-home` |
+| run.port | No | Port used to start SCM-Manager, default is `8081` |
+| run.contextPath | No | Context path for SCM-Manager, default is `/scm` |
+| run.disableCorePlugins | No | Disable the installation of core plugin, default is `false` |
+| run.stage | No | Stage of SCM-Manager runtime, default is `DEVELOPMENT` |
+| run.headerSize | No | Jetty header size, default is `16384` |
+| run.loggingConfiguration | No | Path to a logback configuration |
+| run.openBrowser | No | Open a browser after SCM-Manager is started, default is `true` |
+
+The blocks openapi, conditions and run are complete optional. 
+
+### Declaring dependencies
+
+Dependencies are declared as in every other gradle project e.g.:
+
+```groovy
+dependencies {
+  // implementation is used for runtime dependencies 
+  implementation "org.jasig.cas.client:cas-client-core:3.5.1"
+  // and testImplementation is used for test dependencies
+  testImplementation "org.jboss.resteasy:resteasy-validator-provider:4.5.8.Final"
+}
+```
+
+If you want to declare a dependency to an other SCM-Manager plugin a special configuration is required:
+
+```groovy
+dependencies {
+  // plugin is used for a required plugin dependency 
+  plugin "sonia.scm.plugins:scm-mail-plugin:2.1.0"
+  // and optionalPlugin is used for an optional one
+  optionalPlugin "sonia.scm.plugins:scm-editor-plugin:2.0.0"
+}
+```
+
+## Converting from Maven
+
+If you want to migrate an existing plugin from Maven to Gradle, 
+please have a look at [smp-maven-to-gradle](https://github.com/scm-manager/smp-maven-to-gradle).
+
+## Need help?
+
+Looking for more guidance? Full documentation lives on our [homepage](https://www.scm-manager.org/docs/) or the dedicated pages for our [plugins](https://www.scm-manager.org/plugins/). Do you have further ideas or need support?
+
+- **Community Support** - Contact the SCM-Manager support team for questions about SCM-Manager, to report bugs or to request features through the official channels. [Find more about this here](https://www.scm-manager.org/support/).
+
+- **Enterprise Support** - Do you require support with the integration of SCM-Manager into your processes, with the customization of the tool or simply a service level agreement (SLA)? **Contact our development partner Cloudogu! Their team is looking forward to discussing your individual requirements with you and will be more than happy to give you a quote.** [Request Enterprise Support](https://cloudogu.com/en/scm-manager-enterprise/).
