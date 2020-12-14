@@ -14,9 +14,9 @@ class VersionRule implements Rule {
     }
 
     if (smpVersion.equals(packageJsonVersion)) {
-      return Result.ok("version of build.gradle and package.json are equal")
+      return Result.ok("version of gradle.properties and package.json are equal")
     } else {
-      return Result.error("version of pom.xml and package.json are not equal")
+      return Result.error("version of gradle.properties and package.json are not equal")
         .withFix {
           context.getPackageJson().modify {
             it.version = smpVersion
