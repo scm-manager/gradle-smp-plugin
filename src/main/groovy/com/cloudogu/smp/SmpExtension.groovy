@@ -72,6 +72,10 @@ class SmpExtension implements Serializable {
     return project.name
   }
 
+  File getServerConfigurationFile(Project project) {
+    return new File(project.buildDir, "server" + File.separator + "config.json")
+  }
+
   class Conditions {
     @Input
     @Optional

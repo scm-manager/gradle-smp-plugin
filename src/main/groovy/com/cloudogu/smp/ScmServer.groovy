@@ -9,14 +9,10 @@ import org.eclipse.jetty.server.ServerConnector
 import org.eclipse.jetty.util.component.AbstractLifeCycle
 import org.eclipse.jetty.util.component.LifeCycle
 import org.eclipse.jetty.webapp.WebAppContext
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 import java.awt.Desktop
 
 final class ScmServer {
-
-  private static final Logger LOG = LoggerFactory.getLogger(ScmServer.class)
 
   private final ScmServerConfiguration configuration
   private Server server
@@ -26,11 +22,11 @@ final class ScmServer {
   }
 
   void start() throws Exception {
-    LOG.info("start scm-server at port {}", configuration.port)
+    info("start scm-server at port %s", configuration.port)
 
     System.setProperty("scm.home", configuration.home)
     if (configuration.disableCorePlugins) {
-      LOG.info("disable core plugin extraction")
+      info("disable core plugin extraction")
       System.setProperty("sonia.scm.boot.disable-core-plugin-extraction", "true")
     }
 
@@ -38,7 +34,7 @@ final class ScmServer {
       System.setProperty("logback.configurationFile", configuration.loggingConfiguration);
     }
 
-    LOG.info("set stage {}", configuration.stage)
+    info("set stage %s", configuration.stage)
     System.setProperty("scm.stage", configuration.stage)
 
     server = new Server()
@@ -69,8 +65,21 @@ final class ScmServer {
       Desktop desktop = Desktop.getDesktop()
       desktop.browse(URI.create(endpoint))
     } catch (IOException | URISyntaxException ex) {
-      LOG.warn("could not open browser", ex);
+      warn("could not open browser", ex)
     }
+  }
+
+  private static void info(String message, Object... args) {
+    log("INFO", message, args)
+  }
+
+  private static void warn(String message, Exception exception) {
+    log("WARN", message)
+    exception.printStackTrace(System.out)
+  }
+
+  private static void log(String level, String template, Object... args) {
+    System.out.println("[${level}] " + String.format(template, args))
   }
 
   private WebAppContext createScmContext() {

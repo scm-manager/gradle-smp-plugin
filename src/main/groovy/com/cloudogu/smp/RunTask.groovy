@@ -44,7 +44,7 @@ class RunTask extends DefaultTask {
   private Closure<Void> createBackend() {
     def backend = project.tasks.create("boot-backend", JavaExec) {
       main ScmServer.class.name
-      args(extension.serverConfiguration.getFile(project))
+      args(extension.getServerConfigurationFile(project))
       environment "NODE_ENV", "development"
       classpath project.buildscript.configurations.classpath
     }

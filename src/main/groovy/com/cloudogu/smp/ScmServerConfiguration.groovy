@@ -1,6 +1,5 @@
 package com.cloudogu.smp
 
-import org.gradle.api.Project
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 
@@ -108,9 +107,5 @@ class ScmServerConfiguration {
 
   void setOpenBrowser(boolean openBrowser) {
     this.openBrowser = openBrowser
-  }
-
-  File getFile(Project project) {
-    return new File(project.buildDir, "server" + File.separator + "config.json")
   }
 }
