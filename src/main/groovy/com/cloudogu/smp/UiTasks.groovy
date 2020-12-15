@@ -92,7 +92,7 @@ class UiTasks {
       inputs.file("yarn.lock")
       inputs.dir("src/main/js")
 
-      outputs.dir("target/jest-reports")
+      outputs.dir("build/jest-reports")
 
       args = ['run', 'test']
       dependsOn("yarn_install")
