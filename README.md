@@ -146,6 +146,17 @@ To see the full list of available tasks, execute the following command:
 If you want to migrate an existing plugin from Maven to Gradle, 
 please have a look at [smp-maven-to-gradle](https://github.com/scm-manager/smp-maven-to-gradle).
 
+## Local development
+
+To speed up local development the build of the gradle-smp-plugin can be combined with the one of the SCM-Manager plugin.
+Doing so will use the gradle-smp-plugin directly from the source code and changes are immediately visible.
+To combine the builds, we have to clone the gradle-smp-plugin and insert the path into the settings.gradle file of our SCM-Manager plugin e.g.:
+
+```groovy
+rootProject.name = 'scm-review-plugin'
+includeBuild '../gradle-smp-plugin'
+```
+
 ## Need help?
 
 Looking for more guidance? Full documentation lives on our [homepage](https://www.scm-manager.org/docs/) or the dedicated pages for our [plugins](https://www.scm-manager.org/plugins/). Do you have further ideas or need support?
