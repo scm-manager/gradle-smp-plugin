@@ -74,7 +74,7 @@ The following table shows the available options.
 | conditions.os | No | Specifies on which operating system the plugin can run |
 | conditions.arch | No | Specifies on which cpu architecture the plugin can run |
 | run.warFile | No | Path to the war file which is used with the `run` task |
-| run.home | No | Path to the scm home directory, default is `build/scm-home` |
+| run.home | No | Path to the scm home directory, default is `build/scm-home` (can also be changed by passing `-Pscm.home=/path` to gradle) |
 | run.port | No | Port used to start SCM-Manager, default is `8081` |
 | run.contextPath | No | Context path for SCM-Manager, default is `/scm` |
 | run.disableCorePlugins | No | Disable the installation of core plugin, default is `false` |

@@ -58,6 +58,9 @@ class SmpExtension implements Serializable {
   }
 
   File getScmHome(Project project) {
+    if (project.hasProperty("scm.home")) {
+      return new File(project.getProperty("scm.home"))
+    }
     def home = serverConfiguration.getHome()
     if (home != null) {
       return new File(home)
