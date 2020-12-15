@@ -87,7 +87,7 @@ The blocks openapi, conditions and run are complete optional.
 
 ### Declaring dependencies
 
-Dependencies are declared as in every other gradle project e.g.:
+Java dependencies are handled by the gradle [java plugin](https://docs.gradle.org/current/userguide/dependency_management_for_java_projects.html) e.g.:
 
 ```groovy
 dependencies {
@@ -98,7 +98,7 @@ dependencies {
 }
 ```
 
-If you want to declare a dependency to an other SCM-Manager plugin a special configuration is required:
+If you want to declare a dependency to another SCM-Manager plugin a special configuration is required:
 
 ```groovy
 dependencies {
@@ -107,6 +107,37 @@ dependencies {
   // and optionalPlugin is used for an optional one
   optionalPlugin "sonia.scm.plugins:scm-editor-plugin:2.0.0"
 }
+```
+
+## Tasks
+
+The gradle-smp-plugin provides some high level tasks,
+which should cover most of the daily work.
+
+| Name | Description |
+| ---- | ----------- |
+| run | Starts an SCM-Manager plugin with the plugin pre installed, with livereload for the ui |
+| build | Executes all checks, tests and builds the smp inclusive javadoc and source jar |
+| check | Executes all registered checks and tests |
+| test | Run all tests |
+| smp | Builds the smp file, without the execution of checks and tests |
+| clean | Deletes the build directory |
+
+The plugin also defines a few tasks which are more relevant for CI servers. 
+
+| Name | Description |
+| ---- | ----------- |
+| publish | Publishes the plugin to packages.scm-manager.org (requires credentials) |
+| sonarqube | Executes a SonarQube analysis |
+| setVersion | Sets the version to a new version |
+| setVersionToNextSnapshot | Sets the version to the next snapshot version |
+
+There many more tasks, which are executed as part of the high level tasks, 
+and it should rarely be necessary to call them individually.
+To see the full list of available tasks, execute the following command:
+
+```bash
+./gradlew tasks
 ```
 
 ## Converting from Maven
