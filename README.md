@@ -119,6 +119,7 @@ which should cover most of the daily work.
 | run | Starts an SCM-Manager plugin with the plugin pre installed, with livereload for the ui |
 | build | Executes all checks, tests and builds the smp inclusive javadoc and source jar |
 | check | Executes all registered checks and tests |
+| fix | Fixes all fixable findings of the check task |
 | test | Run all tests |
 | smp | Builds the smp file, without the execution of checks and tests |
 | clean | Deletes the build directory |
