@@ -52,6 +52,11 @@ dependencies {
   testImplementation 'org.assertj:assertj-core:3.11.1'
 }
 
+project.tasks.withType(JavaCompile) {
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 test {
   useJUnitPlatform()
 }
