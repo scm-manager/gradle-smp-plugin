@@ -32,8 +32,8 @@ class UiTasks {
     project.plugins.apply("com.github.node-gradle.node")
     def nodeExt = NodeExtension.get(project)
     nodeExt.setDownload(true)
-    nodeExt.setVersion("14.15.1")
-    nodeExt.setYarnVersion("1.22.5")
+    nodeExt.setVersion(Environment.NODE_VERSION)
+    nodeExt.setYarnVersion(Environment.YARN_VERSION)
   }
 
   private static void registerYarnInstall(Project project) {
