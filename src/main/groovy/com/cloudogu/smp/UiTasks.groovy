@@ -95,7 +95,7 @@ class UiTasks {
       outputs.dir("build/jest-reports")
 
       args = ['run', 'test']
-      ignoreExitValue = Tests.shouldIgnoreTestFailures(project)
+      ignoreExitValue = Environment.isCI()
 
       dependsOn("yarn_install")
 

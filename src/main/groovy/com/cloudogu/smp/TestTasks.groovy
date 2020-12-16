@@ -12,7 +12,7 @@ class TestTasks {
     project.afterEvaluate {
       project.test {
         useJUnitPlatform()
-        ignoreFailures = Tests.shouldIgnoreTestFailures(project)
+        ignoreFailures = Environment.isCI()
       }
     }
   }

@@ -23,6 +23,8 @@ class GradleSmpPlugin implements Plugin<Project> {
     project.plugins.apply("io.swagger.core.v3.swagger-gradle-plugin")
     project.plugins.apply(MavenPublishPlugin)
 
+    
+
     project.tasks.withType(JavaCompile) {
       sourceCompatibility = JavaVersion.VERSION_1_8
       targetCompatibility = JavaVersion.VERSION_1_8
