@@ -4,13 +4,13 @@ import org.gradle.api.Project
 
 class AnalysisTasks {
 
-  static void configure(Project project) {
+  static void configure(Project project, SmpExtension extension) {
     if (Environment.isCI()) {
-      configureSonarQube(project)
+      configureSonarQube(project, extension)
     }
   }
 
-  static void configureSonarQube(Project project) {
+  static void configureSonarQube(Project project, SmpExtension extension) {
     project.plugins.apply('org.sonarqube')
     project.sonarqube {
       properties {
@@ -20,6 +20,7 @@ class AnalysisTasks {
         property 'sonar.junit.reportPaths', 'build/test-results/test/,build/jest-reports/'
         property 'sonar.test.inclusions', 'src/**/*.test.ts,src/**/*.test.js,src/**/*.test.tsx,src/**/*.test.jsx,src/**/*Test.java,src/**/*ITCase.java'
         property 'sonar.nodejs.executable', ".gradle/nodejs/node-v${Environment.NODE_VERSION}-${Environment.CI_OS}-${Environment.CI_ARCH}/bin/node"
+        property 'sonar.projectKey', "${extension.group}:${extension.getName(project)}"
       }
     }
   }
