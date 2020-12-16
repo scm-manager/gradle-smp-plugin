@@ -95,6 +95,8 @@ class UiTasks {
       outputs.dir("build/jest-reports")
 
       args = ['run', 'test']
+      ignoreExitValue = Tests.shouldIgnoreTestFailures(project)
+
       dependsOn("yarn_install")
 
       group = LifecycleBasePlugin.VERIFICATION_GROUP
