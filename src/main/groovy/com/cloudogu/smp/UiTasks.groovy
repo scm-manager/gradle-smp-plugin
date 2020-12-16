@@ -87,7 +87,7 @@ class UiTasks {
   }
 
   private static void registerUITest(Project project) {
-    project.tasks.register("ui-tests", YarnTask) {
+    project.tasks.register("ui-test", YarnTask) {
       inputs.file("package.json")
       inputs.file("yarn.lock")
       inputs.dir("src/main/js")
@@ -103,8 +103,8 @@ class UiTasks {
       description = "Run ui tests"
     }
 
-    project.tasks.getByName("test").configure {
-      dependsOn("ui-tests")
+    project.tasks.getByName("check").configure {
+      dependsOn("ui-test")
     }
   }
 

@@ -71,18 +71,19 @@ class UiTasksTest {
 
   @Test
   void shouldRegisterUiTestTask() {
-    project.tasks.register("test")
-    new File(directory, "package.json") << """
+    project.tasks.register('check')
+    new File(directory, 'package.json') << '''
     {
       "scripts": {
         "test": "jest"
       }
     }
-    """
+    '''
 
     configure()
 
-    assertThat(project.tasks.getByName("ui-tests")).isInstanceOf(YarnTask)
+    def task = project.tasks.getByName('ui-test')
+    assertThat(task).isInstanceOf(YarnTask)
   }
 
   @Test
