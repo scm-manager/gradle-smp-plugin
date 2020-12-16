@@ -7,10 +7,10 @@ class Tests {
   private static final String PROPERTY = 'ignoreTestFailures'
 
   static boolean shouldIgnoreTestFailures(Project project) {
-    if (!project.ext.hasProperty(PROPERTY)) {
+    if (!project.ext.has(PROPERTY)) {
       return false
     }
-    def property = project.ext.getProperty(PROPERTY)
+    def property = project.ext.get(PROPERTY)
     if (property instanceof Boolean) {
       return property
     } else if (property instanceof String) {
