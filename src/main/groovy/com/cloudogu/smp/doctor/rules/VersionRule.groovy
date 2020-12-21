@@ -1,14 +1,15 @@
 package com.cloudogu.smp.doctor.rules
 
+import com.cloudogu.smp.PackageJson
 import com.cloudogu.smp.doctor.Context
 import com.cloudogu.smp.doctor.Result
 import com.cloudogu.smp.doctor.Rule
 
-class VersionRule implements Rule {
+class VersionRule extends PackageJsonRule {
   @Override
-  Result validate(Context context) {
+  Result validate(Context context, PackageJson packageJson) {
     String smpVersion = context.getProject().version
-    String packageJsonVersion = context.getPackageJson().getVersion()
+    String packageJsonVersion = packageJson.getVersion()
     if (packageJsonVersion == null) {
       return Result.ok("package.json has no version, which is fine")
     }

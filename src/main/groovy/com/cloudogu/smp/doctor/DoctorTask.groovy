@@ -4,8 +4,8 @@ import com.cloudogu.smp.PackageJson
 import com.cloudogu.smp.SmpExtension
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.Nested
-import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
 abstract class DoctorTask extends DefaultTask {
@@ -13,6 +13,7 @@ abstract class DoctorTask extends DefaultTask {
   private SmpExtension extension
   private PackageJson packageJson
   private PrintStream outputStream = System.out
+  
   private Rules rules = Rules.all()
 
   @Nested
@@ -25,17 +26,13 @@ abstract class DoctorTask extends DefaultTask {
   }
 
   @Nested
+  @Optional
   PackageJson getPackageJson() {
     return packageJson
   }
 
   void setPackageJson(PackageJson packageJson) {
     this.packageJson = packageJson
-  }
-
-  @OutputFile
-  File getOutputFile() {
-    return packageJson.file
   }
 
   void setOutputStream(PrintStream outputStream) {
@@ -58,6 +55,9 @@ abstract class DoctorTask extends DefaultTask {
 
   @TaskAction
   void execute() {
+    if (packageJson == null) {
+      packageJson = new PackageJson(project)
+    }
     def results = rules.validate(new Context(project, extension, packageJson))
     execute(results)
   }

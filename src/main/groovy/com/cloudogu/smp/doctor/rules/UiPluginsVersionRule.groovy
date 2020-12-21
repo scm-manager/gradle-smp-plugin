@@ -1,14 +1,15 @@
 package com.cloudogu.smp.doctor.rules
 
+import com.cloudogu.smp.PackageJson
 import com.cloudogu.smp.doctor.Context
 import com.cloudogu.smp.doctor.Result
 import com.cloudogu.smp.doctor.Rule
 
-class UiPluginsVersionRule implements Rule {
+class UiPluginsVersionRule extends PackageJsonRule {
   @Override
-  Result validate(Context context) {
+  Result validate(Context context, PackageJson packageJson) {
     String extensionVersion = context.getExtension().getScmVersion()
-    String uiPluginsVersion = context.getPackageJson().getDependencyVersion("@scm-manager/ui-plugins")
+    String uiPluginsVersion = packageJson.getDependencyVersion("@scm-manager/ui-plugins")
       if (uiPluginsVersion != null) {
         if (extensionVersion.equals(uiPluginsVersion)) {
           return Result.ok("scm version is equal with @scm-manager/ui-plugins")

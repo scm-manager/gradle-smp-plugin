@@ -14,7 +14,10 @@ class DoctorTasks {
       it.group = LifecycleBasePlugin.VERIFICATION_GROUP
 
       it.extension = extension
-      it.packageJson = packageJson
+      if (packageJson.exists()) {
+        it.packageJson = packageJson
+      }
+      it.outputMarker = new File(project.buildDir, "tmp/validate/marker")
     }
 
     File localeDirectory = new File(project.projectDir, 'src/main/resources/locales')
@@ -32,7 +35,9 @@ class DoctorTasks {
       it.group = LifecycleBasePlugin.VERIFICATION_GROUP
 
       it.extension = extension
-      it.packageJson = packageJson
+      if (packageJson.exists()) {
+        it.packageJson = packageJson
+      }
     }
   }
 

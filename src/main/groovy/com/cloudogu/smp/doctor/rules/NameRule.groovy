@@ -1,17 +1,18 @@
 package com.cloudogu.smp.doctor.rules
 
 import com.cloudogu.smp.SmpExtension
+import com.cloudogu.smp.PackageJson
 import com.cloudogu.smp.doctor.Context
 import com.cloudogu.smp.doctor.Result
 import com.cloudogu.smp.doctor.Rule
 
-class NameRule implements Rule {
+class NameRule extends PackageJsonRule {
 
   @Override
-  Result validate(Context context) {
+  Result validate(Context context, PackageJson packageJson) {
     SmpExtension extension = context.getExtension()
     String extensionName = extension.getName(context.getProject())
-    String packageJsonName = context.getPackageJson().getName()
+    String packageJsonName = packageJson.getName()
 
     int slash = packageJsonName.indexOf('/')
     if (slash > 0) {

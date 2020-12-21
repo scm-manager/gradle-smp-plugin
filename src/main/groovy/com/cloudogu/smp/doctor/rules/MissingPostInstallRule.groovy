@@ -5,15 +5,10 @@ import com.cloudogu.smp.doctor.Context
 import com.cloudogu.smp.doctor.Result
 import com.cloudogu.smp.doctor.Rule
 
-class MissingPostInstallRule implements Rule {
+class MissingPostInstallRule extends PackageJsonRule {
 
   @Override
-  Result validate(Context context) {
-    PackageJson packageJson = context.getPackageJson()
-    if (!packageJson.exists()) {
-      return Result.ok("no package.json found")
-    }
-
+  Result validate(Context context, PackageJson packageJson) {
     if (context.getExtension().core) {
       return Result.ok("core plugins need no postinstall")
     }
