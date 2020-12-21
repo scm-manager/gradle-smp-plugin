@@ -17,10 +17,10 @@ class DoctorTasks {
       it.packageJson = packageJson
     }
 
-    File localeDirectory = new File(project.rootDir, 'src/main/resources/locales')
+    File localeDirectory = new File(project.projectDir, 'src/main/resources/locales')
     project.tasks.register("validatePluginJson", ValidatePluginsJsonTask) {
       it.localeDirectory = localeDirectory.exists() ? localeDirectory : null
-      it.outputMarker = new File(project.buildDir, "temp/validatePluginJson/marker")
+      it.outputMarker = new File(project.buildDir, "tmp/validatePluginJson/marker")
     }
 
     project.tasks.getByName("check").configure {

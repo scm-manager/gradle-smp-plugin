@@ -33,6 +33,9 @@ class SmpExtension implements Serializable {
   @Optional
   String category
 
+  @Input
+  boolean core = false
+
   @Nested
   Conditions pluginConditions = new Conditions()
 

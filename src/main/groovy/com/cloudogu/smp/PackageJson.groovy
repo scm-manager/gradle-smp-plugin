@@ -14,7 +14,7 @@ class PackageJson {
   private Object packageJson
 
   PackageJson(Project project) {
-    this(new File(project.rootDir, "package.json"))
+    this(new File(project.projectDir, "package.json"))
   }
 
   PackageJson(File file) {

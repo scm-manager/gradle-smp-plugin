@@ -14,6 +14,10 @@ class MissingPostInstallRule implements Rule {
       return Result.ok("no package.json found")
     }
 
+    if (context.getExtension().core) {
+      return Result.ok("core plugins need no postinstall")
+    }
+
     Closure<Void> fix = {
       packageJson.modify {
         if (it.scripts == null) {
