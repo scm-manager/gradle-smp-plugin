@@ -1,6 +1,7 @@
 package com.cloudogu.smp
 
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact
 import org.gradle.api.plugins.BasePlugin
@@ -11,9 +12,18 @@ class PackagingTasks {
   static PublishArtifact configure(Project project, PackageJson packageJson, SmpExtension extension) {
     PublishArtifact artifact = registerSmpTasks(project, extension)
     registerPluginXml(project, packageJson, extension)
+
+
+    Configuration smpArtifacts = project.configurations.create('smp')
+    smpArtifacts.canBeResolved = false
+    smpArtifacts.canBeConsumed = true
+
     project.afterEvaluate {
       registerOpenApiSpecGenerator(project, extension)
+
+      project.artifacts.add('smp', project.tasks.getByName('smp'))
     }
+
     artifact
   }
 
