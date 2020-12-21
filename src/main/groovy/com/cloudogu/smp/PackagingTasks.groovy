@@ -82,7 +82,9 @@ class PackagingTasks {
       it.extension = extension
       it.moduleXml = new File(project.buildDir, "classes/java/main/META-INF/scm/module.xml")
       it.pluginXml = new File(project.buildDir, "smp/META-INF/scm/plugin.xml")
-      it.packageJson = packageJson
+      if (packageJson.exists()) {
+        it.packageJson = packageJson
+      }
       it.pluginName = extension.getName(project)
       it.pluginVersion = project.version
 

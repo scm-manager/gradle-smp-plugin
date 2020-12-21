@@ -6,6 +6,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
@@ -75,6 +76,7 @@ class PluginXmlTask extends DefaultTask {
   }
 
   @Nested
+  @Optional
   PackageJson getPackageJson() {
     return packageJson
   }
@@ -121,7 +123,7 @@ class PluginXmlTask extends DefaultTask {
         }
       }
       resources {
-        if (packageJson.exists()) {
+        if (packageJson != null && packageJson.hasScript('build')) {
           script("assets/${pluginName}.bundle.js")
         }
       }
