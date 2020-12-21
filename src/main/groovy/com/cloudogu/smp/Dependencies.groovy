@@ -110,9 +110,17 @@ class Dependencies {
 
     project.dependencies {
       // we enforce the dependency versions from scm-manager root pom dependency management
-      scmCoreDependency enforcedPlatform("sonia.scm:scm:${extension.scmVersion}")
-
-      scmCoreDependency "sonia.scm:scm-core:${extension.scmVersion}"
+      if (extension.core) {
+        scmCoreDependency enforcedPlatform(project.project(':'))
+        scmCoreDependency project.project(':scm-core')
+        scmCoreDependency project.project(':scm-test')
+        annotationProcessor project.project(':scm-annotation-processor')
+      } else {
+        scmCoreDependency enforcedPlatform("sonia.scm:scm:${extension.scmVersion}")
+        scmCoreDependency "sonia.scm:scm-core:${extension.scmVersion}"
+        testImplementation "sonia.scm:scm-test:${extension.scmVersion}"
+        annotationProcessor "sonia.scm:scm-annotation-processor:${extension.scmVersion}"
+      }
 
       // is provided in scm-core
       scmCoreDependency "javax.ws.rs:javax.ws.rs-api:2.1.1"
@@ -125,10 +133,6 @@ class Dependencies {
       // register annotation processors
       annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.1.Final'
       annotationProcessor 'org.projectlombok:lombok:1.18.12'
-      annotationProcessor "sonia.scm:scm-annotation-processor:${extension.scmVersion}"
-
-      // test dependencies
-      testImplementation "sonia.scm:scm-test:${extension.scmVersion}"
 
       // resteasy test dependencies
       testImplementation "org.jboss.resteasy:resteasy-core:4.5.3.Final"
@@ -139,6 +143,7 @@ class Dependencies {
       testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
 
       testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
+      testImplementation 'org.junit.jupiter:junit-jupiter-params:5.6.2'
       testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
 
       testImplementation 'org.assertj:assertj-core:3.16.1'
