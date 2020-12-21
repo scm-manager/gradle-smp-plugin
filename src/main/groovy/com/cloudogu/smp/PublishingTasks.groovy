@@ -5,6 +5,7 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.authentication.http.BasicAuthentication
+import org.gradle.api.tasks.javadoc.Javadoc
 
 import static com.cloudogu.smp.Dependencies.*
 
@@ -20,6 +21,10 @@ class PublishingTasks {
     project.java {
       withJavadocJar()
       withSourcesJar()
+    }
+
+    project.tasks.withType(Javadoc) {
+      failOnError false
     }
 
     project.publishing {
