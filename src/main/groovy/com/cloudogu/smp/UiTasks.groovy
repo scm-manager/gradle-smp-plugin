@@ -66,7 +66,7 @@ class UiTasks {
         if (!directory.exists() && !directory.mkdirs()) {
           throw new GradleException("failed to create directory ${directory}")
         }
-        if (!marker.createNewFile()) {
+        if (!marker.exists() && !marker.createNewFile()) {
           throw new GradleException("failed to create marker file ${marker}")
         }
       }
