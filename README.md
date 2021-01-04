@@ -82,8 +82,9 @@ The following table shows the available options.
 | run.headerSize | No | Jetty header size, default is `16384` |
 | run.loggingConfiguration | No | Path to a logback configuration |
 | run.openBrowser | No | Open a browser after SCM-Manager is started, default is `true` |
+| sonar.property | No | Specify extra properties for SonarQube analysis (can be used multiple times) |
 
-The blocks openapi, conditions and run are complete optional. 
+The blocks openapi, conditions, run and sonar are complete optional. 
 
 ### Declaring dependencies
 

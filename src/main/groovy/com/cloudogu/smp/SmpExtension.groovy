@@ -40,6 +40,9 @@ class SmpExtension implements Serializable {
   @Input
   boolean core = false
 
+  @Input
+  Map<String,String> sonarProperties = [:]
+
   @Nested
   Conditions pluginConditions = new Conditions()
 
@@ -61,6 +64,11 @@ class SmpExtension implements Serializable {
 
   def run(def closure) {
     closure.delegate = serverConfiguration
+    closure.call()
+  }
+
+  def sonar(def closure) {
+    closure.delegate = new Sonar()
     closure.call()
   }
 
@@ -101,6 +109,14 @@ class SmpExtension implements Serializable {
     @Input
     @Optional
     Set<String> packages = new LinkedHashSet<>()
+
+  }
+
+  class Sonar {
+
+    public void property(String key, String value) {
+      sonarProperties.put(key, value)
+    }
 
   }
 
