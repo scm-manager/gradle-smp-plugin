@@ -34,6 +34,10 @@ class SmpExtension implements Serializable {
   String category
 
   @Input
+  @Optional
+  String avatarUrl
+
+  @Input
   boolean core = false
 
   @Nested

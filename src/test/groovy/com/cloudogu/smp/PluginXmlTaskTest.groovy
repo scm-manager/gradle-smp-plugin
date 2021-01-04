@@ -30,6 +30,7 @@ class PluginXmlTaskTest {
     extension.category = "Sample"
     extension.author = "Cloudogu GmbH"
     extension.scmVersion = "2.7.0"
+    extension.avatarUrl = '/images/avatar.png'
     extension.conditions {
       os = "Linux"
       arch = "arm"

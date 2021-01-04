@@ -112,6 +112,9 @@ class PluginXmlTask extends DefaultTask {
         if (extension.author != null) {
           author(extension.author)
         }
+        if (extension.avatarUrl != null) {
+          avatarUrl(extension.avatarUrl)
+        }
       }
       conditions {
         'min-version'(extension.scmVersion)
