@@ -27,12 +27,16 @@ class DoctorTaskTestBase {
       it.packageJson = new PackageJson(project)
       it.outputStream = stream
       it.rules = rules
+      prepareTask(it)
     }
     task.execute()
 
     return output.toString()
   }
 
+  protected void prepareTask(def task) {
+
+  }
 
   protected Rule rule(Result result) {
     return new PredefinedResultRule(result)

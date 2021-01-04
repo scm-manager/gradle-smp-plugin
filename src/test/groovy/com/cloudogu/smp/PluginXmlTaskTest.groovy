@@ -14,7 +14,11 @@ class PluginXmlTaskTest {
   @Test
   void shouldCreatePluginXml(@TempDir Path temp) {
     File packageJson = temp.resolve("package.json").toFile()
-    packageJson << "{}"
+    packageJson << '''{
+      "scripts": {
+        "build": "plugin-scripts build"
+      }
+    }'''
     File moduleXml = temp.resolve("module.xml").toFile()
     moduleXml << """
       <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -64,6 +68,7 @@ class PluginXmlTaskTest {
     assertThat(plugin.information.version).isEqualTo("2.4.0")
     assertThat(plugin.information.category).isEqualTo("Sample")
     assertThat(plugin.information.author).isEqualTo("Cloudogu GmbH")
+    assertThat(plugin.information.avatarUrl).isEqualTo('/images/avatar.png')
 
     assertThat(plugin.resources.script).isEqualTo("assets/scm-sample-plugin.bundle.js")
 

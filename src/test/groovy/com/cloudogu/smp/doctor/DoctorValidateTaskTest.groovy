@@ -2,12 +2,23 @@ package com.cloudogu.smp.doctor
 
 
 import org.gradle.api.GradleException
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+
+import java.nio.file.Path
 
 import static org.assertj.core.api.Assertions.assertThat
 import static org.junit.jupiter.api.Assertions.assertThrows
 
 class DoctorValidateTaskTest extends DoctorTaskTestBase {
+
+  private File markerFile
+
+  @BeforeEach
+  void prepareProject(@TempDir Path temp) {
+    markerFile = temp.resolve("marker").toFile()
+  }
 
   @Test
   void shouldPrintRuleResults() {
@@ -24,6 +35,7 @@ class DoctorValidateTaskTest extends DoctorTaskTestBase {
       .contains("WARN")
       .contains("little help")
       .contains("fixable")
+    assertThat(markerFile).exists()
   }
 
   @Test
@@ -35,6 +47,13 @@ class DoctorValidateTaskTest extends DoctorTaskTestBase {
     assertThrows(GradleException) {
       execute(rules)
     }
+
+    assertThat(markerFile).doesNotExist()
+  }
+
+  @Override
+  void prepareTask(def task) {
+    task.outputMarker = markerFile
   }
 
   private String execute(Rules rules) {
