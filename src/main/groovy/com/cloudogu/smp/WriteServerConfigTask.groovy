@@ -57,11 +57,13 @@ class WriteServerConfigTask extends DefaultTask {
       throw new IllegalStateException("failed to delete existing server configuration: ${outputFile}")
     }
 
-    webappResolver.delegate = {
-      it.project = project
-    }
+    if (extension.serverConfiguration.warFile == null) {
+      webappResolver.delegate = {
+        it.project = project
+      }
 
-    extension.serverConfiguration.warFile = webappResolver.call()
+      extension.serverConfiguration.warFile = webappResolver.call()
+    }
     extension.serverConfiguration.home = extension.getScmHome(project)
 
     outputFile << JsonOutput.toJson(extension.serverConfiguration)
