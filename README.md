@@ -148,6 +148,8 @@ To see the full list of available tasks, execute the following command:
 If you want to debug the `run` task of your plugin.
 You can provide the `--debug-jvm` option, which starts the SCM-Manager jvm in debug mode.
 Then you can attach a debugger on port 5005.
+The port can be changed by using the `--debug-port` e.g.: `--debug-port=5006`.
+If you want to wait until a debugger is attached, before SCM-Manager starts you can use the `--debug-wait` option. 
 
 ## Converting from Maven
 

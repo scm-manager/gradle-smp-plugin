@@ -26,6 +26,14 @@ class RunTask extends DefaultTask {
   @Option(option = 'debug-jvm', description = 'Start ScmServer suspended and listening on debug port (default: 5005)')
   boolean debugJvm = false
 
+  @Input
+  @Option(option = 'debug-wait', description = 'Wait until a debugger has connected')
+  boolean debugWait = false
+
+  @Input
+  @Option(option = 'debug-port', description = 'Port for debugger')
+  String debugPort = "5005"
+
   @TaskAction
   void exec() {
     List<Closure<Void>> actions = new ArrayList<>();
@@ -58,7 +66,15 @@ class RunTask extends DefaultTask {
         jes.args(extension.getServerConfigurationFile(project))
         jes.environment("NODE_ENV", "development")
         jes.classpath(project.buildscript.configurations.classpath)
-        jes.debug = debugJvm
+        if (debugJvm) {
+          jes.debug = true
+          jes.debugOptions {
+            enabled = true
+            port = Integer.parseInt(debugPort)
+            server = true
+            suspend = debugWait
+          }
+        }
         execSpecActions.each { a -> a.execute(jes) }
       }
     }
