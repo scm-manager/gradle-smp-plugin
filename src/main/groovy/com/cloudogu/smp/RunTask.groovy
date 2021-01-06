@@ -1,10 +1,13 @@
 package com.cloudogu.smp
 
 import com.moowork.gradle.node.yarn.YarnTask
+import org.gradle.api.Action
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.options.Option
+import org.gradle.process.JavaExecSpec
 
 import java.util.stream.Collectors
 
@@ -15,6 +18,13 @@ class RunTask extends DefaultTask {
 
   @Nested
   PackageJson packageJson
+
+  @Input
+  List<Action<JavaExecSpec>> execSpecActions = []
+
+  @Input
+  @Option(option = 'debug-jvm', description = 'Start ScmServer suspended and listening on debug port (default: 5005)')
+  boolean debugJvm = false
 
   @TaskAction
   void exec() {
@@ -42,15 +52,20 @@ class RunTask extends DefaultTask {
   }
 
   private Closure<Void> createBackend() {
-    def backend = project.tasks.create("boot-backend", JavaExec) {
-      main ScmServer.class.name
-      args(extension.getServerConfigurationFile(project))
-      environment "NODE_ENV", "development"
-      classpath project.buildscript.configurations.classpath
-    }
     return {
-      backend.exec()
+      project.javaexec { jes ->
+        jes.mainClass.set(ScmServer.name)
+        jes.args(extension.getServerConfigurationFile(project))
+        jes.environment("NODE_ENV", "development")
+        jes.classpath(project.buildscript.configurations.classpath)
+        jes.debug = debugJvm
+        execSpecActions.each { a -> a.execute(jes) }
+      }
     }
+  }
+
+  void execSpec(Action<JavaExecSpec> action) {
+    execSpecActions.add(action)
   }
 
   private Closure<Void> createFrontend() {

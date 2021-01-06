@@ -117,7 +117,7 @@ which should cover most of the daily work.
 
 | Name | Description |
 | ---- | ----------- |
-| run | Starts an SCM-Manager plugin with the plugin pre installed, with livereload for the ui |
+| run | Starts an SCM-Manager with the plugin pre installed and with livereload for the ui |
 | build | Executes all checks, tests and builds the smp inclusive javadoc and source jar |
 | check | Executes all registered checks and tests (java and ui) |
 | test | Run all java tests |
@@ -142,6 +142,12 @@ To see the full list of available tasks, execute the following command:
 ```bash
 ./gradlew tasks
 ```
+
+### Debugging
+
+If you want to debug the `run` task of your plugin.
+You can provide the `--debug-jvm` option, which starts the SCM-Manager jvm in debug mode.
+Then you can attach a debugger on port 5005.
 
 ## Converting from Maven
 
