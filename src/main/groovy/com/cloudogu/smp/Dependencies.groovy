@@ -154,6 +154,7 @@ class Dependencies {
 
   private static void configureRepositories(Project project) {
     project.repositories {
+      mavenLocal()
       maven {
         url "https://packages.scm-manager.org/repository/public/"
       }
