@@ -114,7 +114,7 @@ class PackagingTasks {
       prettyPrint = 'TRUE'
       classpath = project.sourceSets.main.runtimeClasspath
       resourcePackages = extension.openApiSpec.packages
-      outputDir = new File(project.buildDir, "smp/META-INF/scm")
+      outputDir = new File(project.buildDir, "smp/classes/META-INF/scm")
       skip = extension.openApiSpec.packages.isEmpty()
 
       mustRunAfter("classes")
