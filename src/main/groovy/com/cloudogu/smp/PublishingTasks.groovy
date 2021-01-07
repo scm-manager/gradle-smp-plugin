@@ -61,18 +61,25 @@ class PublishingTasks {
           }
         }
       }
-      repositories {
-        maven {
-          def releasesRepoUrl = "https://packages.scm-manager.org/repository/plugin-releases/"
-          def snapshotsRepoUrl = "https://packages.scm-manager.org/repository/plugin-snapshots/"
-          url = project.version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-          if (project.hasProperty("packagesScmManagerUsername") && project.hasProperty("packagesScmManagerPassword")) {
-            credentials {
-              username project.property("packagesScmManagerUsername")
-              password project.property("packagesScmManagerPassword")
-            }
-            authentication {
-              basic(BasicAuthentication)
+      if (extension.core) {
+        // copy repositories from root project
+        project.rootProject.publishing.repositories.each { r ->
+          project.publishing.repositories.add(r)
+        }
+      } else {
+        repositories {
+          maven {
+            def releasesRepoUrl = "https://packages.scm-manager.org/repository/plugin-releases/"
+            def snapshotsRepoUrl = "https://packages.scm-manager.org/repository/plugin-snapshots/"
+            url = project.version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            if (project.hasProperty("packagesScmManagerUsername") && project.hasProperty("packagesScmManagerPassword")) {
+              credentials {
+                username project.property("packagesScmManagerUsername")
+                password project.property("packagesScmManagerPassword")
+              }
+              authentication {
+                basic(BasicAuthentication)
+              }
             }
           }
         }
