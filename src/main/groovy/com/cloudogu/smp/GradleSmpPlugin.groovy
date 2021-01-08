@@ -31,6 +31,10 @@ class GradleSmpPlugin implements Plugin<Project> {
       options.release = 8
     }
 
+    project.compileTestJava {
+      options.release = 8
+    }
+
     def packageJson = new PackageJson(project)
     def extension = project.extensions.create("scmPlugin", SmpExtension)
 
