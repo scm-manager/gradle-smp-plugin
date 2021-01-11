@@ -47,13 +47,20 @@ class RunTasks {
       it.outputFile = extension.getServerConfigurationFile(project)
     }
 
-    project.tasks.register("run", RunTask) {
-      description = "Run SCM-Manager with the plugin installed"
-      it.extension = extension
-      it.packageJson = packageJson
-      // run always
-      outputs.upToDateWhen { false }
-      dependsOn("prepare-home", "write-server-config", "yarn_install")
+    project.afterEvaluate {
+      if (!extension.core) {
+        // We register run only on none core plugins,
+        // because core plugins should only be used from the root project.
+        project.tasks.register("run", RunTask) {
+          group = "Run"
+          description = "Run SCM-Manager with the plugin installed"
+          it.extension = extension
+          it.packageJson = packageJson
+          // run always
+          outputs.upToDateWhen { false }
+          dependsOn("prepare-home", "write-server-config", "yarn_install")
+        }
+      }
     }
   }
 
