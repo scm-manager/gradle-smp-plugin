@@ -143,6 +143,11 @@ To see the full list of available tasks, execute the following command:
 ./gradlew tasks
 ```
 
+### Artifacts and reports
+
+Artifacts and reports which are created from the tasks are stored in the build directory.
+The final smp file is located in `build/libs`.
+
 ### Debugging
 
 If you want to debug the `run` task of your plugin.
