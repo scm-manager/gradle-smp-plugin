@@ -9,7 +9,7 @@ import java.time.Instant
 class TouchFilesTask extends DefaultTask {
 
   @Input
-  File directory
+  Object directory
 
   @Input
   String extension
@@ -27,8 +27,16 @@ class TouchFilesTask extends DefaultTask {
 
   @TaskAction
   public void execute() {
-    if (directory != null && directory.exists()) {
-      touch(directory)
+    if (directory instanceof File) {
+      touchDirectory(directory)
+    } else if (directory instanceof String) {
+      touchDirectory(new File((String) directory))
+    }
+  }
+
+  private void touchDirectory(File file) {
+    if (file.exists()) {
+      touch(file)
     }
   }
 
