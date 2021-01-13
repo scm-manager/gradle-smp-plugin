@@ -101,6 +101,13 @@ class UiTasks {
   }
 
   private static void registerUITest(Project project) {
+    if (Environment.isCI()) {
+      project.tasks.register("update-ui-test-timestamp", TouchFilesTask) {
+        directory = new File(project.buildDir, "jest-reports")
+        extension = "xml"
+      }
+    }
+
     project.tasks.register("ui-test", YarnTask) {
       inputs.file("package.json")
       inputs.file( project.rootProject.file('yarn.lock') )
@@ -111,7 +118,11 @@ class UiTasks {
       args = ['run', 'test']
       ignoreExitValue = Environment.isCI()
 
-      dependsOn("yarn_install")
+      if (Environment.isCI()) {
+        dependsOn("yarn_install", "update-ui-test-timestamp")
+      } else {
+        dependsOn("yarn_install")
+      }
 
       group = LifecycleBasePlugin.VERIFICATION_GROUP
       description = "Run ui tests"
