@@ -12,7 +12,16 @@ import java.nio.charset.StandardCharsets
 
 class VersionTasks {
 
-  static void configure(Project project) {
+  static void configure(Project project, SmpExtension extension) {
+    project.afterEvaluate {
+      // we do not need tasks to set the versions of core plugins
+      if (!extension.core) {
+        register(project)
+      }
+    }
+  }
+
+  private static void register(Project project) {
     project.tasks.register("setVersion", SetVersionTask) {
       it.group = "help"
       it.description = "Set version for the plugin e.g.: setVersion --newVersion=x.y.z)"
