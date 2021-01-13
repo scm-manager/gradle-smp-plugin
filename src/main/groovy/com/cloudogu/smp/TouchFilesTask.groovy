@@ -2,14 +2,13 @@ package com.cloudogu.smp
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
 
 import java.time.Instant
 
 class TouchFilesTask extends DefaultTask {
 
-  @InputDirectory
+  @Input
   File directory
 
   @Input
@@ -28,7 +27,7 @@ class TouchFilesTask extends DefaultTask {
 
   @TaskAction
   public void execute() {
-    if (directory.exists()) {
+    if (directory != null && directory.exists()) {
       touch(directory)
     }
   }
