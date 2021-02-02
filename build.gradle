@@ -42,7 +42,7 @@ dependencies {
   implementation 'com.sun.xml.bind:jaxb-osgi:2.2.4-1'
   implementation 'com.google.guava:guava:29.0-jre'
   implementation 'org.codehaus.groovy:groovy-yaml:3.0.5'
-  implementation 'io.swagger.core.v3:swagger-gradle-plugin:2.1.4'
+  implementation 'io.swagger.core.v3:swagger-gradle-plugin:2.1.6'
   implementation 'gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.15.0'
   implementation 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
 

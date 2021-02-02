@@ -1,7 +1,10 @@
 package com.cloudogu.smp
 
+import io.swagger.v3.plugins.gradle.tasks.ResolveTask
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.DependencySet
 import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact
 import org.gradle.api.plugins.BasePlugin
@@ -63,7 +66,7 @@ class PackagingTasks {
         into "webapp"
       }
 
-      dependsOn("classes", "resolve")
+      dependsOn("classes", "openapi")
     }
 
     project.tasks.getByName("assemble").configure {
@@ -108,7 +111,19 @@ class PackagingTasks {
   }
 
   private static void registerOpenApiSpecGenerator(Project project, SmpExtension extension) {
-    project.tasks.getByName("resolve") {
+    final Configuration config = project.configurations.create("swaggerDeps")
+      .setVisible(false)
+
+    config.defaultDependencies(new Action<DependencySet>() {
+      public void execute(DependencySet dependencies) {
+        dependencies.add(project.getDependencies().create("org.apache.commons:commons-lang3:3.7"))
+        dependencies.add(project.getDependencies().create("io.swagger.core.v3:swagger-jaxrs2:2.1.6"))
+        dependencies.add(project.getDependencies().create("javax.ws.rs:javax.ws.rs-api:2.1"))
+        dependencies.add(project.getDependencies().create("javax.servlet:javax.servlet-api:3.1.0"))
+      }
+    })
+
+    project.tasks.register("openapi", ResolveTask) {
       outputFileName = 'openapi'
       outputFormat = 'JSONANDYAML'
       prettyPrint = 'TRUE'
@@ -117,6 +132,9 @@ class PackagingTasks {
       outputDir = new File(project.buildDir, "smp/classes/META-INF/scm")
       skip = extension.openApiSpec.packages.isEmpty()
 
+      setBuildClasspath(config)
+
+      dependsOn("classes")
       mustRunAfter("classes")
     }
   }
