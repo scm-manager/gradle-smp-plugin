@@ -172,6 +172,19 @@ rootProject.name = 'scm-review-plugin'
 includeBuild '../gradle-smp-plugin'
 ```
 
+If you need to include API changes from the SCM-Manager core that have not yet been released (aka your local feature branch), you have
+to build the core with the task `publishToMavenLocal`:
+
+```
+./gradlew publishToMavenLocal
+```
+
+Then, to use these changes in the plugin, use the flag `--refresh-dependencies` when you build the plugin:
+
+```
+./gradlew build --refresh-dependencies
+```
+
 ## Need help?
 
 Looking for more guidance? Full documentation lives on our [homepage](https://www.scm-manager.org/docs/) or the dedicated pages for our [plugins](https://www.scm-manager.org/plugins/). Do you have further ideas or need support?
