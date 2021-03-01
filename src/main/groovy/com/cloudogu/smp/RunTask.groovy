@@ -4,6 +4,7 @@ import com.moowork.gradle.node.yarn.YarnTask
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
@@ -16,7 +17,7 @@ class RunTask extends DefaultTask {
   @Nested
   SmpExtension extension
 
-  @Nested
+  @Internal
   PackageJson packageJson
 
   @Input

@@ -58,7 +58,10 @@ class RunTasks {
           it.packageJson = packageJson
           // run always
           outputs.upToDateWhen { false }
-          dependsOn("prepare-home", "write-server-config", "yarn_install")
+          dependsOn("prepare-home", "write-server-config")
+          if (packageJson.exists()) {
+            dependsOn("yarn_install")
+          }
         }
       }
     }
