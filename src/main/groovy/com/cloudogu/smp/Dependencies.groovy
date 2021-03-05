@@ -65,13 +65,21 @@ class Dependencies {
     // but remove the core dependencies before packaging
     // https://github.com/gradle/gradle/blob/master/subprojects/plugins/src/main/java/org/gradle/api/plugins/WarPlugin.java#L72
     ConfigurationContainer configurationContainer = project.getConfigurations()
+
+    def noCacheResolutionStrategy = {
+      cacheDynamicVersionsFor 0, "seconds"
+      cacheChangingModulesFor 0, "seconds"
+    }
+
     Configuration coreDependency = configurationContainer
       .create("scmCoreDependency")
+      .resolutionStrategy(noCacheResolutionStrategy)
       .setVisible(false)
       .setDescription("Additional classpath for libraries which are provided from scm code.")
 
     Configuration pluginDependency = configurationContainer
       .create("plugin")
+      .resolutionStrategy(noCacheResolutionStrategy)
       .setVisible(false)
       .setDescription("Plugin dependencies.")
       .extendsFrom(coreDependency)
@@ -82,6 +90,7 @@ class Dependencies {
 
     Configuration optionalPlugin = configurationContainer
       .create("optionalPlugin")
+      .resolutionStrategy(noCacheResolutionStrategy)
       .setVisible(false)
       .setDescription("Optional plugin dependencies.")
       .extendsFrom(coreDependency)
