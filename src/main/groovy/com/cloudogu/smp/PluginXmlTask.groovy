@@ -104,7 +104,8 @@ class PluginXmlTask extends DefaultTask {
           displayName(extension.displayName)
         }
         if (extension.description != null) {
-          description(extension.description)
+          // we have to use explicit 'createNode' here, because 'description()' exists as a method in task
+          createNode('description', extension.description)
         }
         if (extension.category != null) {
           category(extension.category)
