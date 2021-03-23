@@ -8,6 +8,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaLibraryPlugin
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
+import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 
 class GradleSmpPlugin implements Plugin<Project> {
@@ -26,12 +27,9 @@ class GradleSmpPlugin implements Plugin<Project> {
       }
     }
 
-    project.compileJava {
+    project.tasks.withType(JavaCompile) {
       options.release = 8
-    }
-
-    project.compileTestJava {
-      options.release = 8
+      options.encoding = 'UTF-8'
     }
 
     def packageJson = new PackageJson(project)
