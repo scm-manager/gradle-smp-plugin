@@ -1,8 +1,10 @@
 package com.cloudogu.smp
 
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.PublishArtifact
+import org.gradle.api.component.AdhocComponentWithVariants
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.authentication.http.BasicAuthentication
 import org.gradle.api.tasks.javadoc.Javadoc
@@ -27,6 +29,15 @@ class PublishingTasks {
       failOnError false
     }
 
+    // we have to add our smp artifact as variant of the java component (jar)
+    // in order to resolve the smp from a deployed gradle module file
+    AdhocComponentWithVariants javaComponent = (AdhocComponentWithVariants) project.components.findByName("java")
+    // smp configuration is defined as part of packaging tasks
+    Configuration outgoing = project.configurations.getByName("smp")
+    javaComponent.addVariantsFromConfiguration(outgoing) {
+      // we don't need any customizing here
+    }
+
     project.publishing {
       publications {
         mavenJava(MavenPublication) {
@@ -35,7 +46,6 @@ class PublishingTasks {
           version = project.version
 
           from project.components.java
-          artifact smp
 
           pom {
             packaging = "smp"
