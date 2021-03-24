@@ -28,7 +28,11 @@ class PackagingTasks {
         it.attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage, Usage.JAVA_RUNTIME))
         it.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements, "smp"))
       }
-    smpArtifacts.canBeResolved = true
+      .extendsFrom(
+        project.configurations.getByName("plugin"),
+        project.configurations.getByName("optionalPlugin")
+      )
+    smpArtifacts.canBeResolved = false
     smpArtifacts.canBeConsumed = true
 
     project.afterEvaluate {

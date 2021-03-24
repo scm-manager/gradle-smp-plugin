@@ -77,12 +77,13 @@ class Dependencies {
       .setVisible(false)
       .setDescription("Additional classpath for libraries which are provided from scm code.")
 
+    configurationContainer.getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME).extendsFrom(coreDependency)
+
     Configuration pluginDependency = configurationContainer
       .create("plugin")
       .resolutionStrategy(noCacheResolutionStrategy)
       .setVisible(false)
       .setDescription("Plugin dependencies.")
-      .extendsFrom(coreDependency)
 
     pluginDependency.canBeConsumed = true
 
@@ -93,7 +94,6 @@ class Dependencies {
       .resolutionStrategy(noCacheResolutionStrategy)
       .setVisible(false)
       .setDescription("Optional plugin dependencies.")
-      .extendsFrom(coreDependency)
 
     configurationContainer.getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME).extendsFrom(optionalPlugin)
 
@@ -106,7 +106,7 @@ class Dependencies {
       it.attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling, Bundling.EXTERNAL))
       it.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements, "smp"))
 
-      runtimeScmElements.extendsFrom(pluginDependency, optionalPlugin)
+      runtimeScmElements.extendsFrom(coreDependency, pluginDependency, optionalPlugin)
     }
   }
 
