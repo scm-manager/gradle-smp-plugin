@@ -65,6 +65,7 @@ class PluginXmlTask extends DefaultTask {
     this.pluginXml = pluginXml
   }
 
+  @Optional
   @InputFile
   @PathSensitive(PathSensitivity.RELATIVE)
   File getModuleXml() {
@@ -92,7 +93,6 @@ class PluginXmlTask extends DefaultTask {
     }
 
     def xml = new NodeBuilder()
-    def module = new XmlParser().parse(moduleXml)
 
     def output = xml.plugin {
       'scm-version'('2')
@@ -144,8 +144,11 @@ class PluginXmlTask extends DefaultTask {
       }
     }
 
-    module.each { node ->
-      output.append node
+    if (moduleXml) {
+      def module = new XmlParser().parse(moduleXml)
+      module.each { node ->
+        output.append node
+      }
     }
 
     def document = DOMBuilder.parse(new StringReader(XmlUtil.serialize(output)))
