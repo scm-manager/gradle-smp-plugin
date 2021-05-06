@@ -107,7 +107,10 @@ class PackagingTasks {
 
     project.tasks.register("plugin-xml", PluginXmlTask) {
       it.extension = extension
-      it.moduleXml = new File(project.buildDir, "classes/java/main/META-INF/scm/module.xml")
+      File moduleXml = new File(project.buildDir, "classes/java/main/META-INF/scm/module.xml")
+      if (moduleXml.exists()) {
+        it.moduleXml = moduleXml
+      }
       it.pluginXml = new File(project.buildDir, "smp/META-INF/scm/plugin.xml")
       if (packageJson.exists()) {
         it.packageJson = packageJson
