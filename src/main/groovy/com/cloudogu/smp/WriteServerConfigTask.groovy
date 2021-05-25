@@ -1,23 +1,27 @@
 package com.cloudogu.smp
 
+import groovy.json.JsonOutput
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Internal
+import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.ResolvedArtifact
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
-import groovy.json.JsonOutput
-
 
 class WriteServerConfigTask extends DefaultTask {
 
   private SmpExtension extension
   private File outputFile
-  private Closure<File> webappResolver = {
-    def coordinates = "sonia.scm:scm-webapp:${extension.scmVersion}@war"
-    def dependency = project.dependencies.create(coordinates)
-    def configuration = project.configurations.detachedConfiguration(dependency)
-    configuration.resolve()
-    return configuration.files.first()
+  private Configuration configuration
+
+  @InputFiles
+  Configuration getConfiguration() {
+    return configuration
+  }
+
+  void setConfiguration(Configuration configuration) {
+    this.configuration = configuration
   }
 
   @Nested
@@ -38,15 +42,6 @@ class WriteServerConfigTask extends DefaultTask {
     this.outputFile = outputFile
   }
 
-  @Internal
-  Closure<File> getWebappResolver() {
-    return webappResolver
-  }
-
-  void setWebappResolver(Closure<File> webappResolver) {
-    this.webappResolver = webappResolver
-  }
-
   @TaskAction
   void write() {
     File directory = outputFile.getParentFile()
@@ -58,11 +53,10 @@ class WriteServerConfigTask extends DefaultTask {
     }
 
     if (extension.serverConfiguration.warFile == null) {
-      webappResolver.delegate = {
-        it.project = project
+      ResolvedArtifact artifact = configuration.resolvedConfiguration.resolvedArtifacts.find {
+        return it.name == "scm-webapp" && it.extension == "war"
       }
-
-      extension.serverConfiguration.warFile = webappResolver.call()
+      extension.serverConfiguration.warFile = artifact.file
     }
     extension.serverConfiguration.home = extension.getScmHome(project)
 

@@ -2,6 +2,7 @@ package com.cloudogu.smp
 
 import groovy.json.JsonSlurper
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -21,6 +22,12 @@ class WriteServerConfigTaskTest {
     extension.serverConfiguration.home = directory.resolve("home")
 
     Project project = ProjectBuilder.builder().build()
+    def configuration = project.configurations.create("scmServer")
+
+    project.dependencies {
+      scmServer "sonia.scm:scm-webapp:2.0.0@war"
+    }
+
     project.repositories {
       maven {
         url "https://packages.scm-manager.org/repository/public/"
@@ -29,6 +36,7 @@ class WriteServerConfigTaskTest {
 
     def outputFile = directory.resolve("server-config.json").toFile()
     def task = project.task("write-server-config", type: WriteServerConfigTask) {
+      it.configuration = configuration
       it.extension = extension
       it.outputFile = outputFile
     }
@@ -45,8 +53,9 @@ class WriteServerConfigTaskTest {
     def home = directory.resolve("home").toString()
     extension.serverConfiguration.home = home
 
-    def webapp = directory.resolve("scm-webapp.war")
+    def webapp = directory.resolve("scm-webapp.war").toString()
     def loggingConf = directory.resolve("logging.xml").toString()
+    extension.serverConfiguration.warFile = webapp
     extension.serverConfiguration.loggingConfiguration = loggingConf
 
     Project project = ProjectBuilder.builder().build()
@@ -55,9 +64,6 @@ class WriteServerConfigTaskTest {
     def task = project.task("write-server-config", type: WriteServerConfigTask) {
       it.extension = extension
       it.outputFile = outputFile
-      it.webappResolver = {
-        return webapp.toFile()
-      }
     }
     task.write()
 
@@ -67,7 +73,7 @@ class WriteServerConfigTaskTest {
     assertThat(json["disableCorePlugins"] as boolean).isFalse()
     assertThat(json["home"]).isEqualTo(home)
     assertThat(json["headerSize"] as int).isEqualTo(16384)
-    assertThat(json["warFile"] as String).isEqualTo(webapp.toString())
+    assertThat(json["warFile"] as String).isEqualTo(webapp)
     assertThat(json["loggingConfiguration"] as String).isEqualTo(loggingConf)
     assertThat(json["stage"] as String).isEqualTo("DEVELOPMENT")
     assertThat(json["contextPath"] as String).isEqualTo("/scm")

@@ -71,6 +71,15 @@ class Dependencies {
       cacheChangingModulesFor 0, "seconds"
     }
 
+    Configuration scmServer = configurationContainer
+      .create("scmServer")
+      .resolutionStrategy(noCacheResolutionStrategy)
+      .setVisible(false)
+      .setDescription("Dependencies required to start the development environment")
+
+    scmServer.canBeResolved = true
+    scmServer.canBeConsumed = false
+
     Configuration coreDependency = configurationContainer
       .create("scmCoreDependency")
       .resolutionStrategy(noCacheResolutionStrategy)
@@ -130,6 +139,8 @@ class Dependencies {
         testImplementation "sonia.scm:scm-test:${extension.scmVersion}"
         annotationProcessor "sonia.scm:scm-annotation-processor:${extension.scmVersion}"
       }
+
+      scmServer "sonia.scm:scm-webapp:${extension.scmVersion}@war"
 
       // is provided in scm-core
       scmCoreDependency "javax.ws.rs:javax.ws.rs-api:2.1.1"
