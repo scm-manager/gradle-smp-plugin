@@ -44,6 +44,7 @@ class RunTasks {
     project.tasks.register("write-server-config", WriteServerConfigTask) {
       description = "Writes the configuration for run task"
       it.extension = extension
+      it.configuration = project.configurations.getByName("scmServer")
       it.outputFile = extension.getServerConfigurationFile(project)
     }
 
