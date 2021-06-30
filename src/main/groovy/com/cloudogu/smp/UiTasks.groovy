@@ -128,7 +128,7 @@ class UiTasks {
       description = "Run ui tests"
     }
 
-    project.tasks.getByName("check").configure {
+    project.tasks.getByName("test").configure {
       dependsOn("ui-test")
     }
   }

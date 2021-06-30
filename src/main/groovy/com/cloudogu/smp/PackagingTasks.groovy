@@ -95,6 +95,7 @@ class PackagingTasks {
       it.pluginVersion = project.version
 
       dependsOn("smp")
+      mustRunAfter("smp")
     }
 
     new LazyPublishArtifact(smp)
