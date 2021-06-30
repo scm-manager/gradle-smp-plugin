@@ -6,6 +6,7 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.component.AdhocComponentWithVariants
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.authentication.http.BasicAuthentication
 import org.gradle.api.tasks.javadoc.Javadoc
 
@@ -28,6 +29,13 @@ class PublishingTasks {
     project.tasks.withType(Javadoc) {
       failOnError false
     }
+
+    // ensure release-yaml is generate before artifact is published
+    // to be sure that the checksum is correct
+    project.tasks.withType(AbstractPublishToMaven) { 
+      it.dependsOn "release-yaml"
+    }
+
 
     // we have to add our smp artifact as variant of the java component (jar)
     // in order to resolve the smp from a deployed gradle module file

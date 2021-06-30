@@ -71,7 +71,7 @@ class UiTasksTest {
 
   @Test
   void shouldRegisterUiTestTask() {
-    project.tasks.register('check')
+    project.tasks.register('test')
     new File(directory, 'package.json') << '''
     {
       "scripts": {
