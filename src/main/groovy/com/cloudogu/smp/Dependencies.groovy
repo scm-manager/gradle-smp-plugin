@@ -17,8 +17,10 @@ class Dependencies {
       .getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath()
     Configuration plugins = project.getConfigurations().getByName("plugin")
     Configuration optionalPlugin = project.getConfigurations().getByName("optionalPlugin")
+    Configuration coreDependencies = project.getConfigurations().getByName("scmCoreDependency")
     runtimeClasspath -= plugins
-    runtimeClasspath - optionalPlugin
+    runtimeClasspath -= optionalPlugin
+    runtimeClasspath - coreDependencies
   }
 
   static Set<Dependency> runtimeDependencies(Project project) {
