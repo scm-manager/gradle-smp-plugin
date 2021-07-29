@@ -107,17 +107,15 @@ class PackagingTasks {
     }
 
     project.tasks.register("plugin-xml", PluginXmlTask) {
-      it.extension = extension
-      File moduleXml = new File(project.buildDir, "classes/java/main/META-INF/scm/module.xml")
-      if (moduleXml.exists()) {
-        it.moduleXml = moduleXml
-      }
-      it.pluginXml = new File(project.buildDir, "smp/META-INF/scm/plugin.xml")
-      if (packageJson.exists()) {
-        it.packageJson = packageJson
-      }
-      it.pluginName = extension.getName(project)
-      it.pluginVersion = project.version
+      it.extension.set(extension)
+      it.moduleXml.set(project.layout.buildDirectory.file("classes/java/main/META-INF/scm/module.xml").map({ f ->
+        if (f.asFile.exists()) {
+          return f
+        }
+        return null
+      }))
+      it.pluginXml.set(project.layout.buildDirectory.file("smp/META-INF/scm/plugin.xml"))
+      it.packageJson.set(packageJson.exists() ? packageJson : null)
 
       it.mustRunAfter("compileJava")
     }

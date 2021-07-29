@@ -47,13 +47,13 @@ class PluginXmlTaskTest {
     optionalPluginConfiguration.dependencies.add(project.dependencies.create("sonia.scm.plugins:scm-editor-plugin:2.0.0"))
     optionalPluginConfiguration.dependencies.add(project.dependencies.create("sonia.scm.plugins:scm-landingpage-plugin:1.0.0"))
 
+    project.setProperty("version", "2.4.0")
     def task = project.task("plugin-xml", type: PluginXmlTask) {
-      it.extension = extension
-      it.moduleXml = moduleXml
-      it.pluginXml = pluginXml
-      it.packageJson = new PackageJson(packageJson)
-      it.pluginName = "scm-sample-plugin"
-      it.pluginVersion = "2.4.0"
+      it.extension.set(extension)
+      it.moduleXml.set(moduleXml)
+      it.pluginXml.set(pluginXml)
+      it.packageJson.set(new PackageJson(packageJson))
+      it.pluginName.set("scm-sample-plugin")
     }
     task.write()
 
@@ -99,13 +99,13 @@ class PluginXmlTaskTest {
     Project project = ProjectBuilder.builder().build()
     project.configurations.create("plugin")
     project.configurations.create("optionalPlugin")
+    project.setProperty("version", "2.4.0")
     def task = project.task("plugin-xml", type: PluginXmlTask) {
-      it.extension = extension
-      it.moduleXml = moduleXml
-      it.pluginXml = pluginXml
-      it.packageJson = new PackageJson(packageJson)
-      it.pluginName = "scm-sample-plugin"
-      it.pluginVersion = "2.4.0"
+      it.extension.set(extension)
+      it.moduleXml.set(moduleXml)
+      it.pluginXml.set(pluginXml)
+      it.packageJson.set(new PackageJson(packageJson))
+      it.pluginName.set("scm-sample-plugin")
     }
     task.write()
 

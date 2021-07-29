@@ -3,7 +3,12 @@ package com.cloudogu.smp
 import groovy.xml.DOMBuilder
 import groovy.xml.XmlUtil
 import org.gradle.api.DefaultTask
+import org.gradle.api.artifacts.Configuration
+import org.gradle.api.file.RegularFile
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
+import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Optional
@@ -21,131 +26,107 @@ import javax.xml.transform.stream.StreamResult
 @CacheableTask
 class PluginXmlTask extends DefaultTask {
 
-  private SmpExtension extension
-  private File moduleXml
-  private File pluginXml
-  private PackageJson packageJson
-
-  private String pluginName
-  private String pluginVersion
-
-  @Input
-  String getPluginVersion() {
-    return pluginVersion
-  }
-
-  void setPluginVersion(String pluginVersion) {
-    this.pluginVersion = pluginVersion
-  }
-
-  @Input
-  String getPluginName() {
-    return pluginName
-  }
-
-  void setPluginName(String pluginName) {
-    this.pluginName = pluginName
-  }
-
   @Nested
-  SmpExtension getExtension() {
-    return extension
-  }
-
-  void setExtension(SmpExtension extension) {
-    this.extension = extension
-  }
-
-  @OutputFile
-  File getPluginXml() {
-    return pluginXml
-  }
-
-  void setPluginXml(File pluginXml) {
-    this.pluginXml = pluginXml
-  }
+  final Property<SmpExtension> extension = project.objects.property(SmpExtension)
 
   @Optional
   @InputFile
   @PathSensitive(PathSensitivity.RELATIVE)
-  File getModuleXml() {
-    return moduleXml
-  }
-
-  void setModuleXml(File moduleXml) {
-    this.moduleXml = moduleXml
-  }
+  final RegularFileProperty moduleXml = project.objects.fileProperty()
 
   @Nested
   @Optional
-  PackageJson getPackageJson() {
-    return packageJson
+  final Property<PackageJson> packageJson = project.objects.property(PackageJson)
+
+  @Input
+  final Property<String> pluginName = project.objects.property(String).convention(extension.map({ ext ->
+    ext.getName(project)
+  }))
+
+  @Input
+  final String getPluginVersion() {
+    project.version.toString()
   }
 
-  void setPackageJson(PackageJson packageJson) {
-    this.packageJson = packageJson
+  @Classpath
+  final Configuration getPluginDependencies() {
+    project.configurations.getByName("plugin")
   }
+
+  @Classpath
+  final Configuration getOptionalPluginDependencies() {
+    project.configurations.getByName("optionalPlugin")
+  }
+
+  @OutputFile
+  final RegularFileProperty pluginXml = project.objects.fileProperty()
 
   @TaskAction
   void write() {
-    if (!pluginXml.getParentFile().exists()) {
-      pluginXml.getParentFile().mkdirs()
+    File pluginXmlFile = pluginXml.get().getAsFile()
+    if (!pluginXmlFile.getParentFile().exists()) {
+      pluginXmlFile.getParentFile().mkdirs()
     }
 
+    PackageJson pkgJson = packageJson.getOrNull()
+
     def xml = new NodeBuilder()
+    SmpExtension ext = extension.get()
+
+    RegularFile moduleXmlFile = moduleXml.getOrNull();
 
     def output = xml.plugin {
       'scm-version'('2')
       information {
-        name(pluginName)
+        createNode('name', pluginName.get())
         version(pluginVersion)
 
-        if (extension.displayName != null) {
-          displayName(extension.displayName)
+        if (ext.displayName != null) {
+          displayName(ext.displayName)
         }
-        if (extension.description != null) {
+        if (ext.description != null) {
           // we have to use explicit 'createNode' here, because 'description()' exists as a method in task
-          createNode('description', extension.description)
+          createNode('description', ext.description)
         }
-        if (extension.category != null) {
-          category(extension.category)
+        if (ext.category != null) {
+          category(ext.category)
         }
-        if (extension.author != null) {
-          author(extension.author)
+        if (ext.author != null) {
+          author(ext.author)
         }
-        if (extension.avatarUrl != null) {
-          avatarUrl(extension.avatarUrl)
+        if (ext.avatarUrl != null) {
+          avatarUrl(ext.avatarUrl)
         }
       }
       conditions {
-        'min-version'(extension.scmVersion)
-        if (extension.pluginConditions.os != null) {
-          os(extension.pluginConditions.os)
+        'min-version'(ext.scmVersion)
+        if (ext.pluginConditions.os != null) {
+          os(ext.pluginConditions.os)
         }
-        if (extension.pluginConditions.arch != null) {
-          arch(extension.pluginConditions.arch)
+        if (ext.pluginConditions.arch != null) {
+          arch(ext.pluginConditions.arch)
         }
       }
       resources {
-        if (packageJson != null && packageJson.hasScript('build')) {
-          script("assets/${pluginName}.bundle.js")
+        if (pkgJson != null && pkgJson.hasScript('build')) {
+          script("assets/${pluginName.get()}.bundle.js")
         }
       }
       // we use name/artifactid as dependency
       dependencies {
-        project.configurations.getByName("plugin").dependencies.forEach { dep ->
+        pluginDependencies.dependencies.forEach { dep ->
           dependency(version: dep.version, dep.name)
         }
       }
       'optional-dependencies' {
-        project.configurations.getByName("optionalPlugin").dependencies.forEach { dep ->
+        optionalPluginDependencies.dependencies.forEach { dep ->
           dependency(version: dep.version, dep.name)
         }
       }
     }
 
-    if (moduleXml) {
-      def module = new XmlParser().parse(moduleXml)
+    if (moduleXmlFile != null) {
+      def module = new XmlParser().parse(moduleXmlFile.getAsFile())
       module.each { node ->
         output.append node
       }
@@ -156,7 +137,7 @@ class PluginXmlTask extends DefaultTask {
       setOutputProperty(OutputKeys.INDENT, 'yes')
       setOutputProperty(OutputKeys.STANDALONE, 'no')
 
-      transform(new DOMSource(document), new StreamResult(pluginXml))
+      transform(new DOMSource(document), new StreamResult(pluginXmlFile))
     }
   }
 }
