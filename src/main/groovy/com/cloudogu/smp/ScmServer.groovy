@@ -37,6 +37,9 @@ final class ScmServer {
     info("set stage %s", configuration.stage)
     System.setProperty("scm.stage", configuration.stage)
 
+    // skip first start user creation wizard
+    System.setProperty("scm.initialPassword", "scmadmin")
+
     server = new Server()
     server.addConnector(createServerConnector(server))
     server.setHandler(createScmContext())
