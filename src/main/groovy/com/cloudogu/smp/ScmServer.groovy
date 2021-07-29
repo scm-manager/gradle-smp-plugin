@@ -24,6 +24,12 @@ final class ScmServer {
   void start() throws Exception {
     info("start scm-server at port %s", configuration.port)
 
+    // gradle has xerces on it classpath, which breaks our annotation processor
+    // so we force jdk build in for now
+    // @see https://stackoverflow.com/questions/53299280/java-and-xerces-cant-find-property-xmlconstants-access-external-dtd
+    System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
+      "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl")
+
     System.setProperty("scm.home", configuration.home)
     if (configuration.disableCorePlugins) {
       info("disable core plugin extraction")
