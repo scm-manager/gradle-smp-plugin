@@ -157,10 +157,10 @@ class Dependencies {
 
 
       // register annotation processors
+      annotationProcessor 'org.projectlombok:lombok:1.18.12'
       annotationProcessor 'com.cloudogu.jaxrs-tie:jaxrs-tie:1.0.4'
       annotationProcessor 'com.cloudogu.conveyor:conveyor:1.0.0'
       annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.1.Final'
-      annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
       // resteasy test dependencies
       testImplementation "org.jboss.resteasy:resteasy-core:4.5.3.Final"
