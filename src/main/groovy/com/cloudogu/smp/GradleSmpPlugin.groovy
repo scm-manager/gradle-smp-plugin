@@ -20,6 +20,7 @@ class GradleSmpPlugin implements Plugin<Project> {
 
     project.plugins.apply(JavaLibraryPlugin)
     project.plugins.apply(MavenPublishPlugin)
+    project.plugins.apply(com.cloudogu.changelog.GradlePlugin)
 
     project.java {
       toolchain {

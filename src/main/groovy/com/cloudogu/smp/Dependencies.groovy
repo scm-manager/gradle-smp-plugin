@@ -152,9 +152,15 @@ class Dependencies {
       scmCoreDependency 'org.projectlombok:lombok:1.18.12'
       scmCoreDependency 'org.mapstruct:mapstruct-jdk8:1.3.1.Final'
 
+      scmCoreDependency 'com.cloudogu.conveyor:conveyor:1.0.0'
+      scmCoreDependency 'com.cloudogu.jaxrs-tie:jaxrs-tie:1.0.4'
+
+
       // register annotation processors
-      annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.1.Final'
       annotationProcessor 'org.projectlombok:lombok:1.18.12'
+      annotationProcessor 'com.cloudogu.jaxrs-tie:jaxrs-tie:1.0.4'
+      annotationProcessor 'com.cloudogu.conveyor:conveyor:1.0.0'
+      annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.1.Final'
 
       // resteasy test dependencies
       testImplementation "org.jboss.resteasy:resteasy-core:4.5.3.Final"
