@@ -153,7 +153,7 @@ class Dependencies {
       scmCoreDependency 'org.mapstruct:mapstruct-jdk8:1.3.1.Final'
 
       scmCoreDependency 'com.cloudogu.conveyor:conveyor:1.0.0'
-      scmCoreDependency 'com.cloudogu.jaxrs-tie:jaxrs-tie:1.0.4'
+      scmCoreDependency 'com.cloudogu.jaxrs-tie:jaxrs-tie:1.0.5'
 
 
       // register annotation processors
