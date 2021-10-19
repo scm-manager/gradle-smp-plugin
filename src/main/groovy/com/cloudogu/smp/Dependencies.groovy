@@ -158,7 +158,7 @@ class Dependencies {
 
       // register annotation processors
       annotationProcessor 'org.projectlombok:lombok:1.18.12'
-      annotationProcessor 'com.cloudogu.jaxrs-tie:jaxrs-tie:1.0.4'
+      annotationProcessor 'com.cloudogu.jaxrs-tie:jaxrs-tie:1.0.5'
       annotationProcessor 'com.cloudogu.conveyor:conveyor:1.0.0'
       annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.1.Final'
 
