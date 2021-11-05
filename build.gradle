@@ -23,9 +23,9 @@ plugins {
 }
 
 repositories {
-  // Use jcenter for resolving dependencies.
+  // Use maven central for resolving dependencies.
   // You can declare any Maven/Ivy/file repository here.
-  jcenter()
+  mavenCentral()
 
   maven {
     url 'https://plugins.gradle.org/m2/'
@@ -43,7 +43,7 @@ dependencies {
   implementation 'com.google.guava:guava:29.0-jre'
   implementation 'org.codehaus.groovy:groovy-yaml:3.0.5'
   implementation 'io.swagger.core.v3:swagger-gradle-plugin:2.1.6'
-  implementation 'gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.15.0'
+  implementation 'gradle.plugin.org.cadixdev.gradle:licenser:0.6.1'
   implementation 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
   implementation 'org.scm-manager.changelog:gradle-plugin:0.1.5'
 

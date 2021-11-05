@@ -35,7 +35,7 @@ class LicenseTasksTest {
     }
 
     assertThat(tasks).contains(
-      "license", "licenseBuild", "licenseUI", "licenseMain", "licenseTest"
+      "license", "checkLicenses", "checkLicenseCustomUi", "checkLicenseCustomGradle"
     )
   }
 

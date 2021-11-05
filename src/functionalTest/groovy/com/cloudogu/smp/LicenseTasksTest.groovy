@@ -40,7 +40,10 @@ class LicenseTasksTest {
     content "settings.gradle", """
      /*
       * Awesome License
-      */"""
+      */
+      
+      // nothing to setup
+      """
     content "build.gradle", """
      /*
       * Awesome License
@@ -62,7 +65,7 @@ class LicenseTasksTest {
   @ValueSource(strings = ["src/main/java/Main.java", "src/test/java/MainTest.java", "src/main/js/index.ts"])
   void shouldNotFail(String filePath) {
     content "gradle.properties", """
-    # 
+    #
     # Cool License
     #
     
@@ -72,7 +75,10 @@ class LicenseTasksTest {
     content "settings.gradle", """
      /*
       * Cool License
-      */"""
+      */
+      
+      // nothing to configure
+      """
     content "build.gradle", """
      /*
       * Cool License
@@ -86,6 +92,8 @@ class LicenseTasksTest {
      /*
       * Cool License
       */
+
+      // ...
       """
 
     def result = runner.build()

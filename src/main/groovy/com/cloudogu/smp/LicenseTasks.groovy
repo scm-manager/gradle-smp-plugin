@@ -1,6 +1,5 @@
 package com.cloudogu.smp
 
-import com.hierynomus.gradle.license.tasks.LicenseCheck
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
@@ -10,7 +9,7 @@ class LicenseTasks {
   static void configure(Project project) {
     File licenseFile = new File(project.rootDir, "LICENSE.txt")
     if (licenseFile.exists()) {
-      project.plugins.apply("com.github.hierynomus.license")
+      project.plugins.apply("org.cadixdev.licenser")
       configureTasks(project, licenseFile)
     } else {
       project.tasks.register("license", LicenseFileMissingTask) {
@@ -20,38 +19,17 @@ class LicenseTasks {
   }
 
   private static void configureTasks(Project project, File licenseFile) {
-    project.tasks.register("licenseBuild", LicenseCheck) {
-      source = project.fileTree(dir: ".").include("build.gradle", "settings.gradle", "gradle.properties")
-      enabled = true
-    }
-
-    project.tasks.register("licenseUI", LicenseCheck) {
-      source = project.fileTree(dir: "src/main/js")
-      enabled = true
-    }
-
-    project.tasks.getByName("licenseMain").configure {
-      enabled = true
-    }
-
-    project.tasks.getByName("licenseTest").configure {
-      enabled = true
-    }
-
-    project.tasks.getByName("license").configure {
-      dependsOn("licenseBuild", "licenseUI")
-      enabled = true
+    project.tasks.register("license") {
+      dependsOn 'checkLicenses'
     }
 
     project.license {
       header licenseFile
-      strictCheck true
 
-      mapping {
-        tsx = 'SLASHSTAR_STYLE'
-        ts = 'SLASHSTAR_STYLE'
-        java = 'SLASHSTAR_STYLE'
-        gradle = 'SLASHSTAR_STYLE'
+      style {
+        tsx = 'BLOCK_COMMENT'
+        ts = 'BLOCK_COMMENT'
+        js = 'BLOCK_COMMENT'
       }
 
       exclude "**/*.mustache"
@@ -60,6 +38,15 @@ class LicenseTasks {
       exclude "**/mockito-extensions/*"
       exclude "**/*.txt"
       exclude "**/*.md"
+
+      tasks {
+        gradle {
+          files.from("build.gradle", "settings.gradle", "gradle.properties")
+        }
+        ui {
+          files.from("src/main/js")
+        }
+      }
     }
   }
 
