@@ -1,6 +1,6 @@
 package com.cloudogu.smp
 
-import com.moowork.gradle.node.yarn.YarnTask
+import com.moowork.gradle.node.task.NodeTask
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
@@ -37,7 +37,7 @@ class RunTask extends DefaultTask {
 
   @TaskAction
   void exec() {
-    List<Closure<Void>> actions = new ArrayList<>();
+    List<Closure<Void>> actions = new ArrayList<>()
     actions.add(createBackend())
     if (packageJson.hasScript("watch")) {
       actions.add(createFrontend())
@@ -91,7 +91,7 @@ class RunTask extends DefaultTask {
     if (!home.exists()) {
       home.mkdirs()
     }
-    def frontend = project.tasks.create("boot-frontend", YarnTask) {
+    def frontend = project.tasks.create("boot-frontend", NodeTask) {
       args = ['run', 'watch']
       environment = [
         "BUNDLE_OUTPUT": home.absolutePath,
