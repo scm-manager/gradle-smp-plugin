@@ -57,7 +57,7 @@ class ValidatePluginsJsonTask extends DefaultTask {
     }
   }
 
-  private static void validateJson(File file) {
+  void validateJson(File file) {
     try {
       // we use pretty print of validation,
       // because of https://stackoverflow.com/a/48470335/579777
