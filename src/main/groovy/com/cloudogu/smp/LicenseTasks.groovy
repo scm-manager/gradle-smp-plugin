@@ -9,7 +9,7 @@ class LicenseTasks {
   static void configure(Project project) {
     File licenseFile = new File(project.rootDir, "LICENSE.txt")
     if (licenseFile.exists()) {
-      project.plugins.apply("org.cadixdev.licenser")
+      project.plugins.apply("org.scm-manager.license")
       configureTasks(project, licenseFile)
     } else {
       project.tasks.register("license", LicenseFileMissingTask) {
@@ -25,12 +25,8 @@ class LicenseTasks {
 
     project.license {
       header licenseFile
-
-      style {
-        tsx = 'BLOCK_COMMENT'
-        ts = 'BLOCK_COMMENT'
-        js = 'BLOCK_COMMENT'
-      }
+      newLine = true
+      ignoreNewLine = true
 
       exclude "**/*.mustache"
       exclude "**/*.json"
