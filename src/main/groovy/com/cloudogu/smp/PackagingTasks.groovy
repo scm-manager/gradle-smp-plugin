@@ -76,6 +76,7 @@ class PackagingTasks {
         into "webapp"
       }
       from("build/smp")
+      from("build/openapi")
       from("src/main/webapp") {
         into "webapp"
       }
@@ -145,7 +146,7 @@ class PackagingTasks {
       prettyPrint = 'TRUE'
       classpath = project.sourceSets.main.runtimeClasspath
       resourcePackages = extension.openApiSpec.packages
-      outputDir = new File(project.buildDir, "smp/classes/META-INF/scm")
+      outputDir = new File(project.buildDir, "openapi/classes/META-INF/scm")
       skip = extension.openApiSpec.packages.isEmpty()
 
       setBuildClasspath(config)
