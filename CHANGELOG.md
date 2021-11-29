@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Broken publishing
 
+### Changed
+- Downgrade Gradle to 6.7.1 to be compatible with Gradle 6.7 and 6.8
+
 ## 0.10.0 - 2021-11-25
 ### Added
 - Support for gradle 7
