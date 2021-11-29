@@ -7,6 +7,7 @@ import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.component.AdhocComponentWithVariants
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
+import org.gradle.api.publish.tasks.GenerateModuleMetadata
 import org.gradle.authentication.http.BasicAuthentication
 import org.gradle.api.tasks.javadoc.Javadoc
 
@@ -44,6 +45,13 @@ class PublishingTasks {
     Configuration outgoing = project.configurations.getByName("smp")
     javaComponent.addVariantsFromConfiguration(outgoing) {
       // we don't need any customizing here
+    }
+
+    // suppress enforced-platform error on gradle 7.3
+    project.tasks.withType(GenerateModuleMetadata).configureEach {
+      // The value 'enforced-platform' is provided in the validation
+      // error message you got
+      suppressedValidationErrors.add('enforced-platform')
     }
 
     project.publishing {
