@@ -1,5 +1,8 @@
 package com.cloudogu.smp
 
+import com.google.common.base.CharMatcher
+import com.google.common.base.Splitter
+import com.moowork.gradle.node.task.NodeTask
 import com.moowork.gradle.node.yarn.YarnTask
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
@@ -37,7 +40,7 @@ class RunTask extends DefaultTask {
 
   @TaskAction
   void exec() {
-    List<Closure<Void>> actions = new ArrayList<>();
+    List<Closure<Void>> actions = new ArrayList<>()
     actions.add(createBackend())
     if (packageJson.hasScript("watch")) {
       actions.add(createFrontend())
@@ -78,6 +81,7 @@ class RunTask extends DefaultTask {
         }
         execSpecActions.each { a -> a.execute(jes) }
       }
+      return null
     }
   }
 
@@ -91,13 +95,32 @@ class RunTask extends DefaultTask {
     if (!home.exists()) {
       home.mkdirs()
     }
-    def frontend = project.tasks.create("boot-frontend", YarnTask) {
-      args = ['run', 'watch']
-      environment = [
-        "BUNDLE_OUTPUT": home.absolutePath,
-        "NODE_ENV"     : "development"
-      ]
+
+    def env = [
+      "BUNDLE_OUTPUT": home.absolutePath,
+      "NODE_ENV"     : "development"
+    ]
+
+    def frontend
+    def script = packageJson.getScript("watch").orElseThrow({ ->
+      new IllegalStateException("could not find watch script in package.json")
+    })
+    // we call the plugin scripts directly, to avoid stop problems with yarn on windows
+    if (script.startsWith("plugin-scripts")) {
+      def args = Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().trimResults().splitToList(script)
+      frontend = project.tasks.create("boot-frontend", NodeTask) {
+        it.script = new File(project.projectDir, "node_modules/@scm-manager/plugin-scripts/bin/plugin-scripts.js")
+        it.args = args.subList(1, args.size())
+        it.environment = env
+      }
+    } else {
+      // if we not use plugin-scripts for our watch script we fallback to start it with yarn
+      frontend = project.tasks.create("boot-frontend", YarnTask) {
+        it.args = ['run', 'watch']
+        it.environment = env
+      }
     }
+
     return {
       frontend.exec()
     }
