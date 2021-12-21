@@ -102,9 +102,9 @@ class RunTask extends DefaultTask {
     ]
 
     def frontend
-    def script = packageJson.getScript("watch").orElseThrow(
-      () -> new IllegalStateException("could not find watch script in package.json")
-    )
+    def script = packageJson.getScript("watch").orElseThrow({ ->
+      new IllegalStateException("could not find watch script in package.json")
+    })
     // we call the plugin scripts directly, to avoid stop problems with yarn on windows
     if (script.startsWith("plugin-scripts")) {
       def args = Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().trimResults().splitToList(script)
