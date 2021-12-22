@@ -27,6 +27,7 @@ class LicenseTasks {
       header licenseFile
       newLine = true
       ignoreNewLine = true
+      lineEnding = "\n"
 
       exclude "**/*.mustache"
       exclude "**/*.json"
