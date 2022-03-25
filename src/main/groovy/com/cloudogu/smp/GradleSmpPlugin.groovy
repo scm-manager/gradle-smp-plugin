@@ -29,7 +29,7 @@ class GradleSmpPlugin implements Plugin<Project> {
     }
 
     project.tasks.withType(JavaCompile) {
-      options.release = 8
+      options.release = 11
       options.encoding = 'UTF-8'
     }
 
