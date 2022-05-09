@@ -3,7 +3,6 @@ package com.cloudogu.smp
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -33,7 +32,7 @@ class CopyPluginsTask extends DefaultTask {
       .findAll {
         it.extension == "smp"
       }
-      .collectEntries { [(it.file.name): withoutVersion(it)] } as Map<String, String>
+      .collectEntries { [(it.file.name): it.name + '.smp'] } as Map<String, String>
   }
 
   @TaskAction
@@ -43,7 +42,7 @@ class CopyPluginsTask extends DefaultTask {
       throw new GradleException("failed to create plugin directory: " + directory);
     }
     def withoutVersion = lookup.get()
-    project.sync {
+    project.copy {
       into(directory)
       from(configuration) {
         include('*.smp')
@@ -53,9 +52,4 @@ class CopyPluginsTask extends DefaultTask {
       }
     }
   }
-
-  private static String withoutVersion(ResolvedArtifact artifact) {
-    artifact.name + '.smp'
-  }
-
 }
