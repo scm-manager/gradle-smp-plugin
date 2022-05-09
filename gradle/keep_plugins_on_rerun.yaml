@@ -1,0 +1,2 @@
+- type: fixed
+  description: Keep plugins on rerun ([#14](https://github.com/scm-manager/gradle-smp-plugin/pull/14))
