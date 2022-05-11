@@ -22,6 +22,9 @@ class GradleSmpPlugin implements Plugin<Project> {
     project.plugins.apply(MavenPublishPlugin)
     project.plugins.apply(com.cloudogu.changelog.GradlePlugin)
 
+    def extension = project.extensions.create("scmPlugin", SmpExtension, project)
+    def jvmVersion = extension.scmVersion.map(v -> v.equals("2.29.0") ? 8 : 11)
+
     project.java {
       toolchain {
         languageVersion = JavaLanguageVersion.of(11)
@@ -29,12 +32,11 @@ class GradleSmpPlugin implements Plugin<Project> {
     }
 
     project.tasks.withType(JavaCompile) {
-      options.release = 8
+      options.release = jvmVersion
       options.encoding = 'UTF-8'
     }
 
     def packageJson = new PackageJson(project)
-    def extension = project.extensions.create("scmPlugin", SmpExtension)
 
     AnalysisTasks.configure(project, extension, packageJson)
     DoctorTasks.configure(project, extension, packageJson)

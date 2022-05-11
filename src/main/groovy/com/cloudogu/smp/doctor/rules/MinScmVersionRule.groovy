@@ -50,7 +50,7 @@ class MinScmVersionRule implements Rule {
     Collections.sort(plugins)
 
     Plugin pluginWithHighestMinVersion = plugins.last()
-    VersionNumber currentVersion = VersionNumber.parse(context.extension.scmVersion)
+    VersionNumber currentVersion = VersionNumber.parse(context.extension.getScmVersion().get())
     if (currentVersion.compareTo(pluginWithHighestMinVersion.version) < 0) {
       String message = String.format(
         ERROR_MIN_VERSION, currentVersion, pluginWithHighestMinVersion.name, pluginWithHighestMinVersion.version

@@ -122,6 +122,8 @@ class Dependencies {
   }
 
   private static void configureDependencies(Project project, SmpExtension extension) {
+    String scmVersion = extension.scmVersion.get()
+
     // gradle has xerces on it classpath, which breaks our annotation processor
     // so we force jdk build in for now
     // @see https://stackoverflow.com/questions/53299280/java-and-xerces-cant-find-property-xmlconstants-access-external-dtd
@@ -136,10 +138,10 @@ class Dependencies {
         scmCoreDependency project.project(':scm-test')
         annotationProcessor project.project(':scm-annotation-processor')
       } else {
-        scmCoreDependency enforcedPlatform("sonia.scm:scm:${extension.scmVersion}")
-        scmCoreDependency "sonia.scm:scm-core:${extension.scmVersion}"
-        testImplementation "sonia.scm:scm-test:${extension.scmVersion}"
-        annotationProcessor "sonia.scm:scm-annotation-processor:${extension.scmVersion}"
+        scmCoreDependency enforcedPlatform("sonia.scm:scm:${scmVersion}")
+        scmCoreDependency "sonia.scm:scm-core:${scmVersion}"
+        testImplementation "sonia.scm:scm-test:${scmVersion}"
+        annotationProcessor "sonia.scm:scm-annotation-processor:${scmVersion}"
       }
 
       scmServer "sonia.scm:scm-webapp:${extension.scmVersion}@war"

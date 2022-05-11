@@ -1,14 +1,15 @@
 package com.cloudogu.smp
 
 import org.gradle.api.Project
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
 
-class SmpExtension implements Serializable {
+abstract class SmpExtension implements Serializable {
 
   @Input
-  String scmVersion = "2.0.0"
+  final Property<String> scmVersion
 
   @Input
   String group = "sonia.scm.plugins"
@@ -51,6 +52,10 @@ class SmpExtension implements Serializable {
 
   @Nested
   ScmServerConfiguration serverConfiguration = new ScmServerConfiguration()
+
+  SmpExtension(Project project) {
+    this.scmVersion = project.objects.property(String).convention("2.0.0")
+  }
 
   def conditions(Closure<Void> closure) {
     closure.delegate = pluginConditions
