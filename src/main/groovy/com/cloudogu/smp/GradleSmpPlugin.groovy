@@ -13,6 +13,20 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion
 
 class GradleSmpPlugin implements Plugin<Project> {
 
+  int determineJavaVersion(String version) {
+    String[] versionParts = version.split("\\.")
+    if (versionParts.length < 2) {
+      return 8
+    }
+    def majorVersion = versionParts[0] as int
+    def minorVersion = versionParts[1] as int
+    if (majorVersion == 2 && minorVersion < 35) {
+      return 8
+    } else {
+      return 11
+    }
+  }
+
   void apply(Project project) {
     if (!project.version?.trim() || "unspecified".equals(project.version) ) {
       throw new GradleException("version is missing in gradle.properties")
@@ -23,7 +37,7 @@ class GradleSmpPlugin implements Plugin<Project> {
     project.plugins.apply(com.cloudogu.changelog.GradlePlugin)
 
     def extension = project.extensions.create("scmPlugin", SmpExtension, project)
-    def jvmVersion = extension.scmVersion.map(v -> v.equals("2.29.0") ? 8 : 11)
+    def jvmVersion = extension.scmVersion.map(v -> determineJavaVersion(v))
 
     project.java {
       toolchain {
