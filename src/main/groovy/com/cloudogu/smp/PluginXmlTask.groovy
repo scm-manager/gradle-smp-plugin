@@ -99,7 +99,7 @@ class PluginXmlTask extends DefaultTask {
         }
       }
       conditions {
-        'min-version'(ext.scmVersion)
+        'min-version'(ext.scmVersion.get())
         if (ext.pluginConditions.os != null) {
           os(ext.pluginConditions.os)
         }
