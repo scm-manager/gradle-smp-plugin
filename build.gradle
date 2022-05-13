@@ -45,7 +45,7 @@ dependencies {
   implementation 'io.swagger.core.v3:swagger-gradle-plugin:2.1.6'
   implementation 'org.scm-manager:gradle-license-plugin:0.7.1'
   implementation 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
-  implementation 'org.scm-manager.changelog:gradle-plugin:0.1.6'
+  implementation 'org.scm-manager.changelog:gradle-plugin:0.1.7'
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
   testImplementation 'org.junit.jupiter:junit-jupiter-params:5.7.0'
