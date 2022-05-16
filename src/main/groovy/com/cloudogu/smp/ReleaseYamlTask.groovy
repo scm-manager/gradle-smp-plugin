@@ -94,7 +94,7 @@ class ReleaseYamlTask extends DefaultTask {
         optionalDependencies optionalPluginDeps
       }
       conditions {
-        minVersion extension.scmVersion
+        minVersion extension.getScmVersion().get()
         if (extension.pluginConditions.os != null) {
           os extension.pluginConditions.os
         }
