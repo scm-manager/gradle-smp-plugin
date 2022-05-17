@@ -8,7 +8,7 @@ import com.cloudogu.smp.doctor.Rule
 class UiPluginsVersionRule extends PackageJsonRule {
   @Override
   Result validate(Context context, PackageJson packageJson) {
-    String extensionVersion = context.getExtension().getScmVersion()
+    String extensionVersion = context.getExtension().getScmVersion().get()
     String uiPluginsVersion = packageJson.getDependencyVersion("@scm-manager/ui-plugins")
       if (uiPluginsVersion != null) {
         if (extensionVersion.equals(uiPluginsVersion)) {

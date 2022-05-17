@@ -37,7 +37,7 @@ class GradleSmpPlugin implements Plugin<Project> {
     project.plugins.apply(com.cloudogu.changelog.GradlePlugin)
 
     def extension = project.extensions.create("scmPlugin", SmpExtension, project)
-    def jvmVersion = extension.scmVersion.map(v -> determineJavaVersion(v))
+    def jvmVersion = extension.scmVersion.map({ v -> determineJavaVersion(v) })
 
     project.java {
       toolchain {
