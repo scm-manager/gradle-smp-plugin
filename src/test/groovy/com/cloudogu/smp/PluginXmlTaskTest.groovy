@@ -1,7 +1,9 @@
 package com.cloudogu.smp
 
+import groovy.mock.interceptor.MockFor
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.gradle.api.provider.Property
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 
@@ -29,11 +31,10 @@ class PluginXmlTaskTest {
       </module>
     """.trim().stripIndent()
     File pluginXml = temp.resolve("plugin.xml").toFile()
-    SmpExtension extension = new SmpExtension()
+    SmpExtension extension = new SmpExtension(ScmPropertyHelper.create("2.7.0")) {}
     extension.displayName = "Sample Plugin"
     extension.category = "Sample"
     extension.author = "Cloudogu GmbH"
-    extension.scmVersion = "2.7.0"
     extension.avatarUrl = '/images/avatar.png'
     extension.conditions {
       os = "Linux"
@@ -95,7 +96,7 @@ class PluginXmlTaskTest {
       </module>
     """.trim().stripIndent()
     File pluginXml = temp.resolve("plugin.xml").toFile()
-    SmpExtension extension = new SmpExtension()
+    SmpExtension extension = new SmpExtension(ScmPropertyHelper.create("2.7.0")) {}
     Project project = ProjectBuilder.builder().build()
     project.configurations.create("plugin")
     project.configurations.create("optionalPlugin")

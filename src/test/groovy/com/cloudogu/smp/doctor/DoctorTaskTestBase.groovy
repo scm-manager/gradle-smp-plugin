@@ -1,6 +1,7 @@
 package com.cloudogu.smp.doctor
 
 import com.cloudogu.smp.PackageJson
+import com.cloudogu.smp.ScmPropertyHelper
 import com.cloudogu.smp.SmpExtension
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -23,7 +24,7 @@ class DoctorTaskTestBase {
     PrintStream stream = new PrintStream(output, true)
 
     def task = project.task("doctor", type: type) {
-      it.extension = new SmpExtension()
+      it.extension = new SmpExtension(ScmPropertyHelper.create("2.7.0")) {}
       it.packageJson = new PackageJson(project)
       it.outputStream = stream
       it.rules = rules

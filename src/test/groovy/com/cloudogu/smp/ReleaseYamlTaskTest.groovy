@@ -17,9 +17,8 @@ class ReleaseYamlTaskTest {
     def smp = temp.resolve("scm-sample-plugin.smp").toFile()
     smp << "a"
     def releaseYaml = temp.resolve("release.yml").toFile()
-    def extension = new SmpExtension()
+    def extension = new SmpExtension(ScmPropertyHelper.create("2.8.0")) {}
     extension.setCategory("Sample")
-    extension.setScmVersion("2.8.0")
     extension.conditions {
       os = "Linux"
       arch = "arm"

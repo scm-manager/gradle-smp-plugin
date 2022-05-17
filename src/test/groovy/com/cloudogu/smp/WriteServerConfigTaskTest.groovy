@@ -17,8 +17,7 @@ class WriteServerConfigTaskTest {
   @Test
   @Tag("slow")
   void shouldResolveWebapp(@TempDir Path directory) {
-    SmpExtension extension = new SmpExtension()
-    extension.scmVersion = "2.0.0"
+    SmpExtension extension = new SmpExtension(ScmPropertyHelper.create("2.0.0")) {}
     extension.serverConfiguration.home = directory.resolve("home")
 
     Project project = ProjectBuilder.builder().build()
@@ -48,8 +47,7 @@ class WriteServerConfigTaskTest {
 
   @Test
   void shouldWriteServerConfig(@TempDir Path directory) {
-    SmpExtension extension = new SmpExtension()
-    extension.scmVersion = "2.0.0"
+    SmpExtension extension = new SmpExtension(ScmPropertyHelper.create("2.0.0")) {}
     def home = directory.resolve("home").toString()
     extension.serverConfiguration.home = home
 

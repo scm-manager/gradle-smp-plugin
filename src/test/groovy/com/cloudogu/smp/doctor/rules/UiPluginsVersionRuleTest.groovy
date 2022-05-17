@@ -1,6 +1,7 @@
 package com.cloudogu.smp.doctor.rules
 
 import com.cloudogu.smp.PackageJson
+import com.cloudogu.smp.ScmPropertyHelper
 import com.cloudogu.smp.SmpExtension
 import com.cloudogu.smp.doctor.Context
 import com.cloudogu.smp.doctor.Result
@@ -66,8 +67,7 @@ class UiPluginsVersionRuleTest {
   }
 
   private SmpExtension extension(String scmVersion) {
-    SmpExtension extension = new SmpExtension()
-    extension.setScmVersion(scmVersion)
+    SmpExtension extension = new SmpExtension(ScmPropertyHelper.create(scmVersion)) {}
     return extension
   }
 

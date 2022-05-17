@@ -1,6 +1,7 @@
 package com.cloudogu.smp.doctor.rules
 
 import com.cloudogu.smp.PackageJson
+import com.cloudogu.smp.ScmPropertyHelper
 import com.cloudogu.smp.SmpExtension
 import com.cloudogu.smp.doctor.Context
 import com.cloudogu.smp.doctor.Result
@@ -118,7 +119,7 @@ class MissingPostInstallRuleTest {
 
 
   private Result validate() {
-    SmpExtension extension = new SmpExtension()
+    SmpExtension extension = new SmpExtension(ScmPropertyHelper.create("2.7.0")) {}
     PackageJson packageJson = new PackageJson(packageJsonFile)
     return new MissingPostInstallRule().validate(new Context(project, extension, packageJson))
   }

@@ -1,6 +1,7 @@
 package com.cloudogu.smp.doctor.rules
 
 import com.cloudogu.smp.PackageJson
+import com.cloudogu.smp.ScmPropertyHelper
 import com.cloudogu.smp.SmpExtension
 import com.cloudogu.smp.doctor.Context
 import com.cloudogu.smp.doctor.Result
@@ -62,7 +63,7 @@ class NameRuleTest {
   }
 
   private SmpExtension extension(String name) {
-    SmpExtension extension = new SmpExtension()
+    SmpExtension extension = new SmpExtension(ScmPropertyHelper.create("2.7.0")) {}
     extension.setName(name)
     return extension
   }

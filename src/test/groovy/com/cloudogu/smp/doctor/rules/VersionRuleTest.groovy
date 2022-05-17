@@ -1,6 +1,7 @@
 package com.cloudogu.smp.doctor.rules
 
 import com.cloudogu.smp.PackageJson
+import com.cloudogu.smp.ScmPropertyHelper
 import com.cloudogu.smp.SmpExtension
 import com.cloudogu.smp.doctor.Context
 import com.cloudogu.smp.doctor.Result
@@ -24,7 +25,7 @@ class VersionRuleTest {
   void createDependencies(@TempDir Path directory){
     project = ProjectBuilder.builder().build()
     packageJsonFile = directory.resolve("package.json").toFile()
-    extension = new SmpExtension()
+    extension = new SmpExtension(ScmPropertyHelper.create("2.7.0")) {}
   }
 
   PackageJson createPackageJson(String version = null) {

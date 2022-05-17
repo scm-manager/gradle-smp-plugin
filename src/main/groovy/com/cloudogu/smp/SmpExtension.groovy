@@ -54,7 +54,11 @@ abstract class SmpExtension implements Serializable {
   ScmServerConfiguration serverConfiguration = new ScmServerConfiguration()
 
   SmpExtension(Project project) {
-    this.scmVersion = project.objects.property(String).convention("2.0.0")
+    this(project.objects.property(String).convention("2.0.0"))
+  }
+
+  SmpExtension(Property<String> scmVersion) {
+    this.scmVersion = scmVersion
   }
 
   def conditions(Closure<Void> closure) {

@@ -1,6 +1,7 @@
 package com.cloudogu.smp.doctor.rules
 
 import com.cloudogu.smp.PackageJson
+import com.cloudogu.smp.ScmPropertyHelper
 import com.cloudogu.smp.SmpExtension
 import com.cloudogu.smp.doctor.Context
 import com.cloudogu.smp.doctor.Result
@@ -121,8 +122,7 @@ class MinScmVersionRuleTest {
   }
 
   private Context context(String scmVersion) {
-    SmpExtension extension = new SmpExtension()
-    extension.scmVersion = scmVersion
+    SmpExtension extension = new SmpExtension(ScmPropertyHelper.create(scmVersion)) {}
     return new Context(project, extension, new PackageJson(new File(directory, "package.json")))
   }
 
