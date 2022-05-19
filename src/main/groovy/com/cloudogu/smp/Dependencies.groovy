@@ -144,7 +144,7 @@ class Dependencies {
         annotationProcessor "sonia.scm:scm-annotation-processor:${scmVersion}"
       }
 
-      scmServer "sonia.scm:scm-webapp:${extension.scmVersion}@war"
+      scmServer "sonia.scm:scm-webapp:${extension.scmVersion.get()}@war"
 
       // is provided in scm-core
       scmCoreDependency "javax.ws.rs:javax.ws.rs-api:2.1.1"
