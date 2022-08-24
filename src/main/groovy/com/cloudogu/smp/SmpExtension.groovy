@@ -42,6 +42,9 @@ abstract class SmpExtension implements Serializable {
   boolean core = false
 
   @Input
+  boolean childFirstClassloader = false
+
+  @Input
   Map<String,String> sonarProperties = [:]
 
   @Nested

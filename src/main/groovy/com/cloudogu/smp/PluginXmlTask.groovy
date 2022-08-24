@@ -77,10 +77,12 @@ class PluginXmlTask extends DefaultTask {
 
     def output = xml.plugin {
       'scm-version'('2')
+      if (ext.childFirstClassloader) {
+        "child-first-classloader"(ext.childFirstClassloader)
+      }
       information {
         createNode('name', pluginName.get())
         version(pluginVersion)
-
         if (ext.displayName != null) {
           displayName(ext.displayName)
         }
@@ -97,6 +99,7 @@ class PluginXmlTask extends DefaultTask {
         if (ext.avatarUrl != null) {
           avatarUrl(ext.avatarUrl)
         }
+
       }
       conditions {
         'min-version'(ext.scmVersion.get())
