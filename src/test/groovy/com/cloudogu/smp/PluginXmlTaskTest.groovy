@@ -1,15 +1,14 @@
 package com.cloudogu.smp
 
-import groovy.mock.interceptor.MockFor
+
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.gradle.api.provider.Property
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 
 import java.nio.file.Path
 
-import static org.assertj.core.api.Assertions.*
+import static org.assertj.core.api.Assertions.assertThat
 
 class PluginXmlTaskTest {
 
@@ -36,6 +35,7 @@ class PluginXmlTaskTest {
     extension.category = "Sample"
     extension.author = "Cloudogu GmbH"
     extension.avatarUrl = '/images/avatar.png'
+    extension.childFirstClassloader = true
     extension.conditions {
       os = "Linux"
       arch = "arm"
@@ -70,6 +70,7 @@ class PluginXmlTaskTest {
     assertThat(plugin.information.category).isEqualTo("Sample")
     assertThat(plugin.information.author).isEqualTo("Cloudogu GmbH")
     assertThat(plugin.information.avatarUrl).isEqualTo('/images/avatar.png')
+    assertThat(plugin["child-first-classloader"]).isEqualTo(true)
 
     assertThat(plugin.resources.script).isEqualTo("assets/scm-sample-plugin.bundle.js")
 
