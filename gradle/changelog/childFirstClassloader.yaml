@@ -1,2 +1,0 @@
-- type: added
-  description: Add property to use ChildFirstClassloader in plugins ([#17](https://github.com/scm-manager/gradle-smp-plugin/pull/17))

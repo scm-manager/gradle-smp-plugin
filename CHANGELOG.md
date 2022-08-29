@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.12.0
+### Added
+- Add property to use ChildFirstClassloader in plugins ([#17](https://github.com/scm-manager/gradle-smp-plugin/pull/17))
+
 ## 0.11.1 - 2022-05-19
 ### fixed
 - Resolve property before usage for dependencies
