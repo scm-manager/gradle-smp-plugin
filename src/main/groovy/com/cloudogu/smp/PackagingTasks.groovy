@@ -137,6 +137,7 @@ class PackagingTasks {
         dependencies.add(project.getDependencies().create("io.swagger.core.v3:swagger-jaxrs2:2.1.6"))
         dependencies.add(project.getDependencies().create("javax.ws.rs:javax.ws.rs-api:2.1"))
         dependencies.add(project.getDependencies().create("javax.servlet:javax.servlet-api:3.1.0"))
+        dependencies.add(project.getDependencies().create("com.fasterxml.jackson.core:jackson-core:2.13.4"))
       }
     })
 
