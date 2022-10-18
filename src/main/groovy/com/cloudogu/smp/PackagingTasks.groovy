@@ -127,6 +127,17 @@ class PackagingTasks {
     }
   }
 
+  private static boolean needsJackson(String version) {
+    String[] versionParts = version.split("[.-]")
+    if (versionParts.length < 2) {
+      return false
+    }
+    def majorVersion = versionParts[0] as int
+    def minorVersion = versionParts[1] as int
+    def patchVersion = versionParts[2] as int
+    return majorVersion == 2 && (minorVersion > 39 || minorVersion == 39 && patchVersion > 1)
+  }
+
   private static void registerOpenApiSpecGenerator(Project project, SmpExtension extension) {
     final Configuration config = project.configurations.create("swaggerDeps")
       .setVisible(false)
@@ -137,6 +148,9 @@ class PackagingTasks {
         dependencies.add(project.getDependencies().create("io.swagger.core.v3:swagger-jaxrs2:2.1.6"))
         dependencies.add(project.getDependencies().create("javax.ws.rs:javax.ws.rs-api:2.1"))
         dependencies.add(project.getDependencies().create("javax.servlet:javax.servlet-api:3.1.0"))
+        if (needsJackson(extension.scmVersion.get())) {
+          dependencies.add(project.getDependencies().create("com.fasterxml.jackson.core:jackson-core:2.13.4"))
+        }
       }
     })
 
