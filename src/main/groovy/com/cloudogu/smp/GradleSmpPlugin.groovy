@@ -22,6 +22,8 @@ class GradleSmpPlugin implements Plugin<Project> {
     def minorVersion = versionParts[1] as int
     if (majorVersion == 2 && minorVersion < 35) {
       return 8
+    } else if (majorVersion == 3) {
+      return 17
     } else {
       return 11
     }
@@ -41,7 +43,7 @@ class GradleSmpPlugin implements Plugin<Project> {
 
     project.java {
       toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(17)
       }
     }
 
