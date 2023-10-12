@@ -17,6 +17,7 @@ pipeline {
       steps {
         // read version from brach, set it and commit it
         sh "./gradlew setVersion -PnewVersion=${releaseVersion}"
+        sh "git checkout ${env.BRANCH_NAME}"
         sh 'git add gradle.properties'
         sh "git -c user.name='CES Marvin' -c user.email='cesmarvin@cloudogu.com' commit -m 'release version ${releaseVersion}'"
 
