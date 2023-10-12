@@ -20,17 +20,19 @@ class GradleSmpPlugin implements Plugin<Project> {
     }
     def majorVersion = versionParts[0] as int
     def minorVersion = versionParts[1] as int
-    if (majorVersion == 2 && minorVersion < 35) {
-      return 8
-    } else if (majorVersion == 3) {
-      return 17
+    if (majorVersion == 2) {
+      if (minorVersion < 35) {
+        return 8
+      } else {
+        return 11
+      }
     } else {
-      return 11
+      return 17
     }
   }
 
   void apply(Project project) {
-    if (!project.version?.trim() || "unspecified".equals(project.version) ) {
+    if (!project.version?.trim() || "unspecified".equals(project.version)) {
       throw new GradleException("version is missing in gradle.properties")
     }
 
