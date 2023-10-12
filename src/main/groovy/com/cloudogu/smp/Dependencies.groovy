@@ -151,7 +151,7 @@ class Dependencies {
       scmCoreDependency "io.swagger.core.v3:swagger-annotations:2.1.7"
       scmCoreDependency 'javax.servlet:javax.servlet-api:3.1.0'
 
-      scmCoreDependency 'org.projectlombok:lombok:1.18.12'
+      scmCoreDependency 'org.projectlombok:lombok:1.18.30'
       scmCoreDependency 'org.mapstruct:mapstruct-jdk8:1.3.1.Final'
 
       scmCoreDependency 'com.cloudogu.conveyor:conveyor:1.0.0'
@@ -159,7 +159,7 @@ class Dependencies {
 
 
       // register annotation processors
-      annotationProcessor 'org.projectlombok:lombok:1.18.12'
+      annotationProcessor 'org.projectlombok:lombok:1.18.30'
       annotationProcessor 'com.cloudogu.jaxrs-tie:jaxrs-tie:1.0.5'
       annotationProcessor 'com.cloudogu.conveyor:conveyor:1.0.0'
       annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.1.Final'
@@ -170,7 +170,7 @@ class Dependencies {
       testImplementation "org.jboss.resteasy:resteasy-jackson2-provider:4.5.3.Final"
 
       // test engine
-      testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+      testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
 
       testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
       testImplementation 'org.junit.jupiter:junit-jupiter-params:5.6.2'
