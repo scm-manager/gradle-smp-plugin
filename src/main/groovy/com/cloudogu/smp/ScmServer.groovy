@@ -48,7 +48,7 @@ final class ScmServer {
     server = new Server()
     server.addConnector(createServerConnector(server))
     server.setHandler(createScmContext())
-    server.addLifeCycleListener(new LifeCycle.Listener() {
+    server.addEventListener(new LifeCycle.Listener() {
       @Override
       void lifeCycleStarted(LifeCycle event) {
 
