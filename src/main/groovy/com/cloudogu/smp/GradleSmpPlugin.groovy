@@ -45,7 +45,7 @@ class GradleSmpPlugin implements Plugin<Project> {
 
     project.java {
       toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(determineJavaVersion(project.version))
       }
     }
 

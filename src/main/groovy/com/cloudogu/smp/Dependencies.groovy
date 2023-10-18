@@ -146,10 +146,15 @@ class Dependencies {
 
       scmServer "sonia.scm:scm-webapp:${extension.scmVersion.get()}@war"
 
+      if (scmVersion.startsWith("3.")) {
+        scmCoreDependency "jakarta.ws.rs:jakarta.ws.rs-api:2.1.6"
+        scmCoreDependency 'jakarta.servlet:jakarta.servlet-api:5.0.0'
+      } else {
+        scmCoreDependency "javax.ws.rs:javax.ws.rs-api:2.1.1"
+        scmCoreDependency 'javax.servlet:javax.servlet-api:3.1.0'
+      }
       // is provided in scm-core
-      scmCoreDependency "javax.ws.rs:javax.ws.rs-api:2.1.1"
       scmCoreDependency "io.swagger.core.v3:swagger-annotations:2.1.7"
-      scmCoreDependency 'javax.servlet:javax.servlet-api:3.1.0'
 
       scmCoreDependency 'org.projectlombok:lombok:1.18.30'
       scmCoreDependency 'org.mapstruct:mapstruct-jdk8:1.3.1.Final'
@@ -165,9 +170,15 @@ class Dependencies {
       annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.1.Final'
 
       // resteasy test dependencies
-      testImplementation "org.jboss.resteasy:resteasy-core:4.5.3.Final"
-      testImplementation "org.jboss.resteasy:resteasy-core-spi:4.5.3.Final"
-      testImplementation "org.jboss.resteasy:resteasy-jackson2-provider:4.5.3.Final"
+      if (scmVersion.startsWith("3.")) {
+        testImplementation "org.jboss.resteasy:resteasy-core:6.2.5.Final"
+        testImplementation "org.jboss.resteasy:resteasy-core-spi:6.2.5.Final"
+        testImplementation "org.jboss.resteasy:resteasy-jackson2-provider:6.2.5.Final"
+      } else {
+        testImplementation "org.jboss.resteasy:resteasy-core:4.5.3.Final"
+        testImplementation "org.jboss.resteasy:resteasy-core-spi:4.5.3.Final"
+        testImplementation "org.jboss.resteasy:resteasy-jackson2-provider:4.5.3.Final"
+      }
 
       // test engine
       testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
