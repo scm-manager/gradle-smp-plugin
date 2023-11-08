@@ -3,8 +3,8 @@ pipeline {
 
   agent {
     docker {
-      image 'scmmanager/java-build:11.0.9_11.1'
-      label 'docker'
+      image 'scmmanager/java-build:17.0.9_9'
+      label 'scmm'
     }
   }
 
