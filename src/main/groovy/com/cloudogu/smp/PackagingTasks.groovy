@@ -138,18 +138,32 @@ class PackagingTasks {
     return majorVersion == 2 && (minorVersion > 39 || minorVersion == 39 && patchVersion > 1)
   }
 
+  private static boolean needsJakarta(String version) {
+    return version.startsWith("3.")
+  }
+
   private static void registerOpenApiSpecGenerator(Project project, SmpExtension extension) {
     final Configuration config = project.configurations.create("swaggerDeps")
       .setVisible(false)
 
     config.defaultDependencies(new Action<DependencySet>() {
-      public void execute(DependencySet dependencies) {
+      void execute(DependencySet dependencies) {
         dependencies.add(project.getDependencies().create("org.apache.commons:commons-lang3:3.7"))
-        dependencies.add(project.getDependencies().create("io.swagger.core.v3:swagger-jaxrs2:2.1.6"))
-        dependencies.add(project.getDependencies().create("javax.ws.rs:javax.ws.rs-api:2.1"))
-        dependencies.add(project.getDependencies().create("javax.servlet:javax.servlet-api:3.1.0"))
-        if (needsJackson(extension.scmVersion.get())) {
-          dependencies.add(project.getDependencies().create("com.fasterxml.jackson.core:jackson-core:2.13.4"))
+        dependencies.add(project.getDependencies().create("io.swagger.core.v3:swagger-jaxrs2:2.1.12"))
+        if (needsJakarta(extension.scmVersion.get())) {
+          println("Using Jakarta EE dependencies for $project.name")
+          dependencies.add(project.getDependencies().create("jakarta.ws.rs:jakarta.ws.rs-api:2.1.6"))
+          dependencies.add(project.getDependencies().create("jakarta.servlet:jakarta.servlet-api:5.0.0"))
+          if (needsJackson(extension.scmVersion.get())) {
+            dependencies.add(project.getDependencies().create("com.fasterxml.jackson.core:jackson-core:2.15.2"))
+          }
+        } else {
+          println("Using javax EE dependencies for $project.name")
+          dependencies.add(project.getDependencies().create("javax.ws.rs:javax.ws.rs-api:2.1"))
+          dependencies.add(project.getDependencies().create("javax.servlet:javax.servlet-api:3.1.0"))
+          if (needsJackson(extension.scmVersion.get())) {
+            dependencies.add(project.getDependencies().create("com.fasterxml.jackson.core:jackson-core:2.13.4"))
+          }
         }
       }
     })

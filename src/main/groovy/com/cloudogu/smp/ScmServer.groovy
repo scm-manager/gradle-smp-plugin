@@ -6,7 +6,6 @@ import org.eclipse.jetty.server.HttpConfiguration
 import org.eclipse.jetty.server.HttpConnectionFactory
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
-import org.eclipse.jetty.util.component.AbstractLifeCycle
 import org.eclipse.jetty.util.component.LifeCycle
 import org.eclipse.jetty.webapp.WebAppContext
 
@@ -49,7 +48,7 @@ final class ScmServer {
     server = new Server()
     server.addConnector(createServerConnector(server))
     server.setHandler(createScmContext())
-    server.addLifeCycleListener(new AbstractLifeCycle.AbstractLifeCycleListener() {
+    server.addEventListener(new LifeCycle.Listener() {
       @Override
       void lifeCycleStarted(LifeCycle event) {
 
