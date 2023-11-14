@@ -116,9 +116,13 @@ final class ScmServer {
 
   static void main(String[] args) {
     String configurationPath = args[0]
+    String stage = args[1]
     JsonSlurper slurper = new JsonSlurper()
     def json = slurper.parse(new File(configurationPath))
     ScmServerConfiguration configuration = new ScmServerConfiguration(json)
+    if (!Strings.isNullOrEmpty(stage)) {
+      configuration.setStage(stage)
+    }
     ScmServer server = new ScmServer(configuration)
     server.start()
   }

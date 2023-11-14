@@ -31,6 +31,10 @@ class RunTask extends DefaultTask {
   boolean debugJvm = false
 
   @Input
+  @Option(option = 'stage', description = 'The stage in which to execute the server. One of DEVELOPMENT, PRODUCTION or TESTING')
+  String stage = ""
+
+  @Input
   @Option(option = 'debug-wait', description = 'Wait until a debugger has connected')
   boolean debugWait = false
 
@@ -67,7 +71,7 @@ class RunTask extends DefaultTask {
     return {
       project.javaexec { jes ->
         jes.mainClass.set(ScmServer.name)
-        jes.args(extension.getServerConfigurationFile(project))
+        jes.args(extension.getServerConfigurationFile(project), stage)
         jes.environment("NODE_ENV", "development")
         jes.classpath(project.buildscript.configurations.classpath)
         if (debugJvm) {
