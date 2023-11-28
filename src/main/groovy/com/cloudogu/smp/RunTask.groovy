@@ -13,6 +13,9 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import org.gradle.process.JavaExecSpec
 
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 import java.util.stream.Collectors
 
 class RunTask extends DefaultTask {
@@ -70,6 +73,19 @@ class RunTask extends DefaultTask {
         jes.args(extension.getServerConfigurationFile(project))
         jes.environment("NODE_ENV", "development")
         jes.classpath(project.buildscript.configurations.classpath)
+        if (new File(extension.configFileDirectory + "/config.yml").exists()) {
+          println("Using config.yml from " + extension.configFileDirectory)
+          jes.classpath(extension.configFileDirectory)
+        } else {
+          InputStream resource = getClass().getResourceAsStream("conf/config.yml")
+          Path tempConfig = Files.createFile(Path.of("build/server","config.yml"))
+          Files.copy(resource, tempConfig, StandardCopyOption.REPLACE_EXISTING)
+          jes.classpath(tempConfig.getParent())
+          println("##############\n\n" +
+            "WARNING: config.yml could not be found in directory: ${extension.configFileDirectory}\n" +
+            "Will use the default config.yml from gradle-smp-plugin located in `build/server/`" +
+            "\n\n##############")
+        }
         if (debugJvm) {
           jes.debug = true
           jes.debugOptions {

@@ -39,6 +39,10 @@ abstract class SmpExtension implements Serializable {
   String avatarUrl
 
   @Input
+  @Optional
+  String configFileDirectory = "./src/main/conf"
+
+  @Input
   boolean core = false
 
   @Input
