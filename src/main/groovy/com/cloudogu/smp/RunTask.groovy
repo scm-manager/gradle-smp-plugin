@@ -15,6 +15,7 @@ import org.gradle.process.JavaExecSpec
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.util.stream.Collectors
 
@@ -73,18 +74,17 @@ class RunTask extends DefaultTask {
         jes.args(extension.getServerConfigurationFile(project))
         jes.environment("NODE_ENV", "development")
         jes.classpath(project.buildscript.configurations.classpath)
-        if (new File(extension.configFileDirectory + "/config.yml").exists()) {
+        if (extension.configFileDirectory != "") {
           println("Using config.yml from " + extension.configFileDirectory)
           jes.classpath(extension.configFileDirectory)
-        } else {
+        } else if (!Paths.get("build/server/config.yml").toFile().exists()) {
           InputStream resource = getClass().getResourceAsStream("conf/config.yml")
-          Path tempConfig = Files.createFile(Path.of("build/server","config.yml"))
-          Files.copy(resource, tempConfig, StandardCopyOption.REPLACE_EXISTING)
-          jes.classpath(tempConfig.getParent())
-          println("##############\n\n" +
-            "WARNING: config.yml could not be found in directory: ${extension.configFileDirectory}\n" +
-            "Will use the default config.yml from gradle-smp-plugin located in `build/server/`" +
-            "\n\n##############")
+          Path fallbackConfig = Files.createFile(Path.of("build/server", "config.yml"))
+          Files.copy(resource, fallbackConfig, StandardCopyOption.REPLACE_EXISTING)
+          jes.classpath(fallbackConfig.getParent())
+        } else {
+          Path fallbackConfigDir = Paths.get("build/server")
+          jes.classpath(fallbackConfigDir)
         }
         if (debugJvm) {
           jes.debug = true
@@ -100,6 +100,8 @@ class RunTask extends DefaultTask {
       return null
     }
   }
+
+  private
 
   void execSpec(Action<JavaExecSpec> action) {
     execSpecActions.add(action)

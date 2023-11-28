@@ -40,7 +40,7 @@ abstract class SmpExtension implements Serializable {
 
   @Input
   @Optional
-  String configFileDirectory = "./src/main/conf"
+  String configFileDirectory = ""
 
   @Input
   boolean core = false
