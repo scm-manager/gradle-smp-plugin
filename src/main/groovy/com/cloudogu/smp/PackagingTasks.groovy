@@ -148,12 +148,12 @@ class PackagingTasks {
 
     config.defaultDependencies(new Action<DependencySet>() {
       void execute(DependencySet dependencies) {
-        dependencies.add(project.getDependencies().create("org.apache.commons:commons-lang3:3.7"))
-        dependencies.add(project.getDependencies().create("io.swagger.core.v3:swagger-jaxrs2:2.1.12"))
+        dependencies.add(project.getDependencies().create("org.apache.commons:commons-lang3:3.12.0"))
         if (needsJakarta(extension.scmVersion.get())) {
           println("Using Jakarta EE dependencies for $project.name")
-          dependencies.add(project.getDependencies().create("jakarta.ws.rs:jakarta.ws.rs-api:2.1.6"))
-          dependencies.add(project.getDependencies().create("jakarta.servlet:jakarta.servlet-api:5.0.0"))
+          dependencies.add(project.getDependencies().create("jakarta.ws.rs:jakarta.ws.rs-api:3.1.0"))
+          dependencies.add(project.getDependencies().create("jakarta.servlet:jakarta.servlet-api:6.0.0"))
+          dependencies.add(project.getDependencies().create("io.swagger.core.v3:swagger-jaxrs2-jakarta:2.2.19"))
           if (needsJackson(extension.scmVersion.get())) {
             dependencies.add(project.getDependencies().create("com.fasterxml.jackson.core:jackson-core:2.15.2"))
           }
@@ -161,6 +161,7 @@ class PackagingTasks {
           println("Using javax EE dependencies for $project.name")
           dependencies.add(project.getDependencies().create("javax.ws.rs:javax.ws.rs-api:2.1"))
           dependencies.add(project.getDependencies().create("javax.servlet:javax.servlet-api:3.1.0"))
+          dependencies.add(project.getDependencies().create("io.swagger.core.v3:swagger-jaxrs2:2.1.13"))
           if (needsJackson(extension.scmVersion.get())) {
             dependencies.add(project.getDependencies().create("com.fasterxml.jackson.core:jackson-core:2.13.4"))
           }
