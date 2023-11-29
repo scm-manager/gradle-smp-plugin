@@ -13,6 +13,10 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import org.gradle.process.JavaExecSpec
 
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 import java.util.stream.Collectors
 
 class RunTask extends DefaultTask {
@@ -70,6 +74,18 @@ class RunTask extends DefaultTask {
         jes.args(extension.getServerConfigurationFile(project))
         jes.environment("NODE_ENV", "development")
         jes.classpath(project.buildscript.configurations.classpath)
+        if (extension.configFileDirectory != "") {
+          println("Using config.yml from " + extension.configFileDirectory)
+          jes.classpath(extension.configFileDirectory)
+        } else if (!Paths.get("build/server/config.yml").toFile().exists()) {
+          InputStream resource = getClass().getResourceAsStream("conf/config.yml")
+          Path fallbackConfig = Files.createFile(Path.of("build/server", "config.yml"))
+          Files.copy(resource, fallbackConfig, StandardCopyOption.REPLACE_EXISTING)
+          jes.classpath(fallbackConfig.getParent())
+        } else {
+          Path fallbackConfigDir = Paths.get("build/server")
+          jes.classpath(fallbackConfigDir)
+        }
         if (debugJvm) {
           jes.debug = true
           jes.debugOptions {
@@ -84,6 +100,8 @@ class RunTask extends DefaultTask {
       return null
     }
   }
+
+  private
 
   void execSpec(Action<JavaExecSpec> action) {
     execSpecActions.add(action)

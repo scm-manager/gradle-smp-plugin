@@ -147,15 +147,15 @@ class Dependencies {
       scmServer "sonia.scm:scm-webapp:${extension.scmVersion.get()}@war"
 
       if (scmVersion.startsWith("3.")) {
-        scmCoreDependency "jakarta.ws.rs:jakarta.ws.rs-api:2.1.6"
-        scmCoreDependency 'jakarta.servlet:jakarta.servlet-api:5.0.0'
+        scmCoreDependency "jakarta.ws.rs:jakarta.ws.rs-api:3.1.0"
+        scmCoreDependency 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+        scmCoreDependency "io.swagger.core.v3:swagger-annotations-jakarta:2.2.19"
       } else {
         scmCoreDependency "javax.ws.rs:javax.ws.rs-api:2.1.1"
         scmCoreDependency 'javax.servlet:javax.servlet-api:3.1.0'
+        scmCoreDependency "io.swagger.core.v3:swagger-annotations:2.1.13"
       }
       // is provided in scm-core
-      scmCoreDependency "io.swagger.core.v3:swagger-annotations:2.1.7"
-
       scmCoreDependency 'org.projectlombok:lombok:1.18.30'
       scmCoreDependency 'org.mapstruct:mapstruct-jdk8:1.3.1.Final'
 
