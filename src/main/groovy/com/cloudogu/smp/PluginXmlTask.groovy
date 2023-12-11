@@ -74,9 +74,9 @@ class PluginXmlTask extends DefaultTask {
     SmpExtension ext = extension.get()
 
     RegularFile moduleXmlFile = moduleXml.getOrNull();
-
+    def scmVersion = ext.scmVersion.get();
     def output = xml.plugin {
-      'scm-version'('2')
+      'scm-version'(scmVersion.split("\\.")[0])
       if (ext.childFirstClassloader) {
         "child-first-classloader"(ext.childFirstClassloader)
       }
@@ -102,7 +102,7 @@ class PluginXmlTask extends DefaultTask {
 
       }
       conditions {
-        'min-version'(ext.scmVersion.get())
+        'min-version'(scmVersion)
         if (ext.pluginConditions.os != null) {
           os(ext.pluginConditions.os)
         }
