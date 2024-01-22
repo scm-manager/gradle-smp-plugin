@@ -73,6 +73,7 @@ class RunTask extends DefaultTask {
         jes.mainClass.set(ScmServer.name)
         jes.args(extension.getServerConfigurationFile(project))
         jes.environment("NODE_ENV", "development")
+        jes.environment("SCM_WEBAPP_HOMEDIR", extension.getScmHome(project).getAbsolutePath())
         jes.classpath(project.buildscript.configurations.classpath)
         if (extension.configFileDirectory != "") {
           println("Using config.yml from " + extension.configFileDirectory)
