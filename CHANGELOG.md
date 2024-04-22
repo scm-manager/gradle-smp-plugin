@@ -8,11 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update nodejs to 21.6.2
 
-## 0.16.3 - 2023-01-29
+## 0.16.3 - 2024-01-29
 ### Fixed
 - SCM-Home Switch for Gradle `Run` Task
 
-## 0.16.2 - 2023-01-15
+## 0.16.2 - 2024-01-15
 ### Fixed
 - Resolve `scmVersion` for plugin xml by actual core dependency
 
