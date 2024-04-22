@@ -4,7 +4,7 @@ import org.gradle.api.Project
 
 class Environment {
 
-  static final String NODE_VERSION = "16.13.0"
+  static final String NODE_VERSION = "21.6.2"
   static final String YARN_VERSION = "1.22.15"
 
   static final String CI_OS = "linux"
