@@ -7,15 +7,27 @@ import org.gradle.api.tasks.TaskAction
 class LicenseTasks {
 
   static void configure(Project project) {
-    File licenseFile = new File(project.rootDir, "LICENSE.txt")
-    if (licenseFile.exists()) {
-      project.plugins.apply("org.scm-manager.license")
-      configureTasks(project, licenseFile)
-    } else {
+    File licenseFile = findLicenseFile(project)
+    if (licenseFile == null) {
       project.tasks.register("license", LicenseFileMissingTask) {
         outputs.upToDateWhen { false }
       }
+    } else {
+      project.plugins.apply("org.scm-manager.license")
+      configureTasks(project, licenseFile)
     }
+  }
+
+  private static File findLicenseFile(Project project) {
+    File licenseHeaderFile = new File(project.rootDir, "LICENSE-HEADER.txt")
+    if (licenseHeaderFile.exists()) {
+      return licenseHeaderFile
+    }
+    File licenseFile = new File(project.rootDir, "LICENSE.txt")
+    if (licenseFile.exists()) {
+      return licenseFile
+    }
+    return null
   }
 
   private static void configureTasks(Project project, File licenseFile) {
@@ -51,8 +63,8 @@ class LicenseTasks {
 
     @TaskAction
     void execute() {
-      println "No LICENSE.txt found"
-      println "In order to use the license check, please create a LICENSE.txt in the root of the project"
+      println "No LICENSE.txt or LICENSE-HEADER.txt found"
+      println "In order to use the license check, please create a LICENSE.txt or LICENSE-HEADER.txt in the root of the project"
     }
 
   }

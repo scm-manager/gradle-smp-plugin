@@ -22,8 +22,8 @@ class LicenseTasksTest {
   }
 
   @Test
-  void shouldConfigureLicenseTasks(@TempDir Path directory) {
-    def licenseFile = directory.resolve("LICENSE.txt").toFile()
+  void shouldConfigureLicenseTasksWithLicenseHeaderFile(@TempDir Path directory) {
+    def licenseFile = directory.resolve("LICENSE-HEADER.txt").toFile()
     licenseFile << "Awesome License"
     Project project = ProjectBuilder.builder().withProjectDir(directory.toFile()).build()
     project.plugins.apply(JavaPlugin)
@@ -39,4 +39,21 @@ class LicenseTasksTest {
     )
   }
 
+  @Test
+  void shouldConfigureLicenseTasksWithLicenseFile(@TempDir Path directory) {
+    def licenseFile = directory.resolve("LICENSE.txt").toFile()
+    licenseFile << "Awesome License"
+    Project project = ProjectBuilder.builder().withProjectDir(directory.toFile()).build()
+    project.plugins.apply(JavaPlugin)
+
+    LicenseTasks.configure(project)
+
+    def tasks = project.tasks.asList().collect {
+      return it.name
+    }
+
+    assertThat(tasks).contains(
+      "license", "checkLicenses", "checkLicenseCustomUi", "checkLicenseCustomGradle"
+    )
+  }
 }

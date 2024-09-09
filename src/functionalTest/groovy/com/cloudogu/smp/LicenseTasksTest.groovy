@@ -36,7 +36,7 @@ class LicenseTasksTest {
     
     version=2.0.0
     """
-    content "LICENSE.txt", "Awesome License"
+    content "LICENSE-HEADER.txt", "Awesome License"
     content "settings.gradle", """
      /*
       * Awesome License
@@ -71,7 +71,7 @@ class LicenseTasksTest {
     
     version=2.0.0
     """
-    content "LICENSE.txt", "Cool License"
+    content "LICENSE-HEADER.txt", "Cool License"
     content "settings.gradle", """
      /*
       * Cool License
@@ -100,12 +100,51 @@ class LicenseTasksTest {
     assertThat(result.output).contains("BUILD SUCCESSFUL")
   }
 
+  @ParameterizedTest
+  @ValueSource(strings = ["src/main/java/Main.java", "src/test/java/MainTest.java", "src/main/js/index.ts"])
+  void shouldFindLicenseFileAsFallbackForHeaderFile(String filePath) {
+    content "gradle.properties", """
+    #
+    # Long cool License
+    #
+    
+    version=2.0.0
+    """
+    content "LICENSE.txt", "Long cool License"
+    content "settings.gradle", """
+     /*
+      * Long cool License
+      */
+      
+      // nothing to configure
+      """
+    content "build.gradle", """
+     /*
+      * Long cool License
+      */
+    
+      plugins {
+        id('org.scm-manager.smp')
+      }
+      """
+    content filePath, """
+     /*
+      * Long cool License
+      */
+
+      // ...
+      """
+
+    def result = runner.build()
+    assertThat(result.output).contains("BUILD SUCCESSFUL")
+  }
+
   @Test
   void shouldFailIfBuildFileLicenseIsMissing() {
     content "gradle.properties", """
     version=2.0.0
     """
-    content "LICENSE.txt", "Super awesome License"
+    content "LICENSE-HEADER.txt", "Super awesome License"
     content "settings.gradle", ""
     content "build.gradle", """
       plugins {
@@ -134,7 +173,7 @@ class LicenseTasksTest {
 
     def result = runner.build()
     assertThat(result.output)
-      .contains("No LICENSE.txt found")
+      .contains("No LICENSE.txt or LICENSE-HEADER.txt found")
       .contains("BUILD SUCCESSFUL")
   }
 
