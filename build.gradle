@@ -43,7 +43,7 @@ dependencies {
   implementation 'com.google.guava:guava:32.0.1-jre'
   implementation 'org.codehaus.groovy:groovy-yaml:3.0.19'
   implementation 'io.swagger.core.v3:swagger-gradle-plugin:2.2.19'
-  implementation 'org.scm-manager:gradle-license-plugin:0.7.1'
+  implementation 'org.scm-manager:gradle-license-plugin:0.8.0'
   implementation 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
   implementation 'org.scm-manager.changelog:gradle-plugin:0.2.0'
 
