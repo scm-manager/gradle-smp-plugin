@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Added
+- Support Dockerfile, docker-compose.yml files and src/test/e2e path
+
 ## 0.17.0 - 2024-09-09
 ### Added
 - Instead of a LICENSE.txt file one can use a LICENSE-HEADER.txt file for a shortened license
