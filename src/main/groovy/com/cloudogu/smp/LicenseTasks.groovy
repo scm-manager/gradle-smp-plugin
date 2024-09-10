@@ -58,6 +58,9 @@ class LicenseTasks {
         ui {
           files.from("src/main/js", "src/test/e2e")
         }
+        etc {
+          files.from("src/main/conf/logging.xml")
+        }
       }
     }
   }
