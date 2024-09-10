@@ -52,8 +52,11 @@ class LicenseTasks {
         gradle {
           files.from("build.gradle", "settings.gradle", "gradle.properties")
         }
+        docker {
+          files.from("Dockerfile", "docker-compose.yml")
+        }
         ui {
-          files.from("src/main/js")
+          files.from("src/main/js", "src/test/e2e")
         }
       }
     }
