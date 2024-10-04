@@ -78,11 +78,9 @@ pipeline {
         sh "git -c user.name='CES Marvin' -c user.email='cesmarvin@cloudogu.com' commit -m 'prepare for next development iteration'"
 
         // push changes back to remote repository
-        withCredentials([usernamePassword(credentialsId: 'SCM-Manager', usernameVariable: 'GIT_AUTH_USR', passwordVariable: 'GIT_AUTH_PSW')]) {
-          sh "git -c credential.helper=\"!f() { echo username='\$GIT_AUTH_USR'; echo password='\$GIT_AUTH_PSW'; }; f\" push origin main --tags"
-          sh "git -c credential.helper=\"!f() { echo username='\$GIT_AUTH_USR'; echo password='\$GIT_AUTH_PSW'; }; f\" push origin develop --tags"
-          sh "git -c credential.helper=\"!f() { echo username='\$GIT_AUTH_USR'; echo password='\$GIT_AUTH_PSW'; }; f\" push origin :${env.BRANCH_NAME}"
-        }
+        authGit "SCM-Manager", "push origin main --tags"
+        authGit "SCM-Manager", "push origin develop --tags"
+        authGit "SCM-Manager", "push origin :${env.BRANCH_NAME}"
       }
     }
     
