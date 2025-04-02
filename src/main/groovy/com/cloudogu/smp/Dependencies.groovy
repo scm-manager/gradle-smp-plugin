@@ -152,12 +152,16 @@ class Dependencies {
         scmCoreDependency enforcedPlatform(project.project(':'))
         scmCoreDependency project.project(':scm-core')
         scmCoreDependency project.project(':scm-test')
+        scmCoreDependency project.project(':scm-queryable-test')
         annotationProcessor project.project(':scm-annotation-processor')
+        annotationProcessor project.project(':scm-core-annotation-processor')
       } else {
         scmCoreDependency enforcedPlatform("sonia.scm:scm:${scmVersion}")
         scmCoreDependency "sonia.scm:scm-core:${scmVersion}"
         testImplementation "sonia.scm:scm-test:${scmVersion}"
+        testImplementation "sonia.scm:scm-queryable-test:${scmVersion}"
         annotationProcessor "sonia.scm:scm-annotation-processor:${scmVersion}"
+        annotationProcessor "sonia.scm:scm-core-annotation-processor:${scmVersion}"
       }
 
       scmServer "sonia.scm:scm-webapp:${extension.scmVersion.get()}@war"
@@ -206,6 +210,7 @@ class Dependencies {
       testImplementation 'org.assertj:assertj-core:3.16.1'
       testImplementation 'org.mockito:mockito-core:1.3.1.Final'
       testImplementation 'org.mockito:mockito-junit-jupiter:1.3.1.Final'
+      testImplementation "org.slf4j:slf4j-simple:1.7.36"
     }
   }
 
