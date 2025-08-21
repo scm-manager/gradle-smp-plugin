@@ -155,7 +155,9 @@ class PackagingTasks {
   }
 
   private static boolean needsJakarta(String version) {
-    return version.startsWith("3.")
+    String majorVersionStr = version.split('\\.')[0]
+    int majorVersion = majorVersionStr.toInteger()
+    return majorVersion >= 3
   }
 
   private static void registerOpenApiSpecGenerator(Project project, SmpExtension extension) {
@@ -169,7 +171,7 @@ class PackagingTasks {
           println("Using Jakarta EE dependencies for $project.name")
           dependencies.add(project.getDependencies().create("jakarta.ws.rs:jakarta.ws.rs-api:3.1.0"))
           dependencies.add(project.getDependencies().create("jakarta.servlet:jakarta.servlet-api:6.0.0"))
-          dependencies.add(project.getDependencies().create("io.swagger.core.v3:swagger-jaxrs2-jakarta:2.2.19"))
+          dependencies.add(project.getDependencies().create("io.swagger.core.v3:swagger-jaxrs2-jakarta:2.2.26"))
           if (needsJackson(extension.scmVersion.get())) {
             dependencies.add(project.getDependencies().create("com.fasterxml.jackson.core:jackson-core:2.15.2"))
           }

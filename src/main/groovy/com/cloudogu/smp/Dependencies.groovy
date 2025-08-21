@@ -166,10 +166,13 @@ class Dependencies {
 
       scmServer "sonia.scm:scm-webapp:${extension.scmVersion.get()}@war"
 
-      if (scmVersion.startsWith("3.")) {
+      String majorVersionStr = scmVersion.split('\\.')[0]
+      int majorVersion = majorVersionStr.toInteger()
+
+      if (majorVersion >= 3) {
         scmCoreDependency "jakarta.ws.rs:jakarta.ws.rs-api:3.1.0"
         scmCoreDependency 'jakarta.servlet:jakarta.servlet-api:6.0.0'
-        scmCoreDependency "io.swagger.core.v3:swagger-annotations-jakarta:2.2.19"
+        scmCoreDependency "io.swagger.core.v3:swagger-annotations-jakarta:2.2.26"
       } else {
         scmCoreDependency "javax.ws.rs:javax.ws.rs-api:2.1.1"
         scmCoreDependency 'javax.servlet:javax.servlet-api:3.1.0'
