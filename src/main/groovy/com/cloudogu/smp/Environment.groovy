@@ -18,8 +18,8 @@ package com.cloudogu.smp
 
 class Environment {
 
-  static final String NODE_VERSION = "21.6.2"
-  static final String YARN_VERSION = "1.22.15"
+  static final String NODE_VERSION = "22.19.0"
+  static final String YARN_VERSION = "1.22.19"
 
   static final String CI_OS = "linux"
   static final String CI_ARCH = "x64"
