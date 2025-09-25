@@ -193,7 +193,7 @@ class Dependencies {
       annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.1.Final'
 
       // resteasy test dependencies
-      if (scmVersion.startsWith("3.")) {
+      if (majorVersion >= 3) {
         testImplementation "org.jboss.resteasy:resteasy-core:6.2.5.Final"
         testImplementation "org.jboss.resteasy:resteasy-core-spi:6.2.5.Final"
         testImplementation "org.jboss.resteasy:resteasy-jackson2-provider:6.2.5.Final"
