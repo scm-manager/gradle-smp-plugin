@@ -157,7 +157,9 @@ class PackagingTasks {
   private static boolean needsJakarta(String version) {
     String majorVersionStr = version.split('\\.')[0]
     int majorVersion = majorVersionStr.toInteger()
-    return majorVersion >= 3
+    def result = majorVersion >= 3
+    println "core version ${version} needs jakarta: ${result}"
+    return result
   }
 
   private static void registerOpenApiSpecGenerator(Project project, SmpExtension extension) {
