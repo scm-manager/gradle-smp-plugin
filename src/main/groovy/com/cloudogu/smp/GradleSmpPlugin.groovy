@@ -76,7 +76,7 @@ class GradleSmpPlugin implements Plugin<Project> {
     DoctorTasks.configure(project, extension, packageJson)
     LicenseTasks.configure(project)
     Dependencies.configure(project, extension)
-    UiTasks.configure(project, packageJson)
+    UiTasks.configure(project, extension, packageJson)
     TestTasks.configure(project)
 
     def artifact = PackagingTasks.configure(project, packageJson, extension)

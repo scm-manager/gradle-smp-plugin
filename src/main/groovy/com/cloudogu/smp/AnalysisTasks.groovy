@@ -73,6 +73,6 @@ class AnalysisTasks {
   private static String testsRunWith(String version) {
     String[] versionParts = version.split("[.-]")
     def majorVersion = versionParts[0] as int
-    return majorVersion == 4 ? "vite" : "jest"
+    return majorVersion >= 4 ? "vite" : "jest"
   }
 }

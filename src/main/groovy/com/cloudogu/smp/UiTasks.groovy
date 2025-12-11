@@ -25,7 +25,7 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 class UiTasks {
 
-  static void configure(Project project, PackageJson packageJson) {
+  static void configure(Project project, SmpExtension extension, PackageJson packageJson) {
     if (packageJson.exists()) {
       setupNodeEnv(project)
       registerYarnInstall(project)
@@ -37,7 +37,7 @@ class UiTasks {
         registerUIBuild(project)
       }
       if (packageJson.hasScript("test")) {
-        registerUITest(project)
+        registerUITest(project, extension)
       }
       if (packageJson.hasScript("deploy")) {
         registerUIDeploy(project)
@@ -116,10 +116,11 @@ class UiTasks {
     }
   }
 
-  private static void registerUITest(Project project) {
+  private static void registerUITest(Project project, SmpExtension smpExtension) {
+    def testRunner = testsRunWith(smpExtension.scmVersion.get())
     if (Environment.isCI()) {
       project.tasks.register("update-ui-test-timestamp", TouchFilesTask) {
-        directory = new File(project.buildDir, "jest-reports")
+        directory = new File(project.buildDir, "${testRunner}-reports")
         extension = "xml"
       }
     }
@@ -129,7 +130,7 @@ class UiTasks {
       inputs.file( project.rootProject.file('yarn.lock') )
       inputs.dir("src/main/js")
 
-      outputs.dir("build/jest-reports")
+      outputs.dir("build/${testRunner}-reports")
 
       args = ['run', 'test']
       ignoreExitValue = Environment.isCI()
@@ -147,6 +148,12 @@ class UiTasks {
     project.tasks.getByName("test").configure {
       dependsOn("ui-test")
     }
+  }
+
+  private static String testsRunWith(String version) {
+    String[] versionParts = version.split("[.-]")
+    def majorVersion = versionParts[0] as int
+    return majorVersion >= 4 ? "vite" : "jest"
   }
 
   private static void registerUIDeploy(Project project) {

@@ -31,11 +31,13 @@ class UiTasksTest {
 
   private File directory
   private Project project
+  private SmpExtension extension
 
   @BeforeEach
   void setUpProject(@TempDir Path directoryPath) {
     this.directory = directoryPath.toFile()
     this.project = ProjectBuilder.builder().withProjectDir(directory).build()
+    this.extension = new SmpExtension(ScmPropertyHelper.create("3.0.0")) {}
   }
 
   @Test
@@ -103,6 +105,24 @@ class UiTasksTest {
   }
 
   @Test
+  void shouldRegisterUiTestTaskFor4_0() {
+    this.extension = new SmpExtension(ScmPropertyHelper.create("4.0.0")) {}
+    project.tasks.register('test')
+    new File(directory, 'package.json') << '''
+    {
+      "scripts": {
+        "test": "vitest"
+      }
+    }
+    '''
+
+    configure()
+
+    def task = project.tasks.getByName('ui-test')
+    assertThat(task).isInstanceOf(YarnTask)
+  }
+
+  @Test
   void shouldRegisterUiDeployTask() {
     project.tasks.register("publish")
     new File(directory, "package.json") << """
@@ -120,7 +140,7 @@ class UiTasksTest {
 
   private void configure() {
     PackageJson packageJson = new PackageJson(project)
-    UiTasks.configure(project, packageJson)
+    UiTasks.configure(project, extension, packageJson)
   }
 
 }

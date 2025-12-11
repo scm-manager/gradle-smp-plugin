@@ -15,7 +15,9 @@ pipeline {
         branch pattern: 'release/*', comparator: 'GLOB'
       }
       steps {
+        sh "git tag -d ${releaseVersion} || true"
         sh "git checkout ${env.BRANCH_NAME}"
+        sh "git reset --hard origin/${env.BRANCH_NAME}"
         // read version from brach, set it and commit it
         sh "./gradlew setVersion -PnewVersion=${releaseVersion}"
         sh "git checkout ${env.BRANCH_NAME}"
