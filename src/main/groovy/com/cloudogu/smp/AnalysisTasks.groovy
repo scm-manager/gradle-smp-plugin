@@ -73,6 +73,8 @@ class AnalysisTasks {
   private static String testsRunWith(String version) {
     String[] versionParts = version.split("[.-]")
     def majorVersion = versionParts[0] as int
-    return majorVersion >= 4 ? "vite" : "jest"
+    def testRunner = majorVersion >= 4 ? "vite" : "jest"
+    println "Assuming frontend tests are run with ${testRunner} for SCM core version ${version}"
+    return testRunner
   }
 }
