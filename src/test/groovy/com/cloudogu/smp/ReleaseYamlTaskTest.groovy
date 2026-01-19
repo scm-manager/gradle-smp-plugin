@@ -39,6 +39,7 @@ class ReleaseYamlTaskTest {
       os = "Linux"
       arch = "arm"
     }
+    extension.isScm4Compatible = true
 
     Project project = ProjectBuilder.builder().build()
 
@@ -71,5 +72,6 @@ class ReleaseYamlTaskTest {
     assertThat(release.conditions.minVersion).isEqualTo("2.8.0")
     assertThat(release.conditions.os).isEqualTo("Linux")
     assertThat(release.conditions.arch).isEqualTo("arm")
+    assertThat(release.isScm4Compatible).isEqualTo("true")
   }
 }

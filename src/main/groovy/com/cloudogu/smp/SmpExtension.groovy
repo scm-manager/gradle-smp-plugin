@@ -56,6 +56,10 @@ abstract class SmpExtension implements Serializable {
 
   @Input
   @Optional
+  String isScm4Compatible
+
+  @Input
+  @Optional
   String configFileDirectory = ""
 
   @Input

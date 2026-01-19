@@ -27,24 +27,15 @@ import static org.assertj.core.api.Assertions.assertThat
 
 class PluginXmlTaskTest {
 
+  File packageJsonFile
+  File pluginXmlFile
+  File moduleXmlFile
+  Project project
+
   @Test
   void shouldCreatePluginXml(@TempDir Path temp) {
-    File packageJson = temp.resolve("package.json").toFile()
-    packageJson << '''{
-      "scripts": {
-        "build": "plugin-scripts build"
-      }
-    }'''
-    File moduleXml = temp.resolve("module.xml").toFile()
-    moduleXml << """
-      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-      <module>
-        <subscriber>
-          <class>com.cloudogu.sample.events.EventListener</class>
-        </subscriber>
-      </module>
-    """.trim().stripIndent()
-    File pluginXml = temp.resolve("plugin.xml").toFile()
+    prepareBuild(temp)
+
     SmpExtension extension = new SmpExtension(ScmPropertyHelper.create("2.7.0")) {}
     extension.displayName = "Sample Plugin"
     extension.category = "Sample"
@@ -56,25 +47,7 @@ class PluginXmlTaskTest {
       arch = "arm"
     }
 
-    Project project = ProjectBuilder.builder().build()
-    def pluginConfiguration = project.configurations.create("plugin")
-    pluginConfiguration.dependencies.add(project.dependencies.create("sonia.scm.plugins:scm-mail-plugin:2.1.0"))
-    def optionalPluginConfiguration = project.configurations.create("optionalPlugin")
-    optionalPluginConfiguration.dependencies.add(project.dependencies.create("sonia.scm.plugins:scm-editor-plugin:2.0.0"))
-    optionalPluginConfiguration.dependencies.add(project.dependencies.create("sonia.scm.plugins:scm-landingpage-plugin:1.0.0"))
-
-    project.setProperty("version", "2.4.0")
-    def task = project.task("plugin-xml", type: PluginXmlTask) {
-      it.extension.set(extension)
-      it.moduleXml.set(moduleXml)
-      it.pluginXml.set(pluginXml)
-      it.packageJson.set(new PackageJson(packageJson))
-      it.pluginName.set("scm-sample-plugin")
-    }
-    task.write()
-
-    XmlSlurper slurper = new XmlSlurper()
-    def plugin = slurper.parse(pluginXml)
+    def plugin = runBuild(extension)
 
     assertThat(plugin["scm-version"]).isEqualTo("2")
     assertThat(plugin.subscriber["class"]).isEqualTo("com.cloudogu.sample.events.EventListener")
@@ -85,6 +58,7 @@ class PluginXmlTaskTest {
     assertThat(plugin.information.category).isEqualTo("Sample")
     assertThat(plugin.information.author).isEqualTo("Cloudogu GmbH")
     assertThat(plugin.information.avatarUrl).isEqualTo('/images/avatar.png')
+    assertThat(plugin.information["is-scm4-compatible"]).isEqualTo(false)
     assertThat(plugin["child-first-classloader"]).isEqualTo(true)
 
     assertThat(plugin.resources.script).isEqualTo("assets/scm-sample-plugin.bundle.js")
@@ -100,6 +74,71 @@ class PluginXmlTaskTest {
     assertThat(plugin["optional-dependencies"].dependency[0].@version).isEqualTo("2.0.0")
     assertThat(plugin["optional-dependencies"].dependency[1]).isEqualTo("scm-landingpage-plugin")
     assertThat(plugin["optional-dependencies"].dependency[1].@version).isEqualTo("1.0.0")
+  }
+
+  @Test
+  void shouldSetCompatabilityWithScmVersion4x(@TempDir Path temp) {
+    prepareBuild(temp)
+
+    SmpExtension extension = new SmpExtension(ScmPropertyHelper.create("4.0.0")) {}
+
+    def plugin = runBuild(extension)
+
+    assertThat(plugin.information["is-scm4-compatible"]).isEqualTo(true)
+  }
+
+  @Test
+  void shouldReadCreateCompatabilityFlag(@TempDir Path temp) {
+    prepareBuild(temp)
+
+    SmpExtension extension = new SmpExtension(ScmPropertyHelper.create("3.0.0")) {}
+    extension.isScm4Compatible = true
+
+    def plugin = runBuild(extension)
+
+    assertThat(plugin.information["is-scm4-compatible"]).isEqualTo(true)
+  }
+
+  void prepareBuild(Path temp) {
+    packageJsonFile = temp.resolve("package.json").toFile()
+    packageJsonFile << '''{
+      "scripts": {
+        "build": "plugin-scripts build"
+      }
+    }'''
+    moduleXmlFile = temp.resolve("module.xml").toFile()
+    moduleXmlFile << """
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <module>
+        <subscriber>
+          <class>com.cloudogu.sample.events.EventListener</class>
+        </subscriber>
+      </module>
+    """.trim().stripIndent()
+    pluginXmlFile = temp.resolve("plugin.xml").toFile()
+
+    project = ProjectBuilder.builder().build()
+    def pluginConfiguration = project.configurations.create("plugin")
+    pluginConfiguration.dependencies.add(project.dependencies.create("sonia.scm.plugins:scm-mail-plugin:2.1.0"))
+    def optionalPluginConfiguration = project.configurations.create("optionalPlugin")
+    optionalPluginConfiguration.dependencies.add(project.dependencies.create("sonia.scm.plugins:scm-editor-plugin:2.0.0"))
+    optionalPluginConfiguration.dependencies.add(project.dependencies.create("sonia.scm.plugins:scm-landingpage-plugin:1.0.0"))
+
+    project.setProperty("version", "2.4.0")
+  }
+
+  def runBuild(extension) {
+    def task = project.task("plugin-xml", type: PluginXmlTask) {
+      it.extension.set(extension)
+      it.moduleXml.set(moduleXmlFile)
+      it.pluginXml.set(pluginXmlFile)
+      it.packageJson.set(new PackageJson(packageJsonFile))
+      it.pluginName.set("scm-sample-plugin")
+    }
+    task.write()
+
+    XmlSlurper slurper = new XmlSlurper()
+    return slurper.parse(pluginXmlFile)
   }
 
   @Test

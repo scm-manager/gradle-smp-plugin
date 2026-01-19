@@ -18,6 +18,7 @@ package com.cloudogu.smp
 
 import groovy.yaml.YamlBuilder
 import org.gradle.api.DefaultTask
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Nested
@@ -28,20 +29,12 @@ import java.security.MessageDigest
 
 class ReleaseYamlTask extends DefaultTask {
 
-  private SmpExtension extension
+  @Nested
+  final Property<SmpExtension> extension = project.objects.property(SmpExtension)
   private String pluginName
   private String pluginVersion
   private File releaseYaml
   private File smp
-
-  @Nested
-  SmpExtension getExtension() {
-    return extension
-  }
-
-  void setExtension(SmpExtension extension) {
-    this.extension = extension
-  }
 
   @Input
   String getPluginVersion() {
@@ -96,6 +89,9 @@ class ReleaseYamlTask extends DefaultTask {
       dep.name
     }
 
+    SmpExtension ext = extension.get()
+    def scm4Compatible = ext.isScm4Compatible ? ext.isScm4Compatible : Integer.parseInt(ext.scmVersion.get().split("\\.")[0]) >= 4
+
     def release = new YamlBuilder()
     release {
       plugin pluginName
@@ -103,6 +99,7 @@ class ReleaseYamlTask extends DefaultTask {
       date new Date().format("yyyy-MM-dd'T'HH:mm:ss'Z'")
       url downloadUrl
       checksum chksum
+      isScm4Compatible scm4Compatible
       if (!pluginDeps.isEmpty()) {
         dependencies pluginDeps
       }
@@ -110,12 +107,12 @@ class ReleaseYamlTask extends DefaultTask {
         optionalDependencies optionalPluginDeps
       }
       conditions {
-        minVersion extension.getScmVersion().get()
-        if (extension.pluginConditions.os != null) {
-          os extension.pluginConditions.os
+        minVersion ext.getScmVersion().get()
+        if (ext.pluginConditions.os != null) {
+          os ext.pluginConditions.os
         }
-        if (extension.pluginConditions.arch != null) {
-          arch extension.pluginConditions.arch
+        if (ext.pluginConditions.arch != null) {
+          arch ext.pluginConditions.arch
         }
       }
     }
@@ -124,7 +121,7 @@ class ReleaseYamlTask extends DefaultTask {
   }
 
   private String createDownloadUrl() {
-    String groupIdPath = extension.group.replaceAll("\\.", "/")
+    String groupIdPath = extension.get().group.replaceAll("\\.", "/")
     return "https://packages.scm-manager.org/repository/plugin-releases/${groupIdPath}/${pluginName}/${pluginVersion}/${pluginName}-${pluginVersion}.smp"
   }
 

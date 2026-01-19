@@ -115,7 +115,11 @@ class PluginXmlTask extends DefaultTask {
         if (ext.avatarUrl != null) {
           avatarUrl(ext.avatarUrl)
         }
-
+        if (ext.isScm4Compatible) {
+          'is-scm4-compatible'(ext.isScm4Compatible)
+        } else {
+          'is-scm4-compatible'(Integer.parseInt(scmVersion.split("\\.")[0]) >= 4)
+        }
       }
       conditions {
         'min-version'(scmVersion)
