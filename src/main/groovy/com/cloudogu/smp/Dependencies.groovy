@@ -147,27 +147,36 @@ class Dependencies {
       "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
 
     project.dependencies {
+      scmServer "sonia.scm:scm-webapp:${extension.scmVersion.get()}@war"
+
+      String[] splittedScmVersion = scmVersion.split('\\.')
+      String majorVersionStr = splittedScmVersion[0]
+      int majorVersion = majorVersionStr.toInteger()
+      String minorVersionStr = splittedScmVersion[1]
+      int minorVersion = minorVersionStr.toInteger()
+
       // we enforce the dependency versions from scm-manager root pom dependency management
       if (extension.core) {
         scmCoreDependency enforcedPlatform(project.project(':'))
         scmCoreDependency project.project(':scm-core')
         scmCoreDependency project.project(':scm-test')
-        scmCoreDependency project.project(':scm-queryable-test')
         annotationProcessor project.project(':scm-annotation-processor')
-        annotationProcessor project.project(':scm-core-annotation-processor')
       } else {
         scmCoreDependency enforcedPlatform("sonia.scm:scm:${scmVersion}")
         scmCoreDependency "sonia.scm:scm-core:${scmVersion}"
         testImplementation "sonia.scm:scm-test:${scmVersion}"
-        testImplementation "sonia.scm:scm-queryable-test:${scmVersion}"
         annotationProcessor "sonia.scm:scm-annotation-processor:${scmVersion}"
-        annotationProcessor "sonia.scm:scm-core-annotation-processor:${scmVersion}"
       }
 
-      scmServer "sonia.scm:scm-webapp:${extension.scmVersion.get()}@war"
-
-      String majorVersionStr = scmVersion.split('\\.')[0]
-      int majorVersion = majorVersionStr.toInteger()
+      if (majorVersion >= 3 && minorVersion >= 8) {
+        if (extension.core) {
+          scmCoreDependency project.project(':scm-queryable-test')
+          annotationProcessor project.project(':scm-core-annotation-processor')
+        } else {
+          testImplementation "sonia.scm:scm-queryable-test:${scmVersion}"
+          annotationProcessor "sonia.scm:scm-core-annotation-processor:${scmVersion}"
+        }
+      }
 
       if (majorVersion >= 3) {
         scmCoreDependency "jakarta.ws.rs:jakarta.ws.rs-api:3.1.0"
