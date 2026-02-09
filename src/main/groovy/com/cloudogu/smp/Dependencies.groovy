@@ -178,6 +178,13 @@ class Dependencies {
         }
       }
 
+      // is provided in scm-core
+      //Lombok dependencies need to be defined before the conveyor dependencies, because conveyor depends on the results of lombok
+      scmCoreDependency 'org.projectlombok:lombok:1.18.30'
+      scmCoreDependency 'org.mapstruct:mapstruct-jdk8:1.3.1.Final'
+
+      compileOnly 'com.cloudogu.jaxrs-tie:jaxrs-tie:2.0.0'
+
       if (majorVersion >= 3) {
         scmCoreDependency "jakarta.ws.rs:jakarta.ws.rs-api:3.1.0"
         scmCoreDependency 'jakarta.servlet:jakarta.servlet-api:6.0.0'
@@ -189,23 +196,19 @@ class Dependencies {
         scmCoreDependency "io.swagger.core.v3:swagger-annotations:2.1.13"
         scmCoreDependency 'com.cloudogu.conveyor:conveyor:1.0.0'
       }
-      // is provided in scm-core
-      scmCoreDependency 'org.projectlombok:lombok:1.18.30'
-      scmCoreDependency 'org.mapstruct:mapstruct-jdk8:1.3.1.Final'
-
-      compileOnly 'com.cloudogu.jaxrs-tie:jaxrs-tie:2.0.0'
 
 
       // register annotation processors
+      //Lombok dependencies need to be defined before the conveyor dependencies, because conveyor depends on the results of lombok
+      annotationProcessor 'org.projectlombok:lombok:1.18.30'
+      annotationProcessor 'com.cloudogu.jaxrs-tie:jaxrs-tie:2.0.0'
+      annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.1.Final'
+
       if (majorVersion >= 3) {
         annotationProcessor 'com.cloudogu.conveyor:conveyor:2.0.0'
       } else {
         annotationProcessor 'com.cloudogu.conveyor:conveyor:1.0.0'
       }
-
-      annotationProcessor 'org.projectlombok:lombok:1.18.30'
-      annotationProcessor 'com.cloudogu.jaxrs-tie:jaxrs-tie:2.0.0'
-      annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.1.Final'
 
       // resteasy test dependencies
       if (majorVersion >= 3) {
