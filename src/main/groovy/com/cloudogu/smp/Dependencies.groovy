@@ -182,23 +182,29 @@ class Dependencies {
         scmCoreDependency "jakarta.ws.rs:jakarta.ws.rs-api:3.1.0"
         scmCoreDependency 'jakarta.servlet:jakarta.servlet-api:6.0.0'
         scmCoreDependency "io.swagger.core.v3:swagger-annotations-jakarta:2.2.26"
+        scmCoreDependency 'com.cloudogu.conveyor:conveyor:2.0.0'
       } else {
         scmCoreDependency "javax.ws.rs:javax.ws.rs-api:2.1.1"
         scmCoreDependency 'javax.servlet:javax.servlet-api:3.1.0'
         scmCoreDependency "io.swagger.core.v3:swagger-annotations:2.1.13"
+        scmCoreDependency 'com.cloudogu.conveyor:conveyor:1.0.0'
       }
       // is provided in scm-core
       scmCoreDependency 'org.projectlombok:lombok:1.18.30'
       scmCoreDependency 'org.mapstruct:mapstruct-jdk8:1.3.1.Final'
 
-      scmCoreDependency 'com.cloudogu.conveyor:conveyor:1.0.0'
       compileOnly 'com.cloudogu.jaxrs-tie:jaxrs-tie:2.0.0'
 
 
       // register annotation processors
+      if (majorVersion >= 3) {
+        annotationProcessor 'com.cloudogu.conveyor:conveyor:2.0.0'
+      } else {
+        annotationProcessor 'com.cloudogu.conveyor:conveyor:1.0.0'
+      }
+
       annotationProcessor 'org.projectlombok:lombok:1.18.30'
       annotationProcessor 'com.cloudogu.jaxrs-tie:jaxrs-tie:2.0.0'
-      annotationProcessor 'com.cloudogu.conveyor:conveyor:1.0.0'
       annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.1.Final'
 
       // resteasy test dependencies
