@@ -26,8 +26,9 @@ pipeline {
         sh 'git fetch --all'
 
         // checkout, reset and merge
-        sh "git checkout main"
-        sh "git reset --hard origin/main"
+// TEMPORARILY SWITCHED TO SUPPORT BRANCH TO RELEASE FOR SCM 3.x
+        sh "git checkout support/3.x"
+        sh "git reset --hard origin/support/3.x"
         sh "git merge --ff-only ${env.BRANCH_NAME}"
 
           // set tag
@@ -69,8 +70,9 @@ pipeline {
       }
       steps {
         // merge main in to develop
-        sh 'git checkout develop'
-        sh 'git merge main'
+// TEMPORARILY REMOVED TO RELEASE FOR SCM 3.x
+//         sh 'git checkout develop'
+//         sh 'git merge main'
 
         // set version to next development iteration
         sh './gradlew setVersionToNextSnapshot'
@@ -78,8 +80,8 @@ pipeline {
         sh "git -c user.name='CES Marvin' -c user.email='cesmarvin@cloudogu.com' commit -m 'prepare for next development iteration'"
 
         // push changes back to remote repository
-        authGit "SCM-Manager", "push origin main --tags"
-        authGit "SCM-Manager", "push origin develop --tags"
+// TEMPORARILY SWITCHED TO SUPPORT BRANCH TO RELEASE FOR SCM 3.x
+        authGit "SCM-Manager", "push origin support/3.x --tags"
         authGit "SCM-Manager", "push origin :${env.BRANCH_NAME}"
       }
     }
