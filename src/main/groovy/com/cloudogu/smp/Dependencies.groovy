@@ -133,7 +133,11 @@ class Dependencies {
       it.attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling, Bundling.EXTERNAL))
       it.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements, "smp"))
 
-      runtimeScmElements.extendsFrom(coreDependency, pluginDependency, optionalPlugin)
+      if (project.hasProperty("scm.omitOptionalPlugins") && Boolean.valueOf(project.getProperty("scm.omitOptionalPlugins"))) {
+        runtimeScmElements.extendsFrom(coreDependency, pluginDependency)
+      } else {
+        runtimeScmElements.extendsFrom(coreDependency, pluginDependency, optionalPlugin)
+      }
     }
   }
 
