@@ -172,7 +172,7 @@ class Dependencies {
         annotationProcessor "sonia.scm:scm-annotation-processor:${scmVersion}"
       }
 
-      if (majorVersion >= 3 && minorVersion >= 8) {
+      if (majorVersion > 3 || (majorVersion == 3 && minorVersion >= 8)) {
         if (extension.core) {
           scmCoreDependency project.project(':scm-queryable-test')
           annotationProcessor project.project(':scm-core-annotation-processor')
