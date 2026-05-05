@@ -18,10 +18,13 @@ package com.cloudogu.smp
 
 import com.google.common.base.Strings
 import groovy.json.JsonSlurper
+import org.eclipse.jetty.server.Handler
 import org.eclipse.jetty.server.HttpConfiguration
 import org.eclipse.jetty.server.HttpConnectionFactory
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
+import org.eclipse.jetty.server.handler.HandlerList
+import org.eclipse.jetty.server.handler.ShutdownHandler
 import org.eclipse.jetty.util.component.LifeCycle
 import org.eclipse.jetty.webapp.WebAppContext
 
@@ -63,7 +66,12 @@ final class ScmServer {
 
     server = new Server()
     server.addConnector(createServerConnector(server))
-    server.setHandler(createScmContext())
+    HandlerList handlerList = new HandlerList()
+    handlerList.setHandlers([
+      createScmContext(),
+      createShutdownHandler()
+    ] as Handler[])
+    server.setHandler(handlerList)
     server.addEventListener(new LifeCycle.Listener() {
       @Override
       void lifeCycleStarted(LifeCycle event) {
@@ -114,6 +122,10 @@ final class ScmServer {
     warContext.setWar(configuration.warFile)
 
     return warContext
+  }
+
+  private static ShutdownHandler createShutdownHandler() {
+    return new ShutdownHandler("_shutdown_", true, false)
   }
 
   private ServerConnector createServerConnector(Server server) throws MalformedURLException {
