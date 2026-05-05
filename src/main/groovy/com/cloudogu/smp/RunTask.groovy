@@ -22,6 +22,7 @@ import com.moowork.gradle.node.task.NodeTask
 import com.moowork.gradle.node.yarn.YarnTask
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
@@ -47,7 +48,7 @@ class RunTask extends DefaultTask {
   List<Action<JavaExecSpec>> execSpecActions = []
 
   @Input
-  @Option(option = 'debug-jvm', description = 'Start ScmServer suspended and listening on debug port (default: 5005)')
+  @Option(option = 'debug-jvm', description = 'Start SCM server suspended and listening on debug port (default: 5005)')
   boolean debugJvm = false
 
   @Input
@@ -58,6 +59,10 @@ class RunTask extends DefaultTask {
   @Option(option = 'debug-port', description = 'Port for debugger')
   String debugPort = "5005"
 
+  @Input
+  @Option(option = 'run-in-background', description = 'Start SCM server in background')
+  boolean runInBackground = false
+
   @TaskAction
   void exec() {
     List<Closure<Void>> actions = new ArrayList<>()
@@ -66,13 +71,34 @@ class RunTask extends DefaultTask {
       actions.add(createFrontend())
     }
     def threads = start(actions)
-    wait(threads)
+    if (!runInBackground) {
+      wait(threads)
+    } else {
+      waitForPortToBeOpen()
+    }
   }
 
   private static void wait(List<Thread> threads) {
     for (Thread thread : threads) {
       thread.join()
     }
+  }
+
+  private void waitForPortToBeOpen() {
+    int retries = 180
+    for (int i = 0; i < retries; i++) {
+      try {
+        URL urlConnect = new URL("http://localhost:${extension.serverConfiguration.port}/scm/api/v2")
+        URLConnection conn = (HttpURLConnection) urlConnect.openConnection()
+        if (conn.getResponseCode() == 200) {
+          return
+        }
+      } catch (IOException ex) {
+        System.out.println("scm-server not reachable, retrying...")
+      }
+      Thread.sleep(500)
+    }
+    throw new GradleException("scm-server not reachable")
   }
 
   private static List<Thread> start(List<Closure<Void>> actions) {

@@ -80,6 +80,14 @@ class RunTasks {
             dependsOn("yarn_install")
           }
         }
+
+        project.tasks.register("stop", StopScmServer) {
+          group = "Run"
+          description = "Stop SCM-Manager if started in background"
+          it.extension = extension
+          // run always
+          outputs.upToDateWhen { false }
+        }
       }
     }
   }

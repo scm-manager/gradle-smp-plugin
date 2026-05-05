@@ -224,8 +224,18 @@ class Dependencies {
   private static void configureRepositories(Project project) {
     project.repositories {
       mavenLocal()
+      mavenCentral()
       maven {
         url "https://packages.scm-manager.org/repository/public/"
+        content {
+          includeGroupByRegex "sonia\\..*"
+          includeGroupByRegex "org\\.scm-manager\\..*"
+          includeGroupByRegex "com\\.cloudogu\\..*"
+          includeGroup "com.github.legman"
+          includeGroup "org.tmatesoft.svnkit"
+          includeGroup "org.apache.shiro"
+          includeGroup "com.aragost.javahg"
+        }
       }
     }
   }
