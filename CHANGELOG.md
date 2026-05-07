@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
  adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.19.3 - 2026-05-07
+### Added
+- Start parameter 'run-in-background' to run plugin in background
+### Changed
+- Use Maven Central repository directly instead of packages.scm-manager.org
+
 ## 0.19.2 - 2026-03-20
 ### Fixed
 - Add switch to omit optional plugins in run command
