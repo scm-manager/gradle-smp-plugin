@@ -25,7 +25,7 @@ repositories {
   }
 }
 
-def jettyVersion = '11.0.16'
+def jettyVersion = '11.0.26'
 
 dependencies {
   implementation(gradleApi())
