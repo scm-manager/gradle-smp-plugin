@@ -32,7 +32,7 @@ dependencies {
   implementation 'com.github.node-gradle:gradle-node-plugin:7.1.0'
   implementation "org.eclipse.jetty:jetty-server:${jettyVersion}"
   implementation "org.eclipse.jetty:jetty-webapp:${jettyVersion}"
-  implementation 'com.sun.xml.bind:jaxb-osgi:2.2.4-1'
+  implementation 'com.sun.xml.bind:jaxb-osgi:2.3.9'
   implementation 'com.google.guava:guava:32.0.1-jre'
   implementation 'org.apache.groovy:groovy-yaml:4.0.32'
   implementation 'org.apache.groovy:groovy-xml:4.0.32'
