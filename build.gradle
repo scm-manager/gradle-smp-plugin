@@ -36,7 +36,7 @@ dependencies {
   implementation 'com.google.guava:guava:32.0.1-jre'
   implementation 'org.apache.groovy:groovy-yaml:4.0.32'
   implementation 'org.apache.groovy:groovy-xml:4.0.32'
-  implementation 'io.swagger.core.v3:swagger-gradle-plugin:2.2.52'
+  implementation 'io.swagger.core.v3:swagger-gradle-plugin:2.2.54'
   implementation 'org.scm-manager:gradle-license-plugin:0.9.0'
   implementation 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:7.3.1.8318'
   implementation 'org.scm-manager.changelog:gradle-plugin:0.2.0'
