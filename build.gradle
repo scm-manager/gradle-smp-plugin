@@ -75,7 +75,7 @@ gradlePlugin {
       implementationClass = 'com.cloudogu.smp.GradleSmpPlugin'
       displayName = 'Gradle SCM-Manager Plugin'
       description = 'Plugin to build and test SCM-Manager plugins'
-      tags = ['scm-manager', 'smp', 'plugin']
+      tags = ['scm-manager', 'smp']
     }
   }
 }
