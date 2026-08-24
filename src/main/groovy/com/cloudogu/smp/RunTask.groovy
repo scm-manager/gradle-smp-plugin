@@ -18,8 +18,8 @@ package com.cloudogu.smp
 
 import com.google.common.base.CharMatcher
 import com.google.common.base.Splitter
-import com.moowork.gradle.node.task.NodeTask
-import com.moowork.gradle.node.yarn.YarnTask
+import com.github.gradle.node.task.NodeTask
+import com.github.gradle.node.yarn.task.YarnTask
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
@@ -29,14 +29,21 @@ import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import org.gradle.process.JavaExecSpec
+import org.gradle.process.ExecOperations
+import org.gradle.work.DisableCachingByDefault
 
+import javax.inject.Inject
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.util.stream.Collectors
 
-class RunTask extends DefaultTask {
+@DisableCachingByDefault(because = "Starts long-running backend and frontend processes")
+abstract class RunTask extends DefaultTask {
+
+  @Inject
+  abstract ExecOperations getExecOperations()
 
   @Nested
   SmpExtension extension
@@ -111,7 +118,7 @@ class RunTask extends DefaultTask {
 
   private Closure<Void> createBackend() {
     return {
-      project.javaexec { jes ->
+      execOperations.javaexec { jes ->
         jes.mainClass.set(ScmServer.name)
         jes.args(extension.getServerConfigurationFile(project))
         jes.environment("NODE_ENV", "development")
@@ -170,15 +177,15 @@ class RunTask extends DefaultTask {
     if (script.startsWith("plugin-scripts")) {
       def args = Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().trimResults().splitToList(script)
       frontend = project.tasks.create("boot-frontend", NodeTask) {
-        it.script = new File(project.projectDir, "node_modules/@scm-manager/plugin-scripts/bin/plugin-scripts.js")
-        it.args = args.subList(1, args.size())
-        it.environment = env
+        it.script.set(project.layout.projectDirectory.file("node_modules/@scm-manager/plugin-scripts/bin/plugin-scripts.js"))
+        it.args.set(args.subList(1, args.size()))
+        it.environment.set(env)
       }
     } else {
       // if we not use plugin-scripts for our watch script we fallback to start it with yarn
       frontend = project.tasks.create("boot-frontend", YarnTask) {
-        it.args = ['run', 'watch']
-        it.environment = env
+        it.args.set(['run', 'watch'])
+        it.environment.set(env)
       }
     }
 

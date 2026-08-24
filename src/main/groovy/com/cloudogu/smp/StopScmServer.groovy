@@ -19,7 +19,9 @@ package com.cloudogu.smp
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 
+@DisableCachingByDefault(because = "Sends a shutdown request to a running SCM server")
 class StopScmServer extends DefaultTask {
 
   @Nested

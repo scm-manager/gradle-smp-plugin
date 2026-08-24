@@ -16,8 +16,8 @@
 
 package com.cloudogu.smp
 
-import com.moowork.gradle.node.yarn.YarnTask
-import com.moowork.gradle.node.NodeExtension
+import com.github.gradle.node.yarn.task.YarnTask
+import com.github.gradle.node.NodeExtension
 import org.gradle.api.Project
 import org.gradle.api.GradleException
 import org.gradle.api.plugins.BasePlugin
@@ -48,13 +48,16 @@ class UiTasks {
   private static void setupNodeEnv(Project project) {
     project.plugins.apply("com.github.node-gradle.node")
     def nodeExt = NodeExtension.get(project)
-    nodeExt.setDownload(true)
-    nodeExt.setVersion(Environment.NODE_VERSION)
-    nodeExt.setYarnVersion(Environment.YARN_VERSION)
+    nodeExt.download.set(true)
+    nodeExt.version.set(Environment.NODE_VERSION)
+    nodeExt.yarnVersion.set(Environment.YARN_VERSION)
   }
 
   private static void registerYarnInstall(Project project) {
-    project.tasks.getByName('yarn_install').configure {
+    project.tasks.getByName('yarn').configure {
+      if (project.rootProject.findProject(':scm-ui') != null) {
+        dependsOn ':scm-ui:yarn'
+      }
       inputs.file('package.json')
       inputs.file( project.rootProject.file('yarn.lock') )
       outputs.dir( project.rootProject.file('node_modules') )
@@ -71,8 +74,8 @@ class UiTasks {
       inputs.dir("src/main/js")
       outputs.file(marker)
 
-      args = ['run', 'typecheck']
-      dependsOn("yarn_install")
+      args.set(['run', 'typecheck'])
+      dependsOn("yarn")
 
       group = LifecycleBasePlugin.VERIFICATION_GROUP
       description = "Run typecheck"
@@ -101,8 +104,8 @@ class UiTasks {
 
       outputs.dir("build/webapp/assets")
 
-      args = ['run', 'build']
-      dependsOn("yarn_install")
+      args.set(['run', 'build'])
+      dependsOn("yarn")
 
       group = BasePlugin.BUILD_GROUP
       description = "Assembles the plugin ui bundle"
@@ -132,13 +135,13 @@ class UiTasks {
 
       outputs.dir("build/${testRunner}-reports")
 
-      args = ['run', 'test']
-      ignoreExitValue = Environment.isCI()
+      args.set(['run', 'test'])
+      ignoreExitValue.set(Environment.isCI())
 
       if (Environment.isCI()) {
-        dependsOn("yarn_install", "update-ui-test-timestamp")
+        dependsOn("yarn", "update-ui-test-timestamp")
       } else {
-        dependsOn("yarn_install")
+        dependsOn("yarn")
       }
 
       group = LifecycleBasePlugin.VERIFICATION_GROUP
@@ -162,8 +165,8 @@ class UiTasks {
       inputs.file( project.rootProject.file('yarn.lock') )
       inputs.dir("src/main/js")
 
-      args = ['run', 'deploy', project.version]
-      dependsOn("yarn_install")
+      args.set(['run', 'deploy', project.version.toString()])
+      dependsOn("yarn")
 
       group = "publishing"
       description = "Run ui tests"

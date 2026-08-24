@@ -18,7 +18,9 @@ package com.cloudogu.smp.doctor
 
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.OutputFile
+import org.gradle.work.DisableCachingByDefault
 
+@DisableCachingByDefault(because = "Validation resolves plugin dependencies that are not modeled as task inputs")
 class DoctorValidateTask extends DoctorTask {
 
   private File outputMarker

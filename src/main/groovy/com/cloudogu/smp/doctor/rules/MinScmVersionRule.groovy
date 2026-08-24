@@ -16,11 +16,12 @@
 
 package com.cloudogu.smp.doctor.rules
 
+import groovy.xml.XmlParser
 import com.cloudogu.smp.doctor.Context
 import com.cloudogu.smp.doctor.Result
 import com.cloudogu.smp.doctor.Rule
 import org.gradle.api.GradleException
-import org.gradle.util.VersionNumber
+import org.apache.maven.artifact.versioning.ComparableVersion
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -66,7 +67,7 @@ class MinScmVersionRule implements Rule {
     Collections.sort(plugins)
 
     Plugin pluginWithHighestMinVersion = plugins.last()
-    VersionNumber currentVersion = VersionNumber.parse(context.extension.getScmVersion().get())
+    ComparableVersion currentVersion = new ComparableVersion(context.extension.getScmVersion().get())
     if (currentVersion.compareTo(pluginWithHighestMinVersion.version) < 0) {
       String message = String.format(
         ERROR_MIN_VERSION, currentVersion, pluginWithHighestMinVersion.name, pluginWithHighestMinVersion.version
@@ -102,7 +103,7 @@ class MinScmVersionRule implements Rule {
         throw new GradleException("invalid dependency: ${smp}")
       }
       if (!version.empty) {
-        return new Plugin(name, VersionNumber.parse(version))
+        return new Plugin(name, new ComparableVersion(version))
       }
     }
     return null
@@ -111,9 +112,9 @@ class MinScmVersionRule implements Rule {
   private static class Plugin implements Comparable<Plugin> {
 
     private String name
-    private VersionNumber version
+    private ComparableVersion version
 
-    private Plugin(String name, VersionNumber version) {
+    private Plugin(String name, ComparableVersion version) {
       this.name = name
       this.version = version
     }

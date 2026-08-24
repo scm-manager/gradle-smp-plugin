@@ -27,7 +27,7 @@ class TestTasks {
 
       project.jacocoTestReport {
         reports {
-          xml.enabled true
+          xml.required.set(true)
         }
       }
 

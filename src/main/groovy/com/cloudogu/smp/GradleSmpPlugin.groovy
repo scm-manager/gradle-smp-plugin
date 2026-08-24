@@ -42,9 +42,10 @@ class GradleSmpPlugin implements Plugin<Project> {
       } else {
         return 11
       }
-    } else {
+    } else if (majorVersion < 4) {
       return 17
     }
+    return 25
   }
 
   void apply(Project project) {
@@ -61,7 +62,7 @@ class GradleSmpPlugin implements Plugin<Project> {
 
     project.java {
       toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(25)
       }
     }
 
@@ -79,8 +80,8 @@ class GradleSmpPlugin implements Plugin<Project> {
     UiTasks.configure(project, extension, packageJson)
     TestTasks.configure(project)
 
-    def artifact = PackagingTasks.configure(project, packageJson, extension)
-    PublishingTasks.configure(project, extension, artifact)
+    PackagingTasks.configure(project, packageJson, extension)
+    PublishingTasks.configure(project, extension)
     RunTasks.configure(project, packageJson, extension)
     VersionTasks.configure(project, extension)
   }

@@ -19,6 +19,7 @@ package com.cloudogu.smp
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 
 class LicenseTasks {
 
@@ -81,6 +82,7 @@ class LicenseTasks {
     }
   }
 
+  @DisableCachingByDefault(because = "Only reports that the required license file is missing and produces no output")
   static class LicenseFileMissingTask extends DefaultTask {
 
     @TaskAction

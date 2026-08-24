@@ -16,6 +16,7 @@
 
 package com.cloudogu.smp
 
+import groovy.xml.XmlSlurper
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test

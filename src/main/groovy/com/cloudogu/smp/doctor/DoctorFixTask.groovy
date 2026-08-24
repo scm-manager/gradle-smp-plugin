@@ -16,6 +16,9 @@
 
 package com.cloudogu.smp.doctor
 
+import org.gradle.work.DisableCachingByDefault
+
+@DisableCachingByDefault(because = "Fixes project configuration files in place")
 class DoctorFixTask extends DoctorTask {
   @Override
   void execute(Results results) {

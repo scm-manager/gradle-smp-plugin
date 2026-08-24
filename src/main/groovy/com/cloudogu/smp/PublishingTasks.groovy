@@ -19,7 +19,6 @@ package com.cloudogu.smp
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
-import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.component.AdhocComponentWithVariants
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
@@ -31,20 +30,20 @@ import static com.cloudogu.smp.Dependencies.*
 
 class PublishingTasks {
 
-  static void configure(Project project, SmpExtension extension, PublishArtifact smp) {
+  static void configure(Project project, SmpExtension extension) {
     project.afterEvaluate {
-      configurePublishing(project, extension, smp)
+      configurePublishing(project, extension)
     }
   }
 
-  private static void configurePublishing(Project project, SmpExtension extension, PublishArtifact smp) {
+  private static void configurePublishing(Project project, SmpExtension extension) {
     project.java {
       withJavadocJar()
       withSourcesJar()
     }
 
     project.tasks.withType(Javadoc) {
-      failOnError false
+      failOnError = false
     }
 
     // ensure release-yaml is generate before artifact is published

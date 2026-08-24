@@ -16,6 +16,7 @@
 
 package com.cloudogu.smp
 
+import groovy.xml.XmlParser
 import groovy.xml.DOMBuilder
 import groovy.xml.XmlUtil
 import org.gradle.api.DefaultTask

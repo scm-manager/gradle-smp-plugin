@@ -23,14 +23,14 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.attributes.*
 import org.gradle.api.file.FileCollection
 import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.plugins.JavaPluginConvention
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.SourceSet
 
 class Dependencies {
 
   static Iterable<File> createPackagingClasspath(Project project) {
-    FileCollection runtimeClasspath = project.getConvention().getPlugin(JavaPluginConvention.class)
-      .getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath()
+    FileCollection runtimeClasspath = project.extensions.getByType(JavaPluginExtension)
+      .sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME).runtimeClasspath
     Configuration plugins = project.getConfigurations().getByName("plugin")
     Configuration optionalPlugin = project.getConfigurations().getByName("optionalPlugin")
     Configuration coreDependencies = project.getConfigurations().getByName("scmCoreDependency")
@@ -161,10 +161,10 @@ class Dependencies {
 
       // we enforce the dependency versions from scm-manager root pom dependency management
       if (extension.core) {
-        scmCoreDependency enforcedPlatform(project.project(':'))
-        scmCoreDependency project.project(':scm-core')
-        scmCoreDependency project.project(':scm-test')
-        annotationProcessor project.project(':scm-annotation-processor')
+        scmCoreDependency enforcedPlatform(project.dependencies.project(':'))
+        scmCoreDependency project.dependencies.project(':scm-core')
+        scmCoreDependency project.dependencies.project(':scm-test')
+        annotationProcessor project.dependencies.project(':scm-annotation-processor')
       } else {
         scmCoreDependency enforcedPlatform("sonia.scm:scm:${scmVersion}")
         scmCoreDependency "sonia.scm:scm-core:${scmVersion}"
@@ -174,8 +174,8 @@ class Dependencies {
 
       if (majorVersion > 3 || (majorVersion == 3 && minorVersion >= 8)) {
         if (extension.core) {
-          scmCoreDependency project.project(':scm-queryable-test')
-          annotationProcessor project.project(':scm-core-annotation-processor')
+          scmCoreDependency project.dependencies.project(':scm-queryable-test')
+          annotationProcessor project.dependencies.project(':scm-core-annotation-processor')
         } else {
           testImplementation "sonia.scm:scm-queryable-test:${scmVersion}"
           annotationProcessor "sonia.scm:scm-core-annotation-processor:${scmVersion}"
@@ -184,7 +184,7 @@ class Dependencies {
 
       // is provided in scm-core
       //Lombok dependencies need to be defined before the conveyor dependencies, because conveyor depends on the results of lombok
-      scmCoreDependency 'org.projectlombok:lombok:1.18.30'
+      scmCoreDependency 'org.projectlombok:lombok:1.18.46'
       scmCoreDependency 'org.mapstruct:mapstruct-jdk8:1.3.1.Final'
 
       compileOnly 'com.cloudogu.jaxrs-tie:jaxrs-tie:2.0.0'
@@ -204,7 +204,7 @@ class Dependencies {
 
       // register annotation processors
       //Lombok dependencies need to be defined before the conveyor dependencies, because conveyor depends on the results of lombok
-      annotationProcessor 'org.projectlombok:lombok:1.18.30'
+      annotationProcessor 'org.projectlombok:lombok:1.18.46'
       annotationProcessor 'com.cloudogu.jaxrs-tie:jaxrs-tie:2.0.0'
       annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.1.Final'
 
@@ -226,11 +226,12 @@ class Dependencies {
       }
 
       // test engine
-      testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+      testAnnotationProcessor 'org.projectlombok:lombok:1.18.46'
 
       testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
       testImplementation 'org.junit.jupiter:junit-jupiter-params:5.6.2'
       testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+      testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.3'
 
       testImplementation 'org.assertj:assertj-core:3.16.1'
       testImplementation 'org.mockito:mockito-core:1.3.1.Final'
@@ -244,7 +245,7 @@ class Dependencies {
       mavenLocal()
       mavenCentral()
       maven {
-        url "https://packages.scm-manager.org/repository/public/"
+        url = project.uri("https://packages.scm-manager.org/repository/public/")
         content {
           includeGroupByRegex "sonia\\..*"
           includeGroupByRegex "org\\.scm-manager\\..*"

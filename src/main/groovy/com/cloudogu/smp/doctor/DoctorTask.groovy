@@ -19,11 +19,13 @@ package com.cloudogu.smp.doctor
 import com.cloudogu.smp.PackageJson
 import com.cloudogu.smp.SmpExtension
 import org.gradle.api.DefaultTask
+import org.gradle.work.DisableCachingByDefault
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.TaskAction
 
+@DisableCachingByDefault(because = "Doctor rules access project configuration and resolved dependencies that are not fully modeled as task inputs")
 abstract class DoctorTask extends DefaultTask {
 
   private SmpExtension extension

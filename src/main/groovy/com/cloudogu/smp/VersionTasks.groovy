@@ -22,7 +22,7 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
-import org.gradle.util.VersionNumber
+import org.gradle.work.DisableCachingByDefault
 
 import java.nio.charset.StandardCharsets
 
@@ -74,6 +74,7 @@ class VersionTasks {
     }
   }
 
+  @DisableCachingByDefault(because = "Updates gradle.properties in place")
   static class SetVersionTask extends DefaultTask {
 
     @Input
@@ -89,12 +90,16 @@ class VersionTasks {
     }
   }
 
+  @DisableCachingByDefault(because = "Updates gradle.properties in place")
   static class SetVersionToNextSnapshot extends DefaultTask {
 
     @TaskAction
     void execute() {
-      VersionNumber v = VersionNumber.parse(project.version)
-      String version = "${v.major}.${v.minor}.${v.micro + 1}-SNAPSHOT"
+      def matcher = project.version.toString() =~ /^(\d+)\.(\d+)\.(\d+)(?:-.+)?$/
+      if (!matcher.matches()) {
+        throw new GradleException("version '${project.version}' does not follow major.minor.patch")
+      }
+      String version = "${matcher.group(1)}.${matcher.group(2)}.${matcher.group(3).toInteger() + 1}-SNAPSHOT"
       setVersion(project, version)
     }
   }

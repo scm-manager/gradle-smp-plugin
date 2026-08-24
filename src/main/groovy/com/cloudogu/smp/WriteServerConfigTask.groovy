@@ -23,8 +23,12 @@ import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 
+@DisableCachingByDefault(because = "The generated server configuration contains machine-specific absolute paths")
 class WriteServerConfigTask extends DefaultTask {
 
   private SmpExtension extension
@@ -32,6 +36,7 @@ class WriteServerConfigTask extends DefaultTask {
   private Configuration configuration
 
   @InputFiles
+  @PathSensitive(PathSensitivity.ABSOLUTE)
   Configuration getConfiguration() {
     return configuration
   }

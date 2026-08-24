@@ -1,5 +1,3 @@
-import org.gradle.util.VersionNumber
-
 plugins {
   // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
   id 'java-gradle-plugin'
@@ -11,18 +9,19 @@ plugins {
   id 'maven-publish'
 
   // publishing plugin
-  id 'com.gradle.plugin-publish' version '0.12.0'
+  id 'com.gradle.plugin-publish' version '2.1.0'
 
-  id 'org.scm-manager.license' version '0.8.0'
+  id 'org.scm-manager.license' version '0.9.0'
 }
 
 repositories {
+  mavenLocal()
   // Use maven central for resolving dependencies.
   // You can declare any Maven/Ivy/file repository here.
   mavenCentral()
 
   maven {
-    url 'https://plugins.gradle.org/m2/'
+    url = 'https://plugins.gradle.org/m2/'
   }
 }
 
@@ -30,31 +29,35 @@ def jettyVersion = '11.0.16'
 
 dependencies {
   implementation(gradleApi())
-  implementation 'com.github.node-gradle:gradle-node-plugin:2.2.4'
+  implementation 'com.github.node-gradle:gradle-node-plugin:7.1.0'
   implementation "org.eclipse.jetty:jetty-server:${jettyVersion}"
   implementation "org.eclipse.jetty:jetty-webapp:${jettyVersion}"
   implementation 'com.sun.xml.bind:jaxb-osgi:2.2.4-1'
   implementation 'com.google.guava:guava:32.0.1-jre'
-  implementation 'org.codehaus.groovy:groovy-yaml:3.0.19'
-  implementation 'io.swagger.core.v3:swagger-gradle-plugin:2.2.26'
-  implementation 'org.scm-manager:gradle-license-plugin:0.8.0'
-  implementation 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
+  implementation 'org.apache.groovy:groovy-yaml:4.0.32'
+  implementation 'org.apache.groovy:groovy-xml:4.0.32'
+  implementation 'io.swagger.core.v3:swagger-gradle-plugin:2.2.52'
+  implementation 'org.scm-manager:gradle-license-plugin:0.9.0'
+  implementation 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:7.3.1.8318'
   implementation 'org.scm-manager.changelog:gradle-plugin:0.2.0'
+  implementation 'org.apache.maven:maven-artifact:3.9.12'
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
   testImplementation 'org.junit.jupiter:junit-jupiter-params:5.7.0'
   testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
   testImplementation 'org.assertj:assertj-core:3.11.1'
+  testImplementation 'org.apache.groovy:groovy-test:4.0.32'
 }
 
-project.tasks.withType(GroovyCompile) {
-  sourceCompatibility = JavaVersion.VERSION_17
-  targetCompatibility = JavaVersion.VERSION_17
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(25)
+  }
 }
 
-project.tasks.withType(JavaCompile) {
-  sourceCompatibility = JavaVersion.VERSION_17
-  targetCompatibility = JavaVersion.VERSION_17
+project.tasks.withType(JavaCompile).configureEach {
+  options.release = 17
 }
 
 test {
@@ -62,11 +65,17 @@ test {
 }
 
 gradlePlugin {
+  website = 'https://scm-manager.org'
+  vcsUrl = 'https://github.com/scm-manager/gradle-smp-plugin'
+
   // Define the plugin
   plugins {
     smpPlugin {
       id = 'org.scm-manager.smp'
       implementationClass = 'com.cloudogu.smp.GradleSmpPlugin'
+      displayName = 'Gradle SCM-Manager Plugin'
+      description = 'Plugin to build and test SCM-Manager plugins'
+      tags = ['scm-manager', 'smp', 'plugin']
     }
   }
 }
@@ -79,6 +88,7 @@ sourceSets {
 
 gradlePlugin.testSourceSets(sourceSets.functionalTest)
 configurations.functionalTestImplementation.extendsFrom(configurations.testImplementation)
+configurations.functionalTestRuntimeOnly.extendsFrom(configurations.testRuntimeOnly)
 
 // Add a task to run the functional tests
 tasks.register('functionalTest', Test) {
@@ -94,19 +104,6 @@ check {
 }
 
 // publish plugin
-pluginBundle {
-  website = 'https://scm-manager.org'
-  vcsUrl = 'https://github.com/scm-manager/gradle-smp-plugin'
-  description = 'Plugin to build and test SCM-Manager plugins'
-  tags = ['scm-manager', 'smp', 'plugin']
-
-  plugins {
-    smpPlugin {
-      displayName = 'Gradle SCM-Manager Plugin'
-    }
-  }
-}
-
 // release tasks
 
 task setVersion {
@@ -122,8 +119,11 @@ task setVersion {
 
 task setVersionToNextSnapshot {
   doLast {
-    VersionNumber v = VersionNumber.parse(project.version)
-    String version = "${v.major}.${v.minor}.${v.micro + 1}-SNAPSHOT"
+    def matcher = project.version.toString() =~ /^(\d+)\.(\d+)\.(\d+)(?:-.+)?$/
+    if (!matcher.matches()) {
+      throw new GradleException("version '${project.version}' does not follow major.minor.patch")
+    }
+    String version = "${matcher.group(1)}.${matcher.group(2)}.${matcher.group(3).toInteger() + 1}-SNAPSHOT"
     setVersion(version)
   }
 }

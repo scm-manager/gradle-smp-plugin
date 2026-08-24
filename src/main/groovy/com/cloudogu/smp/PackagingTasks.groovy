@@ -21,19 +21,17 @@ import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.DependencySet
-import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.attributes.Bundling
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.LibraryElements
 import org.gradle.api.attributes.Usage
-import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.tasks.bundling.War
 
 class PackagingTasks {
 
-  static PublishArtifact configure(Project project, PackageJson packageJson, SmpExtension extension) {
-    PublishArtifact artifact = registerSmpTasks(project, extension)
+  static void configure(Project project, PackageJson packageJson, SmpExtension extension) {
+    registerSmpTasks(project, extension)
     registerPluginXml(project, packageJson, extension)
 
     Configuration smpArtifacts = project.configurations.create('smp')
@@ -57,10 +55,9 @@ class PackagingTasks {
       project.artifacts.add('smp', project.tasks.getByName('smp'))
     }
 
-    artifact
   }
 
-  private static PublishArtifact registerSmpTasks(Project project, SmpExtension extension) {
+  private static void registerSmpTasks(Project project, SmpExtension extension) {
     String name = extension.getName(project)
 
     def smp = project.tasks.register("smp", War) {
@@ -115,7 +112,6 @@ class PackagingTasks {
       mustRunAfter("smp")
     }
 
-    new LazyPublishArtifact(smp)
   }
 
   private static void registerPluginXml(Project project, PackageJson packageJson, SmpExtension extension) {

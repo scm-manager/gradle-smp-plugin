@@ -16,7 +16,7 @@
 
 package com.cloudogu.smp
 
-import com.moowork.gradle.node.yarn.YarnTask
+import com.github.gradle.node.yarn.task.YarnTask
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.BeforeEach

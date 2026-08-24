@@ -19,9 +19,11 @@ package com.cloudogu.smp
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 
 import java.time.Instant
 
+@DisableCachingByDefault(because = "Updates timestamps of existing files in place")
 class TouchFilesTask extends DefaultTask {
 
   @Input
