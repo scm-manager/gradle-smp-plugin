@@ -81,7 +81,11 @@ abstract class RunTask extends DefaultTask {
     if (!runInBackground) {
       wait(threads)
     } else {
-      waitForPortToBeOpen()
+      try {
+        waitForPortToBeOpen()
+      } catch (Exception e) {
+        threads
+      }
     }
   }
 

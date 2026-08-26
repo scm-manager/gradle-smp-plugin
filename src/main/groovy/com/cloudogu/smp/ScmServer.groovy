@@ -23,10 +23,9 @@ import org.eclipse.jetty.server.HttpConfiguration
 import org.eclipse.jetty.server.HttpConnectionFactory
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
-import org.eclipse.jetty.server.handler.HandlerList
 import org.eclipse.jetty.server.handler.ShutdownHandler
 import org.eclipse.jetty.util.component.LifeCycle
-import org.eclipse.jetty.webapp.WebAppContext
+import org.eclipse.jetty.ee10.webapp.WebAppContext
 
 import java.awt.Desktop
 
@@ -66,12 +65,10 @@ final class ScmServer {
 
     server = new Server()
     server.addConnector(createServerConnector(server))
-    HandlerList handlerList = new HandlerList()
-    handlerList.setHandlers([
-      createScmContext(),
-      createShutdownHandler()
-    ] as Handler[])
-    server.setHandler(handlerList)
+    Handler.Sequence handlers = new Handler.Sequence()
+    handlers.addHandler(createScmContext())
+    handlers.addHandler(createShutdownHandler())
+    server.setHandler(handlers)
     server.addEventListener(new LifeCycle.Listener() {
       @Override
       void lifeCycleStarted(LifeCycle event) {
@@ -125,7 +122,7 @@ final class ScmServer {
   }
 
   private static ShutdownHandler createShutdownHandler() {
-    return new ShutdownHandler("_shutdown_", true, false)
+    return new ShutdownHandler("_shutdown_", true)
   }
 
   private ServerConnector createServerConnector(Server server) throws MalformedURLException {
