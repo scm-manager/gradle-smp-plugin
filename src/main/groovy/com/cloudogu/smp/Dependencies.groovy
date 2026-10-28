@@ -234,6 +234,12 @@ class Dependencies {
       testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.3'
 
       testImplementation 'org.assertj:assertj-core:3.16.1'
+      if (majorVersion == 3) {
+        // Support Mockito instrumentation on Java 25 with older core dependencies.
+        testImplementation 'net.bytebuddy:byte-buddy:1.17.5'
+        testImplementation 'net.bytebuddy:byte-buddy-agent:1.17.5'
+      }
+
       testImplementation 'org.mockito:mockito-core:1.3.1.Final'
       testImplementation 'org.mockito:mockito-junit-jupiter:1.3.1.Final'
       testImplementation "org.slf4j:slf4j-simple:1.7.36"
